@@ -12,7 +12,7 @@ r = tree.xpath('//TexteJuri/P')
 def replace_none(s: str) -> str:
     if s is None:
         return ""
-    return s.strip()
+    return "[" + s.strip() + "]"
 
 
 def get_person_name(node: lxml.etree._Element)-> tuple:
@@ -21,21 +21,19 @@ def get_person_name(node: lxml.etree._Element)-> tuple:
         return t.text, node.tail
 
 
-def get_paragraph_text(node: lxml.etree._Element) -> str:
+def get_paragraph_text(parent_node: lxml.etree._Element) -> str:
     content: list = list()
-    for t in node.iter():
-        if t.tag == "Personne":
-            name, after = get_person_name(t)
+    for node in parent_node.iter():
+        if node.tag == "Personne":
+            name, after = get_person_name(node)
             content.append(replace_none(name))
             content.append(replace_none(after))
-        elif t.tag == "P":
-            content.append(replace_none(t.text))
-        elif t.tag == "Adresse":
-            content.append(replace_none(t.text))
-        elif t.tag in ["Texte", "TexteAnonymise"]:
+        elif node.tag in ["P", "Adresse"]:
+            content.append(replace_none(node.text))
+        elif node.tag in ["Texte", "TexteAnonymise"]:
             pass
         else:
-            raise NotImplementedError("Unexpected type of node: [" + t.tag + "]")
+            raise NotImplementedError("Unexpected type of node: [" + node.tag + "]")
     content = [x for x in content if len(x) > 0]
     return ' '.join(content)
 
