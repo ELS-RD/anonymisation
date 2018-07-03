@@ -30,7 +30,9 @@ def get_paragraph_text(node: lxml.etree._Element) -> str:
             content.append(replace_none(after))
         elif t.tag == "P":
             content.append(replace_none(t.text))
-        elif t.tag in ["Texte", "TexteAnonymise", "Adresse"]:
+        elif t.tag == "Adresse":
+            content.append(replace_none(t.text))
+        elif t.tag in ["Texte", "TexteAnonymise"]:
             pass
         else:
             raise NotImplementedError("Unexpected type of node: [" + t.tag + "]")
