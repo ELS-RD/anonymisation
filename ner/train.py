@@ -8,18 +8,44 @@
 import random
 from pathlib import Path
 import spacy
+from spacy import util
+from spacy.util import compounding
 
-# training resources
-TRAIN_DATA = [
-    ('Who is Shaka Khan?', {
-        'entities': [(7, 17, 'PERSON')]
-    }),
-    ('I like London and Berlin.', {
-        'entities': [(7, 13, 'LOC'), (18, 24, 'LOC')]
-    })
-]
+from xml_parser.xml_parser import get_paragraph_text, read_xml
 
-n_iter = 100
+batch_size = 50
+
+xml_path = "./resources/training_data/CA-2013-sem-06.xml"
+tree = read_xml(xml_path)
+r = tree.xpath('//TexteJuri/P')
+
+TRAIN_DATA = list()
+for i in r:
+    paragraph_text, extracted_text, offset = get_paragraph_text(i)
+    if len(extracted_text) > 0:
+        item_text = extracted_text[0]
+        current_attribute = offset.get('entities')[0]
+        start = current_attribute[0]
+        end = current_attribute[1]
+        assert item_text == paragraph_text[start:end]
+        TRAIN_DATA.append((paragraph_text, offset))
+
+
+def get_batches(train_data, model_type):
+    max_batch_sizes = {'tagger': 32, 'parser': 16, 'ner': 16, 'textcat': 64}
+    max_batch_size = max_batch_sizes[model_type]
+    if len(train_data) < 1000:
+        max_batch_size /= 2
+    if len(train_data) < 500:
+        max_batch_size /= 2
+    batch_size = compounding(1, max_batch_size, 1.001)
+    batches = util.minibatch(train_data, size=batch_size)
+    return batches
+
+
+batches = util.minibatch(TRAIN_DATA, size=batch_size)
+
+n_iter = 10
 output_dir = None
 
 nlp = spacy.blank('fr')  # create blank Language class
@@ -41,15 +67,19 @@ other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
 with nlp.disable_pipes(*other_pipes):  # only train NER
     optimizer = nlp.begin_training()
     for itn in range(n_iter):
-        random.shuffle(TRAIN_DATA)
+        # random.shuffle(TRAIN_DATA)
         losses = {}
-        for text, annotations in TRAIN_DATA:
+        batch_count = 0
+        for current_batch_item in batches:
+            text, annotations = zip(*current_batch_item)
             nlp.update(
-                [text],  # batch of texts
-                [annotations],  # batch of annotations
+                text,  # batch of texts
+                annotations,  # batch of annotations
                 drop=0.5,  # dropout - make it harder to memorise resources
                 sgd=optimizer,  # callable to update weights
                 losses=losses)
+            print("batch ", batch_count, "/", len(TRAIN_DATA) / batch_size)
+            batch_count += 1
         print(losses)
 
 # test the trained model
