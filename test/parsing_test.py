@@ -1,4 +1,4 @@
-from parser.xml_parser import get_paragraph_text, read_xml
+from xml_parser.xml_parser import get_paragraph_text, read_xml
 
 
 def test_parser():
