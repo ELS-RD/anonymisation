@@ -1,4 +1,3 @@
-# https://github.com/explosion/spaCy/issues/1530
 import lxml
 from lxml import etree
 
@@ -13,7 +12,7 @@ def replace_none(s: str) -> str:
     return s.strip()
 
 
-def get_person_name(node: lxml.etree._Element)-> tuple:
+def get_person_name(node: lxml.etree._Element) -> tuple:
     assert node.tag == "Personne"
     for t in node.iterchildren(tag="Texte"):
         return replace_none(t.text), replace_none(node.tail)
@@ -35,21 +34,31 @@ def get_paragraph_text(parent_node: lxml.etree._Element) -> tuple:
         else:
             raise NotImplementedError("Unexpected type of node: [" + node.tag + "]")
     clean_content = list()
-    attributes = list()
+    extracted_text = list()
+    offset = list()
     text_current_size = 0
     for content in contents:
         current_text_item = content[0]
         current_tag_item = content[1]
-        curent_item_text_size = len(current_text_item)
+        current_item_text_size = len(current_text_item)
 
         clean_content.append(current_text_item)
         if current_tag_item in ["Personne", "Adresse"]:
-            attributes.append((current_text_item,
-                               current_tag_item,
-                               text_current_size,
-                               text_current_size + curent_item_text_size))
-        text_current_size += curent_item_text_size + 1
+            offset.append((text_current_size,
+                           text_current_size + current_item_text_size,
+                           current_tag_item))
+            extracted_text.append(current_text_item)
+        text_current_size += current_item_text_size + 1
 
-    return ' '.join(clean_content), attributes
+    paragraph_text = ' '.join(clean_content)
+    return paragraph_text, extracted_text, {'entities': offset}
 
 
+TRAIN_DATA = [
+    ('Who is Shaka Khan?', {
+        'entities': [(7, 17, 'PERSON')]
+    }),
+    ('I like London and Berlin.', {
+        'entities': [(7, 13, 'LOC'), (18, 24, 'LOC')]
+    })
+]

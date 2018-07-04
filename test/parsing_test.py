@@ -9,11 +9,10 @@ def test_parser():
     r = tree.xpath('//TexteJuri/P')
 
     for i in r:
-        result = get_paragraph_text(i)
-        if len(result[1]) > 0:
-            current_attribute = result[1][0]
-            start = current_attribute[2]
-            end = current_attribute[3]
-            item_text = current_attribute[0]
-            paragraph_text = result[0]
+        paragraph_text, extracted_text, offset = get_paragraph_text(i)
+        if len(extracted_text) > 0:
+            item_text = extracted_text[0]
+            current_attribute = offset.get('entities')[0]
+            start = current_attribute[0]
+            end = current_attribute[1]
             assert item_text == paragraph_text[start:end]
