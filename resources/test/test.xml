@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Juris genbc-version="">
+    <Juri id="CA-aix-en-provence-20130208-1022871-jurica">
+        <MetaJuri>
+            <CompositionCour>
+                <Greffier>Laure METGE</Greffier>
+            </CompositionCour>
+            <Avocat>Colette TOUBOUL</Avocat>
+            <Avocat>Patrice CIPRE</Avocat>
+            <DecisionTraitee>
+                <Numero>10/22871</Numero>
+                <Date>2013/02/08</Date>
+                <Lieu>Aix-en-Provence</Lieu>
+                <Formation>ch. 11 B</Formation>
+                <Juridiction>CA</Juridiction>
+                <Nature>Ordonnance</Nature>
+            </DecisionTraitee>
+            <Defendeurs>
+                <NomPartie>
+                    <Texte>Catherine ***REMOVED***</Texte>
+                    <TexteAnonymise>C.</TexteAnonymise>
+                </NomPartie>
+            </Defendeurs>
+            <Demandeurs>
+                <NomPartie>
+                    <Texte>SCP MJ</Texte>
+                    <TexteAnonymise/>
+</NomPartie>
+                <NomPartie>
+                    <Texte>Maurice Paul LEON ***REMOVED***</Texte>
+                    <TexteAnonymise>L.</TexteAnonymise>
+                </NomPartie>
+            </Demandeurs>
+            <Origine>JURICA</Origine>
+        </MetaJuri>
+        <TexteJuri>
+            <P>COUR D'APPEL </P>
+            <P>D'AIX EN PROVENCE </P>
+            <P>20, Place Verdun </P>
+            <P>13616 AIX EN PROVENCE CEDEX </P>
+            <P>11e Chambre B </P>
+            <P>RG N° : 10/22871 </P>
+            <P>Ordonnance n° 2013/32m </P>
+            <P>ORDONNANCE DE DESSAISISSEMENT </P>
+            <P>DÉSISTEMENT </P>
+            <P>SARL GOCAN prise en la personne de son gérant </P>
+            <P>Représentant : la SCP LABORDE &amp; FOSSAT (avocats au barreau de DRAGUIGNAN) - Représentant : la SELARL BOULAN / CHERFILS / IMPERATORE (avocats au barreau d'AIX EN PROVENCE) - Représentant : la SCP BLANC CHERFILS (avocats au barreau d'AIX EN PROVENCE) </P>
+            <P>Appelante </P>
+            <P>M. Maurice Paul                 <Personne>
+                    <Texte>Léon</Texte>
+                    <TexteAnonymise>L.</TexteAnonymise>
+                </Personne>
+                <Personne>
+                    <Texte>***REMOVED***</Texte>
+                    <TexteAnonymise>F.</TexteAnonymise>
+                </Personne>
+            </P>
+            <P>Représentant : la SCP MJ DE SAINT FERREOL ET COLETTE TOUBOUL (avocats au barreau d'AIX EN PROVENCE) - Représentant : Me Patrice CIPRE (avocat au barreau de NICE) </P>
+            <P>Intimé </P>
+            <P>Nous, Catherine                 <Personne>
+                    <Texte>***REMOVED***</Texte>
+                    <TexteAnonymise>C.</TexteAnonymise>
+                </Personne> , Magistrat de la Mise en Etat, assisté de Laure METGE, greffier, 
+            </P>
+            <P>Vu les articles 384, 400 et suivants et 769 du Code de Procédure Civile, </P>
+            <P>Vu le désistement d'appel de SARL GOCAN, appelante contre Maurice Paul                 <Personne>
+                    <Texte>Léon</Texte>
+                    <TexteAnonymise>L.</TexteAnonymise>
+                </Personne>
+                <Personne>
+                    <Texte>***REMOVED***</Texte>
+                    <TexteAnonymise>F.</TexteAnonymise>
+                </Personne>, intimé 
+            </P>
+            <P> Attendu que le désistement est fait sans réserve ; </P>
+            <P> Attendu que l'intimé à l'égard duquel le désistement est fait a déclaré l'accepter ; </P>
+            <P>PAR CES MOTIFS </P>
+            <P> Constatons l'extinction de l'instance RG N° 10/22871 et le dessaisissement de la Cour. </P>
+            <P> Disons que les dépens seront, sauf convention contraire, supportés par l'appelant ; </P>
+            <P>Fait à Aix en Provence, le07/02/2013 </P>
+            <P>Le Greffier, Le Magistrat de la Mise en Etat, </P>
+            <P>copie délivrée aux avocats des parties le :07/02/2013 </P>
+            <P>Le greffier </P>
+        </TexteJuri>
+    </Juri>
+</Juris>

@@ -9,7 +9,7 @@ import random
 from pathlib import Path
 import spacy
 
-# training data
+# training resources
 TRAIN_DATA = [
     ('Who is Shaka Khan?', {
         'entities': [(7, 17, 'PERSON')]
@@ -47,7 +47,7 @@ with nlp.disable_pipes(*other_pipes):  # only train NER
             nlp.update(
                 [text],  # batch of texts
                 [annotations],  # batch of annotations
-                drop=0.5,  # dropout - make it harder to memorise data
+                drop=0.5,  # dropout - make it harder to memorise resources
                 sgd=optimizer,  # callable to update weights
                 losses=losses)
         print(losses)

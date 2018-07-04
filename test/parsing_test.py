@@ -2,7 +2,8 @@ from xml_parser.xml_parser import get_paragraph_text, read_xml
 
 
 def test_parser():
-    xml_path = "../data/xml_legal_case_exemple/CA-2013-sem-06.xml"
+    xml_path = "./resources/test/test.xml"
+
     tree = read_xml(xml_path)
 
     # r = tree.xpath('//TexteJuri/P|//MetaJuri/DecisionTraitee/Date|//MetaJuri/DecisionTraitee/Numero')
