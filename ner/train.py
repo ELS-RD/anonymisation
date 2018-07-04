@@ -9,44 +9,23 @@ import random
 from pathlib import Path
 import spacy
 from spacy import util
-from spacy.util import compounding
+from tqdm import tqdm
+from xml_parser.xml_parser import get_paragraph
+import configparser
 
-from xml_parser.xml_parser import get_paragraph_text, read_xml
-
-batch_size = 50
-
-xml_path = "./resources/training_data/CA-2013-sem-06.xml"
-tree = read_xml(xml_path)
-r = tree.xpath('//TexteJuri/P')
-
-TRAIN_DATA = list()
-for i in r:
-    paragraph_text, extracted_text, offset = get_paragraph_text(i)
-    if len(extracted_text) > 0:
-        item_text = extracted_text[0]
-        current_attribute = offset.get('entities')[0]
-        start = current_attribute[0]
-        end = current_attribute[1]
-        assert item_text == paragraph_text[start:end]
-        TRAIN_DATA.append((paragraph_text, offset))
+config = configparser.ConfigParser()
+config.read('resources/config.ini')
+config_training = config['training']
+xml_train_path = config_training["xml_train_path"]
+xml_test_path = config_training["xml_test_path"]
+model_dir_path = config_training["model_dir_path"]
+n_iter = int(config_training["number_iterations"])
+batch_size = int(config_training["batch_size"])
 
 
-def get_batches(train_data, model_type):
-    max_batch_sizes = {'tagger': 32, 'parser': 16, 'ner': 16, 'textcat': 64}
-    max_batch_size = max_batch_sizes[model_type]
-    if len(train_data) < 1000:
-        max_batch_size /= 2
-    if len(train_data) < 500:
-        max_batch_size /= 2
-    batch_size = compounding(1, max_batch_size, 1.001)
-    batches = util.minibatch(train_data, size=batch_size)
-    return batches
-
-
-batches = util.minibatch(TRAIN_DATA, size=batch_size)
-
-n_iter = 10
-output_dir = None
+TRAIN_DATA = get_paragraph(xml_train_path, spacy_format=True)
+# TRAIN_DATA = TRAIN_DATA[0:1000]
+TEST_DATA = get_paragraph(xml_test_path, spacy_format=True)
 
 nlp = spacy.blank('fr')  # create blank Language class
 print("Created blank 'fr' model")
@@ -58,56 +37,42 @@ ner = nlp.create_pipe('ner')
 nlp.add_pipe(ner, last=True)
 
 # add labels
-for _, annotations in TRAIN_DATA:
-    for ent in annotations.get('entities'):
-        ner.add_label(ent[2])
+for token_type in ["Adresse", "Personne"]:
+    ner.add_label(token_type)
 
-# get names of other pipes to disable them during training
-other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
-with nlp.disable_pipes(*other_pipes):  # only train NER
-    optimizer = nlp.begin_training()
+
+optimizer = nlp.begin_training()
+with tqdm(total=n_iter * len(TRAIN_DATA) / batch_size) as pbar:
     for itn in range(n_iter):
-        # random.shuffle(TRAIN_DATA)
+        print("\nIter", itn + 1)
         losses = {}
-        batch_count = 0
+        random.shuffle(TRAIN_DATA)
+        batches = util.minibatch(TRAIN_DATA, batch_size)
+
         for current_batch_item in batches:
-            text, annotations = zip(*current_batch_item)
+            texts, annotations = zip(*current_batch_item)
             nlp.update(
-                text,  # batch of texts
+                texts,  # batch of texts
                 annotations,  # batch of annotations
                 drop=0.5,  # dropout - make it harder to memorise resources
                 sgd=optimizer,  # callable to update weights
                 losses=losses)
-            print("batch ", batch_count, "/", len(TRAIN_DATA) / batch_size)
-            batch_count += 1
+            pbar.update(1)
+
         print(losses)
 
-# test the trained model
-for text, _ in TRAIN_DATA:
-    doc = nlp(text)
-    print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
-    print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])
-
 # save model to output directory
-if output_dir is not None:
-    output_dir = Path(output_dir)
-    if not output_dir.exists():
-        output_dir.mkdir()
-    nlp.to_disk(output_dir)
-    print("Saved model to", output_dir)
+if model_dir_path is not None:
+    model_dir_path = Path(model_dir_path)
+    nlp.to_disk(model_dir_path)
+    print("Saved model to", model_dir_path)
 
     # test the saved model
-    print("Loading from", output_dir)
-    nlp2 = spacy.load(output_dir)
-    for text, _ in TRAIN_DATA:
-        doc = nlp2(text)
-        print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
-        print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])
+    print("Loading from", model_dir_path)
+    nlp2 = spacy.load(model_dir_path)
 
-# Expected output:
-# Entities [('Shaka Khan', 'PERSON')]
-# Tokens [('Who', '', 2), ('is', '', 2), ('Shaka', 'PERSON', 3),
-# ('Khan', 'PERSON', 1), ('?', '', 2)]
-# Entities [('London', 'LOC'), ('Berlin', 'LOC')]
-# Tokens [('I', '', 2), ('like', '', 2), ('London', 'LOC', 3),
-# ('and', '', 2), ('Berlin', 'LOC', 3), ('.', '', 2)]
+# test the trained model
+for texts, _ in TEST_DATA:
+    doc = nlp(texts)
+    print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
+    print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])

@@ -1,4 +1,4 @@
-from xml_parser.xml_parser import get_paragraph_text, read_xml
+from xml_parser.xml_parser import get_paragraph_with_entities, read_xml
 
 
 def test_parser():
@@ -10,7 +10,7 @@ def test_parser():
     r = tree.xpath('//TexteJuri/P')
 
     for i in r:
-        paragraph_text, extracted_text, offset = get_paragraph_text(i)
+        paragraph_text, extracted_text, offset = get_paragraph_with_entities(i)
         if len(extracted_text) > 0:
             item_text = extracted_text[0]
             current_attribute = offset.get('entities')[0]

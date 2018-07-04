@@ -18,7 +18,7 @@ def get_person_name(node: lxml.etree._Element) -> tuple:
         return replace_none(t.text), replace_none(node.tail)
 
 
-def get_paragraph_text(parent_node: lxml.etree._Element) -> tuple:
+def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
     contents: list = list()
 
     for node in parent_node.iter():
@@ -54,11 +54,20 @@ def get_paragraph_text(parent_node: lxml.etree._Element) -> tuple:
     return paragraph_text, extracted_text, {'entities': offset}
 
 
-TRAIN_DATA = [
-    ('Who is Shaka Khan?', {
-        'entities': [(7, 17, 'PERSON')]
-    }),
-    ('I like London and Berlin.', {
-        'entities': [(7, 13, 'LOC'), (18, 24, 'LOC')]
-    })
-]
+def get_paragraph(path: str, spacy_format: bool) -> list:
+    result = list()
+    tree = read_xml(path)
+    nodes = tree.xpath('//TexteJuri/P')
+    for node in nodes:
+        paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
+        if len(extracted_text) > 0:
+            item_text = extracted_text[0]
+            current_attribute = offset.get('entities')[0]
+            start = current_attribute[0]
+            end = current_attribute[1]
+            assert item_text == paragraph_text[start:end]
+            if spacy_format:
+                result.append((paragraph_text, offset))
+            else:
+                result.append((paragraph_text, extracted_text, offset))
+    return result
