@@ -1,4 +1,4 @@
-from xml_parser.parse_header_value import parse_xml_header
+from xml_parser.extract_header_values import parse_xml_header
 import os
 
 

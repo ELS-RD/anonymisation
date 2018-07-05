@@ -12,7 +12,7 @@ from spacy import util
 from tqdm import tqdm
 
 from resources.config_provider import get_config_default
-from xml_parser.extract_node_value import get_paragraph_from_file
+from xml_parser.extract_node_values import get_paragraph_from_file
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
@@ -23,8 +23,12 @@ batch_size = int(config_training["batch_size"])
 
 TRAIN_DATA = get_paragraph_from_file(xml_train_path,
                                      keep_paragraph_without_annotation=False)
+
+# TODO call parse_xml_header here
+# TODO look for header info inside paragraphs
+# TODO remove any paragraph without any annotation?
+
 # TRAIN_DATA = TRAIN_DATA[0:1000]
-TRAIN_DATA = [(texts, annotations) for _, texts, _, annotations in TRAIN_DATA]
 
 nlp = spacy.blank('fr')  # create blank Language class
 
@@ -45,7 +49,7 @@ with tqdm(total=n_iter * len(TRAIN_DATA) / batch_size) as pbar:
         batches = util.minibatch(TRAIN_DATA, batch_size)
 
         for current_batch_item in batches:
-            texts, annotations = zip(*current_batch_item)
+            _, texts, _, annotations = zip(*current_batch_item)
             nlp.update(
                 texts,  # batch of texts
                 annotations,  # batch of annotations

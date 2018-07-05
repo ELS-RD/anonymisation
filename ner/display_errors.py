@@ -1,7 +1,7 @@
 import spacy
 
 from resources.config_provider import get_config_default
-from xml_parser.extract_node_value import get_paragraph_from_file
+from xml_parser.extract_node_values import get_paragraph_from_file
 
 
 config_training = get_config_default()

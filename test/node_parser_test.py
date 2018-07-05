@@ -1,4 +1,4 @@
-from xml_parser.extract_node_value import get_paragraph_with_entities, read_xml, get_paragraph_from_file
+from xml_parser.extract_node_values import get_paragraph_with_entities, read_xml, get_paragraph_from_file
 
 xml_path = "./resources/test/test.xml"
 
