@@ -1,10 +1,10 @@
 import spacy
-import configparser
+
+from resources.config_provider import get_config_default
 from xml_parser.extract_node_value import get_paragraph_from_file
 
-config = configparser.ConfigParser()
-config.read('resources/config.ini')
-config_training = config['training']
+
+config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]
 xml_test_path = config_training["xml_test_path"]
 

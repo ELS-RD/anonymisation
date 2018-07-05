@@ -10,12 +10,11 @@ from pathlib import Path
 import spacy
 from spacy import util
 from tqdm import tqdm
-from xml_parser.extract_node_value import get_paragraph_from_file
-import configparser
 
-config = configparser.ConfigParser()
-config.read('resources/config.ini')
-config_training = config['training']
+from resources.config_provider import get_config_default
+from xml_parser.extract_node_value import get_paragraph_from_file
+
+config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
 xml_test_path = config_training["xml_test_path"]
 model_dir_path = config_training["model_dir_path"]
