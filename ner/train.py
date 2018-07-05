@@ -10,7 +10,7 @@ from pathlib import Path
 import spacy
 from spacy import util
 from tqdm import tqdm
-from xml_parser.xml_parser import get_paragraph
+from xml_parser.xml_parser import get_paragraph_from_file
 import configparser
 
 config = configparser.ConfigParser()
@@ -23,9 +23,9 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 
 
-TRAIN_DATA = get_paragraph(xml_train_path, spacy_format=True)
+TRAIN_DATA = get_paragraph_from_file(xml_train_path, spacy_format=True)
 # TRAIN_DATA = TRAIN_DATA[0:1000]
-TEST_DATA = get_paragraph(xml_test_path, spacy_format=True)
+TEST_DATA = get_paragraph_from_file(xml_test_path, spacy_format=True)
 
 nlp = spacy.blank('fr')  # create blank Language class
 print("Created blank 'fr' model")
@@ -70,9 +70,3 @@ if model_dir_path is not None:
     # test the saved model
     print("Loading from", model_dir_path)
     nlp2 = spacy.load(model_dir_path)
-
-# test the trained model
-for texts, _ in TEST_DATA:
-    doc = nlp(texts)
-    print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
-    print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])

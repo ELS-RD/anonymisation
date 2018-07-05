@@ -1,6 +1,6 @@
 import spacy
 import configparser
-from xml_parser.xml_parser import get_paragraph
+from xml_parser.xml_parser import get_paragraph_from_file
 
 config = configparser.ConfigParser()
 config.read('resources/config.ini')
@@ -10,7 +10,7 @@ xml_test_path = config_training["xml_test_path"]
 
 nlp = spacy.load(model_dir_path)
 
-TEST_DATA = get_paragraph(xml_test_path, spacy_format=False)
+TEST_DATA = get_paragraph_from_file(xml_test_path, spacy_format=False)
 
 for texts, extracted_text, annotations in TEST_DATA:
     doc = nlp(texts)
