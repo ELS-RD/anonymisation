@@ -1,12 +1,9 @@
-from xml_parser.extract_node_value import get_paragraph_with_entities, read_xml
-import os
+from xml_parser.extract_node_value import get_paragraph_with_entities, read_xml, get_paragraph_from_file
+
+xml_path = "./resources/test/test.xml"
 
 
 def test_xml_parser():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    print(dir_path)
-    xml_path = "./resources/test/test.xml"
-
     tree = read_xml(xml_path)
 
     # r = tree.xpath('//TexteJuri/P|//MetaJuri/DecisionTraitee/Date|//MetaJuri/DecisionTraitee/Numero')
@@ -20,3 +17,10 @@ def test_xml_parser():
             start = current_attribute[0]
             end = current_attribute[1]
             assert item_text == paragraph_text[start:end]
+
+
+def test_get_paragraph():
+    result_keep_no_annotation = get_paragraph_from_file(path=xml_path, keep_paragraph_without_annotation=True)
+    result_keep_with_annotation = get_paragraph_from_file(path=xml_path, keep_paragraph_without_annotation=False)
+    assert len(result_keep_no_annotation) == 27
+    assert len(result_keep_with_annotation) == 3

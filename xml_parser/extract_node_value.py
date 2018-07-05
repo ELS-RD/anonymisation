@@ -56,33 +56,34 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
     return paragraph_text, extracted_text, {'entities': offset}
 
 
-def get_paragraph_from_file(path: str, spacy_format: bool, keep_paragraph_without_annotation: bool) -> list:
+def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) -> list:
     """
     Read paragraph from a file
     :param path: path to the XML file
-    :param spacy_format: if True, don't include value content
     :param keep_paragraph_without_annotation: keep paragraph which doesn't include annotation according to Themis
     :return: a tupple of (paragraph text, value inside node, offset) OR (paragraph text, offset)
     """
     result = list()
     tree = read_xml(path)
-    nodes = tree.xpath('//TexteJuri/P')
+    nodes = tree.xpath('//Juri|//TexteJuri/P')
+    current_case_id = None
     for node in nodes:
-        paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
-        has_some_annotation = len(extracted_text) > 0
-        if has_some_annotation:
-            item_text = extracted_text[0]
-            current_attribute = offset.get('entities')[0]
-            start = current_attribute[0]
-            end = current_attribute[1]
-            assert item_text == paragraph_text[start:end]
-        else:
-            offset = list()
-            extracted_text = list()
+        if node.tag == "Juri":
+            current_case_id = node.get("id")
+        if node.tag == "P":
+            paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
+            has_some_annotation = len(extracted_text) > 0
+            if has_some_annotation:
+                item_text = extracted_text[0]
+                current_attribute = offset.get('entities')[0]
+                start = current_attribute[0]
+                end = current_attribute[1]
+                assert item_text == paragraph_text[start:end]
+            else:
+                offset = list()
+                extracted_text = list()
 
-        if spacy_format & (has_some_annotation | keep_paragraph_without_annotation):
-            result.append((paragraph_text, offset))
-        elif has_some_annotation | keep_paragraph_without_annotation:
-            result.append((paragraph_text, extracted_text, offset))
+            if has_some_annotation | keep_paragraph_without_annotation:
+                result.append((current_case_id, paragraph_text, extracted_text, offset))
 
     return result

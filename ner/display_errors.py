@@ -10,9 +10,10 @@ xml_test_path = config_training["xml_test_path"]
 
 nlp = spacy.load(model_dir_path)
 
-TEST_DATA = get_paragraph_from_file(xml_test_path, spacy_format=False, keep_paragraph_without_annotation=False)
+DEV_DATA = get_paragraph_from_file(xml_test_path,
+                                   keep_paragraph_without_annotation=False)
 
-for texts, extracted_text, annotations in TEST_DATA:
+for case_id, texts, extracted_text, annotations in DEV_DATA:
     doc = nlp(texts)
     entities_spacy = set([ent.text for ent in doc.ents])
     if entities_spacy != set(extracted_text):

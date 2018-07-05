@@ -16,19 +16,15 @@ from xml_parser.extract_node_value import get_paragraph_from_file
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
-xml_test_path = config_training["xml_test_path"]
 model_dir_path = config_training["model_dir_path"]
 n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 
 
 TRAIN_DATA = get_paragraph_from_file(xml_train_path,
-                                     spacy_format=True,
                                      keep_paragraph_without_annotation=False)
 # TRAIN_DATA = TRAIN_DATA[0:1000]
-TEST_DATA = get_paragraph_from_file(xml_test_path,
-                                    spacy_format=True,
-                                    keep_paragraph_without_annotation=False)
+TRAIN_DATA = [(texts, annotations) for _, texts, _, annotations in TRAIN_DATA]
 
 nlp = spacy.blank('fr')  # create blank Language class
 
@@ -64,8 +60,3 @@ with tqdm(total=n_iter * len(TRAIN_DATA) / batch_size) as pbar:
 if model_dir_path is not None:
     model_dir_path = Path(model_dir_path)
     nlp.to_disk(model_dir_path)
-    print("Saved model to", model_dir_path)
-
-    # test the saved model
-    print("Loading from", model_dir_path)
-    nlp2 = spacy.load(model_dir_path)
