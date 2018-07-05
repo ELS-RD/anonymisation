@@ -1,7 +1,10 @@
 from xml_parser.extract_node_value import get_paragraph_with_entities, read_xml
+import os
 
 
-def test_parser():
+def test_xml_parser():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
     xml_path = "./resources/test/test.xml"
 
     tree = read_xml(xml_path)
