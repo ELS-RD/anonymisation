@@ -22,9 +22,13 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 
 
-TRAIN_DATA = get_paragraph_from_file(xml_train_path, spacy_format=True)
+TRAIN_DATA = get_paragraph_from_file(xml_train_path,
+                                     spacy_format=True,
+                                     keep_paragraph_without_annotation=False)
 # TRAIN_DATA = TRAIN_DATA[0:1000]
-TEST_DATA = get_paragraph_from_file(xml_test_path, spacy_format=True)
+TEST_DATA = get_paragraph_from_file(xml_test_path,
+                                    spacy_format=True,
+                                    keep_paragraph_without_annotation=False)
 
 nlp = spacy.blank('fr')  # create blank Language class
 
