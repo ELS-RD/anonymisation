@@ -1,4 +1,4 @@
-# NER on Legal case
+# NER on legal case
 
 [![Build Status](https://travis-ci.com/ELS-RD/anonymisation.svg?token=9BHyni1rDpKLxVsHDRNp&branch=master)](https://travis-ci.com/ELS-RD/anonymisation)
 
@@ -20,3 +20,12 @@ Advantages:
 Project is done in Python and can't be rewrite in something else because Spacy only exists in Python.
 
 Other approaches (LSTM, etc.) may have shown slightly better performance but are much slower to learn and for inference.
+
+
+### TODO:
+
+- generate training examples using headers, in particular for companies
+    - remove SARL / SA / SAS / Etablissement / AGS ... in front of the name of the company to generalize better 
+- implement prediction with multi thread (pipe)
+- search for phone number, social security number, etc. 
+- implement a loop to manage multiple XML files

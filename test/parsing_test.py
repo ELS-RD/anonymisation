@@ -1,4 +1,4 @@
-from xml_parser.xml_parser import get_paragraph_with_entities, read_xml
+from xml_parser.extract_node_value import get_paragraph_with_entities, read_xml
 
 
 def test_parser():

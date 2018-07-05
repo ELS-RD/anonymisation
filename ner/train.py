@@ -10,7 +10,7 @@ from pathlib import Path
 import spacy
 from spacy import util
 from tqdm import tqdm
-from xml_parser.xml_parser import get_paragraph_from_file
+from xml_parser.extract_node_value import get_paragraph_from_file
 import configparser
 
 config = configparser.ConfigParser()
@@ -28,10 +28,6 @@ TRAIN_DATA = get_paragraph_from_file(xml_train_path, spacy_format=True)
 TEST_DATA = get_paragraph_from_file(xml_test_path, spacy_format=True)
 
 nlp = spacy.blank('fr')  # create blank Language class
-print("Created blank 'fr' model")
-
-# create the built-in pipeline components and add them to the pipeline
-# nlp.create_pipe works for built-ins that are registered with spaCy
 
 ner = nlp.create_pipe('ner')
 nlp.add_pipe(ner, last=True)
