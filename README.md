@@ -24,8 +24,6 @@ Other approaches (LSTM, etc.) may have shown slightly better performance but are
 
 ### TODO:
 
-- generate training examples using headers, in particular for companies
-    - remove SARL / SA / SAS / Etablissement / AGS ... in front of the name of the company to generalize better 
+- generate training examples using headers, in particular for companies 
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
-- implement a loop to manage multiple XML files

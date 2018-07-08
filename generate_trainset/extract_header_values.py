@@ -1,13 +1,13 @@
-from xml_parser.common_xml_parser_function import read_xml
+from generate_trainset.common_xml_parser_function import read_xml
 
 
-def parse_xml_header(xml_path: str):
+def parse_xml_header(path: str):
     """
     Extract some values from Jurica XML headers
-    :param xml_path: path to the Jurica XML file
+    :param path: path to the Jurica XML file
     :return: a dict, 1 slot per legal case, for each slot, there is a dict of list with values
     """
-    tree = read_xml(xml_path)
+    tree = read_xml(path)
     nodes = tree.xpath('//Juri|//MetaJuri//DecisionTraitee/Numero|//Demandeurs//Texte|//Demandeurs//TexteAnonymise|'
                        '//MetaJuri/Defendeurs//TexteAnonymise|//MetaJuri/Defendeurs//Texte|'
                        '//Greffier|//Avocat|//DecisionTraitee/Date')

@@ -1,3 +1,4 @@
+tqdm
 spacy
 lxml
 pytest

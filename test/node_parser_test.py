@@ -1,7 +1,8 @@
-from xml_parser.extract_node_values import get_paragraph_with_entities, read_xml, get_paragraph_from_file
+from resources.config_provider import get_config_default
+from generate_trainset.extract_node_values import get_paragraph_with_entities, read_xml, get_paragraph_from_file
 
-xml_path = "./resources/test/test.xml"
-
+config_training = get_config_default()
+xml_path = config_training["xml_unittest_file"]
 
 def test_xml_parser():
     tree = read_xml(xml_path)

@@ -1,16 +1,16 @@
 import spacy
 
 from resources.config_provider import get_config_default
-from xml_parser.extract_node_values import get_paragraph_from_file
+from generate_trainset.extract_node_values import get_paragraph_from_file
 
 
 config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]
-xml_test_path = config_training["xml_test_path"]
+xml_dev_path = config_training["xml_dev_path"]
 
 nlp = spacy.load(model_dir_path)
 
-DEV_DATA = get_paragraph_from_file(xml_test_path,
+DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=False)
 
 for case_id, texts, extracted_text, annotations in DEV_DATA:
