@@ -27,3 +27,6 @@ Other approaches (LSTM, etc.) may have shown slightly better performance but are
 - generate training examples using headers, in particular for companies 
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
+- add titles to trainset to avoid false positives (UPCASE + short)
+- train with all matches
+- build a dict of PM and match everywhere against this matcher

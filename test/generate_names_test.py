@@ -18,4 +18,4 @@ def test_title_case():
 
 def test_extract_company_names():
     text = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
-    assert get_company_names(text) == ["Société TotoT Titi", "SA Turl-ututu Et Consors"]
+    assert get_company_names(text) == [(3, 22, 'Société TotoT Titi '), (46, 71, 'SA Turl-ututu Et Consors ')]

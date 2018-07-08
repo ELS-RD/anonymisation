@@ -11,7 +11,7 @@ xml_dev_path = config_training["xml_dev_path"]
 nlp = spacy.load(model_dir_path)
 
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
-                                   keep_paragraph_without_annotation=False)
+                                   keep_paragraph_without_annotation=True)
 
 for case_id, texts, extracted_text, annotations in DEV_DATA:
     doc = nlp(texts)

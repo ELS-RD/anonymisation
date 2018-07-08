@@ -1,7 +1,7 @@
 import re
 import regex
 
-org_types = r"sa|sarl|sas|société|association|sasu|eurl|scs|scp|selarl|s.a.s|s.a.|s.a|s.a.s.u|s.a.r.l"
+org_types = r"sa|sarl|sas|société|association|sasu|eurl|scs|scp|s.a.s|s.a.|s.a|s.a.s.u|s.a.r.l|selarl"
 
 remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
 
@@ -89,5 +89,4 @@ find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+\s*)+)
 
 
 def get_company_names(text: str) -> list:
-    list_of_tuple_matches = find_corp.findall(text)
-    return [t[0].strip() for t in list_of_tuple_matches]
+    return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
