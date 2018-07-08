@@ -1,6 +1,9 @@
 import re
+import regex
 
-remove_corp_pattern = re.compile(r"\b(sa|sarl|sas|société|association|sasu|eurl|scs|scp)\b\s+", flags=re.IGNORECASE)
+org_types = r"sa|sarl|sas|société|association|sasu|eurl|scs|scp|selarl|s.a.s|s.a.|s.a|s.a.s.u|s.a.r.l"
+
+remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
 
 
 def remove_corp(original_text: str) -> str:
@@ -80,3 +83,11 @@ def get_list_of_items_to_search(current_header: dict) -> list:
     items_to_search.extend(add_tag(current_header['greffier'], "GREFFIER"))
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
     return items_to_search
+
+
+find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+\s*)+)", flags=regex.VERSION1)
+
+
+def get_company_names(text: str) -> list:
+    list_of_tuple_matches = find_corp.findall(text)
+    return [t[0].strip() for t in list_of_tuple_matches]

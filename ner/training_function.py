@@ -43,7 +43,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
                     drop=dropout_rate,  # dropout - make it harder to memorise resources
                     sgd=optimizer,  # callable to update weights
                     losses=losses)
-                pbar.update(1)
+                pbar.update()
 
             print(losses)
 

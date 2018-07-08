@@ -16,3 +16,6 @@ def test_normalize_offsets():
 
     data5 = [(16, 20, 'PARTIE_PP'), (22, 30, 'PARTIE_PP')]
     assert normalize_offsets(data5) == [(16, 30, 'PARTIE_PP')]
+
+    data6 = [(10, 21, 'PARTIE_PP'), (22, 30, 'PARTIE_PP')]
+    assert normalize_offsets(data6) == [(10, 30, 'PARTIE_PP')]

@@ -11,7 +11,7 @@ def normalize_offsets(offsets: list) -> list:
     for current_start_offset, current_end_offset, current_type_tag in sorted_offsets:
 
         # merge tags which appear as separated but are not really
-        if (previous_end_offset is not None) and (previous_end_offset + 2 == current_start_offset):
+        if (previous_end_offset is not None) and (previous_end_offset + 2 >= current_start_offset):
             previous_start_offset, previous_end_offset, previous_type_tag = previous_start_offset, \
                                                                             current_end_offset, \
                                                                             current_type_tag

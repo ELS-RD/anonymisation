@@ -5,19 +5,16 @@
 # https://spacy.io/usage/linguistic-features#named-entities
 
 
-import random
-from pathlib import Path
 import spacy
-from spacy import util
 from spacy.matcher import PhraseMatcher
 from tqdm import tqdm
 
+from generate_trainset.extract_header_values import parse_xml_header
+from generate_trainset.extract_node_values import get_paragraph_from_file
 from generate_trainset.generate_names import get_list_of_items_to_search
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
-from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.extract_node_values import get_paragraph_from_file
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
@@ -41,7 +38,7 @@ current_item_header = None
 matcher = None
 doc_annotated = list()
 
-with tqdm(total=len(TRAIN_DATA)) as pbar:
+with tqdm(total=len(TRAIN_DATA)) as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
@@ -70,7 +67,7 @@ with tqdm(total=len(TRAIN_DATA)) as pbar:
                     matcher.add(type_span, None, nlp(text_span))
                 except:
                     pass
-        pbar.update(1)
+        progress_bar.update()
         current_case_paragraphs.append((xml_paragraph, xml_offset))
 
 
