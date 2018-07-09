@@ -83,7 +83,7 @@ def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) 
                 end = current_attribute[1]
                 assert item_text == paragraph_text[start:end]
             else:
-                offset = list()
+                offset = dict()
                 extracted_text = list()
 
             if has_some_annotation | keep_paragraph_without_annotation:

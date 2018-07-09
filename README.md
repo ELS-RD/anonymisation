@@ -24,7 +24,7 @@ Other approaches (LSTM, etc.) may have shown slightly better performance but are
 
 ### TODO:
 
-- generate training examples using headers, in particular for companies 
+- build 'entities' in dict at the last moment, just before sending to learning (make things easier)
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
 - add titles to trainset to avoid false positives (UPCASE + short)

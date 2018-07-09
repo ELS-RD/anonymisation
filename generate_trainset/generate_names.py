@@ -90,3 +90,19 @@ find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+\s*)+)
 
 def get_company_names(text: str) -> list:
     return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
+
+
+def get_list_of_pp(paragraphs: list, offsets: list) -> list:
+    extracted_names = [text[start_char: end_char] for (text, (start_char, end_char, type_name)) in zip(paragraphs, offsets) if type_name == "PARTIE_PP"]
+    return list(set(extracted_names))
+
+
+def get_extend_extracted_name_pattern(offsets: list) -> regex.Regex:
+    extracted_names = [name for _, _, name in offsets]
+    extracted_names_pattern = '|'.join(extracted_names)
+    regex.compile("(([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + "))", flags=regex.VERSION1)
+    return regex.compile("([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + ")")
+
+
+def get_extended_extracted_name(text: str, pattern: regex.Regex) -> list:
+    return [(t.start(), t.end(), "PARTIE_PP") for t in pattern.finditer(text)]

@@ -25,12 +25,12 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_file(path=xml_train_path,
                                      keep_paragraph_without_annotation=True)
-# TRAIN_DATA = TRAIN_DATA[0:1000]
+TRAIN_DATA = TRAIN_DATA[0:1000]
 case_header_content = parse_xml_header(path=xml_train_path)
 
 nlp = spacy.blank('fr')
-nlp.vocab.lex_attr_getters = {}
 current_case_paragraphs = list()
+current_case_offsets = list()
 current_items_to_find = None
 previous_case_id = None
 current_item_header = None
@@ -38,11 +38,11 @@ matcher = None
 doc_annotated = list()
 
 with tqdm(total=len(TRAIN_DATA)) as progress_bar:
-    for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
+    for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA[0:100]:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
-                for current_paragraph, current_xml_offset in current_case_paragraphs:
+                for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
                     current_parag_as_doc = nlp(current_paragraph)
                     matcher_offset = [(current_parag_as_doc[start_word_index:end_word_index].start_char,
                                        current_parag_as_doc[start_word_index:end_word_index].end_char,
@@ -58,6 +58,7 @@ with tqdm(total=len(TRAIN_DATA)) as progress_bar:
                         doc_annotated.append((current_paragraph, {'entities': normalized_offsets}))
             # init element specific to the current legal case
             current_case_paragraphs.clear()
+            current_case_offsets.clear()
             previous_case_id = current_case_id
             current_item_header = case_header_content[current_case_id]
             current_items_to_find = get_list_of_items_to_search(current_item_header)
@@ -68,11 +69,12 @@ with tqdm(total=len(TRAIN_DATA)) as progress_bar:
                 except:
                     pass
         progress_bar.update()
-        current_case_paragraphs.append((xml_paragraph, xml_offset))
+        current_case_paragraphs.append(xml_paragraph)
+        current_case_offsets.append(xml_offset)
 
-for text, annot in doc_annotated:
-    start, end, type = annot['entities'][0]
-    print(start, end, "|", text[start:end], "|", type)
+# for text, annot in doc_annotated:
+#     start, end, type = annot['entities'][0]
+#     print(start, end, "|", text[start:end], "|", type)
 
 
 train_model(data=doc_annotated,
