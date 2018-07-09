@@ -1,7 +1,24 @@
 import re
 import regex
 
-org_types = r"sa|sarl|sas|société|association|sasu|eurl|scs|scp|s.a.s|s.a.|s.a|s.a.s.u|s.a.r.l|selarl"
+org_types = r"société|" \
+            r"association|" \
+            r"s(\.)?(\s)?a(\.)?s(\.)?u(\.)?|" \
+            r"e(\.)?(\s)?u(\.)?rl(\.)?|" \
+            r"s(\.)?(\s)?c(\.)?s|" \
+            r"s(\.)?(\s)?c(\.)?p(\.)?|" \
+            r"s(\.)?(\s)?a(\.)?s|" \
+            r"s(\.)?(\s)?a(\.)?|" \
+            r"s(\.)?(\s)?a(\.)?s(\.)?u(\.)?|" \
+            r"s(\.)?(\s)?a(\.)?r(\.)?l|" \
+            r"s(\.)?(\s)?e(\.)?l(\.)?a(\.)?r(\.)?l(\.)?|" \
+            r"s(\.)?(\s)?c(\.)i(\.)|" \
+            r"s(\.)?(\s)?c(\.)o(\.)p(\.)|" \
+            r"s(\.)?(\s)?e(\.)l(\.)|" \
+            r"s(\.)?(\s)?c(\.)a(\.)|" \
+            r"e(\.)?(\s)?i(\.)?r(\.)?l(\.)?|" \
+            r"syndic|" \
+            r"syndicat"
 
 remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
 
@@ -75,7 +92,6 @@ def get_list_of_items_to_search(current_header: dict) -> list:
     items_to_search.extend(add_tag(current_header['avocat'], "AVOCAT"))
     # TODO AJOUTER DES VARIATIONS SANS LE Me
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    # TODO Virer Sans avocat
     items_to_search.extend(add_tag(current_header['president'], "PRESIDENT"))
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
     items_to_search.extend(add_tag(current_header['conseiller'], "CONSEILLER"))
@@ -85,7 +101,7 @@ def get_list_of_items_to_search(current_header: dict) -> list:
     return items_to_search
 
 
-find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+\s*)+)", flags=regex.VERSION1)
+find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+(\s|/|-)*)+)", flags=regex.VERSION1)
 
 
 def get_company_names(text: str) -> list:
@@ -97,7 +113,8 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
     return list(set(extracted_names))
 
 
-def get_extend_extracted_name_pattern(offsets: list) -> regex.Regex:
+def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
+
     extracted_names = [name for _, _, name in offsets]
     extracted_names_pattern = '|'.join(extracted_names)
     regex.compile("(([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + "))", flags=regex.VERSION1)

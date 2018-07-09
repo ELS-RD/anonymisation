@@ -1,3 +1,5 @@
+import os
+
 from generate_trainset.common_xml_parser_function import read_xml
 
 
@@ -69,3 +71,16 @@ def parse_xml_header(path: str):
             conseiller.append(node.text)
 
     return headers_content
+
+
+def parse_xml_headers(folder_path: str) -> dict:
+    all_headers = dict()
+    paths = os.listdir(folder_path)
+    assert len(paths) > 0
+    for path in paths:
+        if path.endswith(".xml"):
+            current_path = os.path.join(folder_path, path)
+            current_header = parse_xml_header(current_path)
+            all_headers.update(current_header)
+
+    return all_headers

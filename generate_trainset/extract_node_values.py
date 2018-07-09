@@ -1,3 +1,5 @@
+import os
+
 import lxml
 from lxml import etree
 
@@ -83,10 +85,22 @@ def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) 
                 end = current_attribute[1]
                 assert item_text == paragraph_text[start:end]
             else:
-                offset = dict()
+                offset = list()
                 extracted_text = list()
 
             if has_some_annotation | keep_paragraph_without_annotation:
                 result.append((current_case_id, paragraph_text, extracted_text, offset))
 
     return result
+
+
+def get_paragraph_from_folder(folder_path: str, keep_paragraph_without_annotation: bool) -> list:
+    paths = os.listdir(folder_path)
+    assert len(paths) > 0
+    for path in paths:
+        if path.endswith(".xml"):
+            current_path = os.path.join(folder_path, path)
+            paragraphs = get_paragraph_from_file(path=current_path,
+                                                 keep_paragraph_without_annotation=keep_paragraph_without_annotation)
+            for paragraph in paragraphs:
+                yield paragraph
