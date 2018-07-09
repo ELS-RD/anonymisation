@@ -85,7 +85,11 @@ def get_list_of_items_to_search(current_header: dict) -> list:
                 items_to_search.append(("PARTIE_PM", no_corp))
 
         else:
-            family_name = get_family_name("full_content")
+            items_to_search.append(("PARTIE_PP", full_content.upper()))
+            items_to_search.append(("PARTIE_PP", full_content))
+            items_to_search.append(("PARTIE_PP", full_content.lower()))
+            items_to_search.append(("PARTIE_PP", get_title_case(full_content)))
+            family_name = get_family_name(full_content)
             items_to_search.append(("PARTIE_PP", family_name.upper()))
             items_to_search.append(("PARTIE_PP", family_name))
             items_to_search.append(("PARTIE_PP", family_name.lower()))
@@ -115,7 +119,6 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
     return list(set(extracted_names))
 
 
-# TODO finish this part
 def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
     extracted_names = list()
     for text, current_offsets in zip(texts, offsets):
@@ -123,8 +126,10 @@ def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex
             extracted_names.append(text[start:end])
 
     extracted_names_pattern = '|'.join(extracted_names)
-    regex.compile("(([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + "))", flags=regex.VERSION1)
-    return regex.compile("([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + ")")
+    return regex.compile("(?<=(M(\.?)|Mme(\.?)|Mlle(\.?)|(M|m)onsieur|(M|m)adame|(M|m)ademoiselle)\s+)"
+                         "(([A-Z][[:alnum:]-]+\s*)+(" +
+                         extracted_names_pattern + "))", flags=regex.VERSION1)
+    # return regex.compile("([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + ")")
 
 
 def get_extended_extracted_name(text: str, pattern: regex.Regex) -> list:

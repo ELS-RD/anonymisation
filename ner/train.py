@@ -11,7 +11,8 @@ from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change
+from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change, \
+    get_extend_extracted_name_pattern, get_extended_extracted_name
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -42,6 +43,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
+                current_doc_extend_name_pattern = get_extend_extracted_name_pattern(texts=current_case_paragraphs,
+                                                                                    offsets=current_case_offsets)
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
                     current_parag_as_doc = nlp(current_paragraph)
                     matcher_offset = [(current_parag_as_doc[start_word_index:end_word_index].start_char,
@@ -49,8 +52,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                        nlp.vocab.strings[match_id])
                                       for match_id, start_word_index, end_word_index in matcher(current_parag_as_doc)]
                     company_names_offset = get_company_names(current_paragraph)
-                    if len(matcher_offset) + len(current_xml_offset) + len(company_names_offset) > 0:
-                        all_match = matcher_offset + current_xml_offset + company_names_offset
+                    full_name = get_extended_extracted_name(text=current_paragraph,
+                                                            pattern=current_doc_extend_name_pattern)
+                    if len(matcher_offset) + len(current_xml_offset) + len(company_names_offset) + len(full_name) > 0:
+                        all_match = matcher_offset + current_xml_offset + company_names_offset + full_name
                         normalized_offsets = normalize_offsets(all_match)
                         current_paragraph_case_updated = random_case_change(text=current_paragraph,
                                                                             offsets=normalized_offsets,
@@ -76,9 +81,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-# for text, annot in doc_annotated:
-#     start, end, type = annot[0]
-#     print(start, end, "|", text[start:end], "|", type)
+for text, annot in doc_annotated:
+    start, end, type = annot['entities'][0]
+    print(start, end, "|", text[start:end], "|", type)
 
 
 train_model(data=doc_annotated,

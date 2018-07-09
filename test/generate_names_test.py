@@ -23,12 +23,11 @@ def test_extract_company_names():
 
 
 def test_extend_names():
-    text = "Jessica SABBA épouse Mic Mac BENESTY"
+    text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
     texts = [text]
-    offsets = [[(7, 13, "PARTIE_PP"), (29, 36, "PARTIE_PP")]]
+    offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
     pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets)
-    print(get_extended_extracted_name(text=text, pattern=pattern))
-    assert get_extended_extracted_name(text=text, pattern=pattern) == [(0, 13, 'PARTIE_PP'), (21, 36, 'PARTIE_PP')]
+    assert get_extended_extracted_name(text=text, pattern=pattern) == [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
 
 
 def test_random_case_change():

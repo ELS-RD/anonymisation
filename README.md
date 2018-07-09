@@ -21,6 +21,7 @@ Project is done in Python and can't be rewrite in something else because Spacy o
 
 Other approaches (LSTM, etc.) may have shown slightly better performance but are much slower to learn and for inference.
 
+Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
@@ -29,3 +30,5 @@ Other approaches (LSTM, etc.) may have shown slightly better performance but are
 - add titles to trainset to avoid false positives (UPCASE + short)
 - train with all matches
 - build a dict of PM and match everywhere against this matcher
+- replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
+- look for president, lawyer by regex
