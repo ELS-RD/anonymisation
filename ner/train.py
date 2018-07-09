@@ -26,7 +26,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:10000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:1000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 nlp = spacy.blank('fr')
@@ -44,7 +44,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_name_pattern = get_extend_extracted_name_pattern(texts=current_case_paragraphs,
-                                                                                    offsets=current_case_offsets)
+                                                                                    offsets=current_case_offsets,
+                                                                                    type_name_to_keep="PARTIE_PP")
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
                     current_parag_as_doc = nlp(current_paragraph)
                     matcher_offset = [(current_parag_as_doc[start_word_index:end_word_index].start_char,
@@ -53,7 +54,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                       for match_id, start_word_index, end_word_index in matcher(current_parag_as_doc)]
                     company_names_offset = get_company_names(current_paragraph)
                     full_name = get_extended_extracted_name(text=current_paragraph,
-                                                            pattern=current_doc_extend_name_pattern)
+                                                            pattern=current_doc_extend_name_pattern,
+                                                            type_name="PARTIE_PP")
                     if len(matcher_offset) + len(current_xml_offset) + len(company_names_offset) + len(full_name) > 0:
                         all_match = matcher_offset + current_xml_offset + company_names_offset + full_name
                         normalized_offsets = normalize_offsets(all_match)
@@ -86,8 +88,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_offsets.append(xml_offset)
 
 for text, annot in doc_annotated:
-    start, end, type = annot['entities'][0]
-    print(start, end, "|", text[start:end], "|", type)
+    if len(annot['entities']) > 0:
+        start, end, type_name = annot['entities'][0]
+        print(start, end, "|", text[start:end], "|", type_name)
 
 
 train_model(data=doc_annotated,

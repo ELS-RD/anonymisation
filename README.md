@@ -27,8 +27,7 @@ Configuration is done through **resources/config.ini** file
 
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
-- add titles to trainset to avoid false positives (UPCASE + short)
 - train with all matches
 - build a dict of PM and match everywhere against this matcher
 - replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
-- look for president, lawyer by regex
+- look for president, lawyer by regex (lawyer -> Maitre|Me.)

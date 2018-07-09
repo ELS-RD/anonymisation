@@ -119,25 +119,40 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
     return list(set(extracted_names))
 
 
-translator = str.maketrans(string.punctuation, ' '*len(string.punctuation)) #map punctuation to space
+translator = str.maketrans(string.punctuation, ' '*len(string.punctuation))  # map punctuation to space
 
 
-def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
+def get_extend_extracted_name_pattern(texts: list, offsets: list, type_name_to_keep: str) -> regex.Regex:
+    """
+    Extend names to include first and last name
+    :param type_name_to_keep: filter on type name
+    :param texts: original text
+    :param offsets: discovered offsets from other methods.
+    :return: a Regex pattern
+    """
     extracted_names = list()
     for text, current_offsets in zip(texts, offsets):
-        for (start, end, _) in current_offsets:
-            item = text[start:end].translate(translator)
-            extracted_names.append(item)
+        for (start, end, type_name) in current_offsets:
+            if type_name == type_name_to_keep:
+                # avoid parentheses and other regex interpreted characters inside the items
+                item = text[start:end].translate(translator)
+                extracted_names.append(item)
 
     extracted_names_pattern = '|'.join(extracted_names)
     return regex.compile("(?<=(M(\.?)|Mme(\.?)|Mlle(\.?)|(M|m)onsieur|(M|m)adame|(M|m)ademoiselle)\s+)"
                          "(([A-Z][[:alnum:]-]+\s*)+(" +
                          extracted_names_pattern + "))", flags=regex.VERSION1)
-    # return regex.compile("([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + ")")
 
 
-def get_extended_extracted_name(text: str, pattern: regex.Regex) -> list:
-    return [(t.start(), t.end(), "PARTIE_PP") for t in pattern.finditer(text)]
+def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name) -> list:
+    """
+    Apply the generated regex pattern to current paragraph text
+    :param text: current original text
+    :param pattern: generated regex from get_extend_extracted_name_pattern
+    :param type_name: name of the type to apply to each offset
+    :return: offset list
+    """
+    return [(t.start(), t.end(), type_name) for t in pattern.finditer(text)]
 
 
 def random_case_change(text: str, offsets: list, rate: int) -> str:
