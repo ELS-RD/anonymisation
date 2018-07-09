@@ -62,6 +62,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                             rate=5)
                         doc_annotated.append((current_paragraph_case_updated,
                                               {'entities': normalized_offsets}))
+
+                    elif current_paragraph.isupper() and len(current_paragraph) > 10:
+                        # add empty title paragraph to avoid fake solution
+                        doc_annotated.append((current_paragraph, {'entities': []}))
             # update when one case is finished
             progress_bar.update()
 

@@ -1,6 +1,6 @@
 import re
 from random import randint
-
+import string
 import regex
 
 org_types = r"société|" \
@@ -119,11 +119,15 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
     return list(set(extracted_names))
 
 
+translator = str.maketrans(string.punctuation, ' '*len(string.punctuation)) #map punctuation to space
+
+
 def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
     extracted_names = list()
     for text, current_offsets in zip(texts, offsets):
         for (start, end, _) in current_offsets:
-            extracted_names.append(text[start:end])
+            item = text[start:end].translate(translator)
+            extracted_names.append(item)
 
     extracted_names_pattern = '|'.join(extracted_names)
     return regex.compile("(?<=(M(\.?)|Mme(\.?)|Mlle(\.?)|(M|m)onsieur|(M|m)adame|(M|m)ademoiselle)\s+)"
