@@ -56,7 +56,7 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
         text_current_size += current_item_text_size + 1
 
     paragraph_text = ' '.join(clean_content)
-    return paragraph_text, extracted_text, {'entities': offset}
+    return paragraph_text, extracted_text, offset
 
 
 def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) -> list:
@@ -78,7 +78,7 @@ def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) 
             has_some_annotation = len(extracted_text) > 0
             if has_some_annotation:
                 item_text = extracted_text[0]
-                current_attribute = offset.get('entities')[0]
+                current_attribute = offset[0]
                 start = current_attribute[0]
                 end = current_attribute[1]
                 assert item_text == paragraph_text[start:end]

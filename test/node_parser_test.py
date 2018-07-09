@@ -14,7 +14,7 @@ def test_xml_parser():
         paragraph_text, extracted_text, offset = get_paragraph_with_entities(i)
         if len(extracted_text) > 0:
             item_text = extracted_text[0]
-            current_attribute = offset.get('entities')[0]
+            current_attribute = offset[0]
             start = current_attribute[0]
             end = current_attribute[1]
             assert item_text == paragraph_text[start:end]

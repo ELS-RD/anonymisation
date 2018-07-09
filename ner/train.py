@@ -51,7 +51,7 @@ with tqdm(total=len(TRAIN_DATA)) as progress_bar:
                     company_names_offset = get_company_names(current_paragraph)
                     if len(matcher_offset) + len(current_xml_offset) + len(company_names_offset) > 0:
                         if len(current_xml_offset) > 0:
-                            all_match = matcher_offset + current_xml_offset['entities'] + company_names_offset
+                            all_match = matcher_offset + current_xml_offset + company_names_offset
                         else:
                             all_match = matcher_offset + company_names_offset
                         normalized_offsets = normalize_offsets(all_match)
@@ -73,7 +73,7 @@ with tqdm(total=len(TRAIN_DATA)) as progress_bar:
         current_case_offsets.append(xml_offset)
 
 # for text, annot in doc_annotated:
-#     start, end, type = annot['entities'][0]
+#     start, end, type = annot[0]
 #     print(start, end, "|", text[start:end], "|", type)
 
 
