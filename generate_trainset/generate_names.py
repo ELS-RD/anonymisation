@@ -1,4 +1,6 @@
 import re
+from random import randint
+
 import regex
 
 org_types = r"société|" \
@@ -113,6 +115,7 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
     return list(set(extracted_names))
 
 
+# TODO finish this part
 def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
 
     extracted_names = [name for _, _, name in offsets]
@@ -123,3 +126,18 @@ def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex
 
 def get_extended_extracted_name(text: str, pattern: regex.Regex) -> list:
     return [(t.start(), t.end(), "PARTIE_PP") for t in pattern.finditer(text)]
+
+
+def random_case_change(text: str, offsets: list, rate: int) -> str:
+    """
+    Randomly remove the offset case to make the NER more robust
+    :param text: original text
+    :param offsets: original offsets
+    :param rate: the percentage of offset to change (as integer)
+    :return: the updated text
+    """
+    for offset in offsets:
+        if randint(0, 99) <= rate:
+            extracted_content = text[offset[0]:offset[1]]
+            text = text[:offset[0]] + extracted_content.lower() + text[offset[1]:]
+    return text

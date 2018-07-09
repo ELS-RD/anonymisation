@@ -1,5 +1,5 @@
 from generate_trainset.generate_names import remove_corp, get_family_name, get_title_case, get_company_names, \
-    get_extended_extracted_name
+    get_extended_extracted_name, random_case_change
 
 
 def test_remove_corp_name():
@@ -26,3 +26,8 @@ def test_extract_company_names():
 #
 #     text = "Jessica SABBA épouse Mic BENESTY"
 #     get_extended_extracted_name(text=text, pattern=pattern)
+
+def test_random_case_change():
+    text = "La Banque est fermée"
+    offsets = [(3, 9, "PARTIE_PP")]
+    assert random_case_change(text, offsets, 100) == "La banque est fermée"

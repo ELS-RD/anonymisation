@@ -79,6 +79,7 @@ def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) 
             paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
             has_some_annotation = len(extracted_text) > 0
             if has_some_annotation:
+                # TODO replace by unit test
                 item_text = extracted_text[0]
                 current_attribute = offset[0]
                 start = current_attribute[0]
