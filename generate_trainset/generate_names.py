@@ -117,8 +117,11 @@ def get_list_of_pp(paragraphs: list, offsets: list) -> list:
 
 # TODO finish this part
 def get_extend_extracted_name_pattern(texts: list, offsets: list) -> regex.Regex:
+    extracted_names = list()
+    for text, current_offsets in zip(texts, offsets):
+        for (start, end, _) in current_offsets:
+            extracted_names.append(text[start:end])
 
-    extracted_names = [name for _, _, name in offsets]
     extracted_names_pattern = '|'.join(extracted_names)
     regex.compile("(([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + "))", flags=regex.VERSION1)
     return regex.compile("([A-Z][[:alnum:]-]+\s*)+(" + extracted_names_pattern + ")")
