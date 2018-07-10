@@ -1,5 +1,5 @@
 from generate_trainset.generate_names import remove_corp, get_family_name, get_title_case, get_company_names, \
-    get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern
+    get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name
 
 
 def test_remove_corp_name():
@@ -38,3 +38,23 @@ def test_random_case_change():
     text = "La Banque est fermée"
     offsets = [(3, 9, "PARTIE_PP")]
     assert random_case_change(text, offsets, 100) == "La banque est fermée"
+
+
+def test_extract_judge_names():
+    text1 = "Madame Bingo TOTO, Conseiller près la cour de machin chose"
+    assert get_judge_name(text1) == [(7, 17, 'PRESIDENT')]
+    text2 = "Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président"
+    assert get_judge_name(text2) == [(9, 25, 'PRESIDENT')]
+
+
+def test_extract_clerk_names():
+    text = "Madame To TOTO, greffier"
+    assert get_clerk_name(text) == [(7, 14, 'GREFFIER')]
+    text2 = "assistée de Geneviève JAUFFRES, greffier"
+    assert get_clerk_name(text2) == [(12, 30, 'GREFFIER')]
+    text3 = "Cour d'Appel d'Aix en Provence, assisté de Josiane BOMEA, Greffier "
+    assert get_clerk_name(text3) == [(43, 56, 'GREFFIER')]
+    text4 = "Greffier lors des débats : Veronique SAIGE"
+    assert get_clerk_name(text4) == [(27, 42, 'GREFFIER')]
+    text5 = "Greffier lors des débats : Madame Françoise PARADIS DEISS."
+    assert get_clerk_name(text5) == [(34, 57, 'GREFFIER')]

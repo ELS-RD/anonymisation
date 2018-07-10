@@ -14,7 +14,8 @@ def normalize_offsets(offsets: list) -> list:
         if (previous_end_offset is not None) and (previous_end_offset + 2 >= current_start_offset):
             previous_start_offset, previous_end_offset, previous_type_tag = previous_start_offset, \
                                                                             current_end_offset, \
-                                                                            current_type_tag
+                                                                            tag_priority(current_type_tag,
+                                                                                         previous_type_tag)
 
         if (previous_end_offset is not None) and (previous_end_offset < current_end_offset):
             offset_to_keep.append((previous_start_offset, previous_end_offset, previous_type_tag))
@@ -23,7 +24,8 @@ def normalize_offsets(offsets: list) -> list:
         if (previous_end_offset is not None) and (previous_end_offset >= current_end_offset):
             current_start_offset, current_end_offset, current_type_tag = previous_start_offset, \
                                                                          previous_end_offset, \
-                                                                         previous_type_tag
+                                                                         tag_priority(current_type_tag,
+                                                                                      previous_type_tag)
 
         previous_start_offset, previous_end_offset, previous_type_tag = current_start_offset, \
                                                                         current_end_offset, \
@@ -33,3 +35,14 @@ def normalize_offsets(offsets: list) -> list:
     return offset_to_keep
 
 
+def tag_priority(tag1: str, tag2: str) -> str:
+    """
+    Apply some rules to decide which tag to keep when merging 2 offsets
+    :param tag1: tag as a string
+    :param tag2: tag as a string
+    :return: the selected tag
+    """
+    if tag1 in ["PARTIE_PP", "PARTIE_PM"]:
+        return tag2
+    else:
+        return tag1
