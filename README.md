@@ -55,7 +55,8 @@ Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
-- greffier may include Madame
+- add first name to dictionary
+- fix clerk extraction which may include Madame
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
 - train with all matches

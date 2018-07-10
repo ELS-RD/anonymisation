@@ -1,4 +1,4 @@
-from generate_trainset.generate_names import remove_corp, get_family_name, get_title_case, get_company_names, \
+from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
     get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name
 
@@ -9,9 +9,9 @@ def test_remove_corp_name():
 
 
 def test_extract_family_name():
-    assert get_family_name("Mic BEN TITI") == "BEN TITI"
-    assert get_family_name("Mic BEN") == "BEN"
-    assert get_family_name("Mic BENp") == ""
+    assert get_last_name("Mic BEN TITI") == "BEN TITI"
+    assert get_last_name("Mic BEN") == "BEN"
+    assert get_last_name("Mic BENp") == ""
 
 
 def test_title_case():
@@ -58,8 +58,7 @@ def test_extract_clerk_names():
     text4 = "Greffier lors des débats : Veronique SAIGE"
     assert get_clerk_name(text4) == [(27, 42, 'GREFFIER')]
     text5 = "Greffier lors des débats : Madame Françoise PARADIS DEISS."
-    # TODO fix offset to 34 (current offset include Madame)
-    assert get_clerk_name(text5) == [(27, 57, 'GREFFIER')]
+    assert get_clerk_name(text5) == [(34, 57, 'GREFFIER')]
 
 
 def test_extract_lawyer():

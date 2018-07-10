@@ -37,16 +37,16 @@ def remove_corp(original_text: str) -> str:
     return remove_corp_pattern.sub(repl="", string=original_text).strip()
 
 
-family_name_pattern = re.compile(r"[A-Z\s]+$")
+last_name_pattern = re.compile(r"[A-Z\s]+$")
 
 
-def get_family_name(original_text: str) -> str:
+def get_last_name(original_text: str) -> str:
     """
-    Extract family name from a full name
+    Extract last name from a full name
     :param original_text: full name
     :return: family name
     """
-    result = family_name_pattern.search(original_text.strip())
+    result = last_name_pattern.search(original_text.strip())
     if result:
         return str(result.group(0)).strip()
     return ""
@@ -92,7 +92,7 @@ def get_list_of_items_to_search(current_header: dict) -> list:
             items_to_search.append(("PARTIE_PP", full_content))
             items_to_search.append(("PARTIE_PP", full_content.lower()))
             items_to_search.append(("PARTIE_PP", get_title_case(full_content)))
-            family_name = get_family_name(full_content)
+            family_name = get_last_name(full_content)
             items_to_search.append(("PARTIE_PP", family_name.upper()))
             items_to_search.append(("PARTIE_PP", family_name))
             items_to_search.append(("PARTIE_PP", family_name.lower()))
@@ -202,7 +202,7 @@ extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(
 
 
 extract_clerk_pattern_2 = regex.compile("(?<=(G|g)reffier.{0,50})"
-                                        "([A-Z]+[[:alnum:]-']+\s*)+", flags=regex.VERSION1)
+                                        "((?!Madame |Monsieur )[A-Z][[:alnum:]-']+\s*)+", flags=regex.VERSION1)
 
 
 def get_clerk_name(text: str) -> list:
