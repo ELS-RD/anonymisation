@@ -5,22 +5,25 @@ import regex
 
 org_types = r"société|" \
             r"association|" \
-            r"s(\.)?(\s)?a(\.)?s(\.)?u(\.)?|" \
-            r"e(\.)?(\s)?u(\.)?rl(\.)?|" \
-            r"s(\.)?(\s)?c(\.)?s|" \
-            r"s(\.)?(\s)?c(\.)?p(\.)?|" \
-            r"s(\.)?(\s)?a(\.)?s|" \
-            r"s(\.)?(\s)?a(\.)?|" \
-            r"s(\.)?(\s)?a(\.)?s(\.)?u(\.)?|" \
-            r"s(\.)?(\s)?a(\.)?r(\.)?l|" \
-            r"s(\.)?(\s)?e(\.)?l(\.)?a(\.)?r(\.)?l(\.)?|" \
-            r"s(\.)?(\s)?c(\.)i(\.)|" \
-            r"s(\.)?(\s)?c(\.)o(\.)p(\.)|" \
-            r"s(\.)?(\s)?e(\.)l(\.)|" \
-            r"s(\.)?(\s)?c(\.)a(\.)|" \
-            r"e(\.)?(\s)?i(\.)?r(\.)?l(\.)?|" \
+            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
+            r"e(\.|\s)*u(\.|\s)*rl(\.|\s)*|" \
+            r"s(\.|\s)*c(\.|\s)*s|" \
+            r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
+            r"s(\.|\s)*a(\.|\s)*s|" \
+            r"s(\.|\s)*a(\.|\s)*|" \
+            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
+            r"s(\.|\s)*a(\.|\s)*r(\.|\s)*l|" \
+            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            r"s(\.|\s)*c(\.|\s)*i(\.|\s)*|" \
+            r"s(\.|\s)*c(\.|\s)*o(\.|\s)*p(\.|\s)*|" \
+            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*|" \
+            r"s(\.|\s)*c(\.|\s)*a(\.|\s)*|" \
+            r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
             r"syndic|" \
-            r"syndicat"
+            r"syndicat|" \
+            r"(e|é)tablissement|" \
+            r"mutuelle|" \
+            r"caisse"
 
 remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
 
@@ -107,7 +110,13 @@ def get_list_of_items_to_search(current_header: dict) -> list:
     return items_to_search
 
 
-find_corp = regex.compile(r"(((?i)" + org_types + ")\s+([A-Z][[:alnum:]-]+(\s|/|-)*)+)", flags=regex.VERSION1)
+find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
+                                                  "("
+                                                  "((?i)"
+                                                  "(de |le |la |les |pour |l'|et |en )"
+                                                  ")*"
+                                                  "(\()?[A-Z][[:alnum:]-'\.\)]+(\s|/|-)*)+"
+                                                  ")", flags=regex.VERSION1)
 
 
 def get_company_names(text: str) -> list:
@@ -115,11 +124,12 @@ def get_company_names(text: str) -> list:
 
 
 def get_list_of_pp(paragraphs: list, offsets: list) -> list:
-    extracted_names = [text[start_char: end_char] for (text, (start_char, end_char, type_name)) in zip(paragraphs, offsets) if type_name == "PARTIE_PP"]
+    extracted_names = [text[start_char: end_char] for (text, (start_char, end_char, type_name)) in
+                       zip(paragraphs, offsets) if type_name == "PARTIE_PP"]
     return list(set(extracted_names))
 
 
-translator = str.maketrans(string.punctuation, ' '*len(string.punctuation))  # map punctuation to space
+translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
 
 
 def get_extend_extracted_name_pattern(texts: list, offsets: list, type_name_to_keep: str) -> regex.Regex:
@@ -168,3 +178,8 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
             extracted_content = text[offset[0]:offset[1]]
             text = text[:offset[0]] + extracted_content.lower() + text[offset[1]:]
     return text
+
+
+# regex.compile("(?<=(M(\.?)|Mme(\.?)|Mlle(\.?)|(M|m)onsieur|(M|m)adame|(M|m)ademoiselle)\s+)"
+#               "(([A-Z][[:alnum:]-]+\s*)+([A-Z]+).{0,10}"
+#               "(magistrat|(président.+(magistrat|cour))|(conseiller.+(président|magistrat|cour)))")

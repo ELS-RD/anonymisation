@@ -18,8 +18,11 @@ def test_title_case():
 
 
 def test_extract_company_names():
-    text = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
-    assert get_company_names(text) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
+    text1 = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
+    print(get_company_names(text1))
+    assert get_company_names(text1) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
+    text2 = "Vu l'absence de l'Association pour l'Insertion et l'Accompagnement en Limousin (ASIIAL) assignée ;"
+    assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
 
 
 def test_extend_names():
