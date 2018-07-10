@@ -26,8 +26,9 @@ def test_extend_names():
     text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
     texts = [text]
     offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
-    pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets)
-    assert get_extended_extracted_name(text=text, pattern=pattern) == [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
+    pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
+    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == [(4, 18, 'PARTIE_PP'),
+                                                                                              (28, 43, 'PARTIE_PP')]
 
 
 def test_random_case_change():
