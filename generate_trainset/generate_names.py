@@ -180,11 +180,12 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame )"
+extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame | )"
                                       "([[:alnum:]-']+\s*)+"
                                       "(?=(?i), (magistrat|"
                                       "conseiller.+(cour|président|magistrat|chambre)|"
-                                      "président.+(cour|magistrat|chambre)))")
+                                      "président.+(cour|magistrat|chambre)))",
+                                      flags=regex.VERSION1)
 
 
 def get_judge_name(text: str) -> list:
@@ -197,12 +198,14 @@ def get_judge_name(text: str) -> list:
 
 
 extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
-                                        "([A-Z]+[[:alnum:]-']*\s*)+(?=.{0,20}(g|G)(reffier|REFFIER)(e|E)?)",
+                                        "([A-Z]+[[:alnum:]-']*\s*)+(?=.{0,20}"
+                                        "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 
 
 extract_clerk_pattern_2 = regex.compile("(?<=(G|g)reffier.{0,50})"
-                                        "((?!Madame |Monsieur )[A-Z][[:alnum:]-']+\s*)+", flags=regex.VERSION1)
+                                        "((?!Madame |Monsieur )[A-Z][[:alnum:]-']+\s*)+",
+                                        flags=regex.VERSION1)
 
 
 def get_clerk_name(text: str) -> list:

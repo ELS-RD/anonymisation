@@ -26,7 +26,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:1000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:1000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 nlp = spacy.blank('fr')

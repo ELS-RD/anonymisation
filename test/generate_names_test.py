@@ -46,6 +46,8 @@ def test_extract_judge_names():
     assert get_judge_name(text1) == [(7, 17, 'PRESIDENT')]
     text2 = "Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président"
     assert get_judge_name(text2) == [(9, 25, 'PRESIDENT')]
+    text3 = "Nous, Gilles BOURGEOIS, Conseiller faisant fonction de Président"
+    assert get_judge_name(text3) == [(6, 22, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
@@ -59,6 +61,8 @@ def test_extract_clerk_names():
     assert get_clerk_name(text4) == [(27, 42, 'GREFFIER')]
     text5 = "Greffier lors des débats : Madame Françoise PARADIS DEISS."
     assert get_clerk_name(text5) == [(34, 57, 'GREFFIER')]
+    text6 = "assistée de Geneviève JAUFFRES, greffière"
+    assert get_clerk_name(text6) == [(12, 30, 'GREFFIER')]
 
 
 def test_extract_lawyer():
