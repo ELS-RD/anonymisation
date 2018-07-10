@@ -12,7 +12,7 @@ from tqdm import tqdm
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change, \
-    get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name
+    get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -58,19 +58,22 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                type_name="PARTIE_PP")
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
+                    lawyer_names = get_lawyer_name(current_paragraph)
 
                     if len(matcher_offset) + \
                             len(current_xml_offset) + \
                             len(company_names_offset) + \
                             len(full_name_pp) + \
                             len(judge_names) + \
-                            len(clerk_names) > 0:
+                            len(clerk_names) + \
+                            len(lawyer_names) > 0:
                         all_match = matcher_offset + \
                                     current_xml_offset + \
                                     company_names_offset + \
                                     full_name_pp + \
                                     judge_names + \
-                                    clerk_names
+                                    clerk_names + \
+                                    lawyer_names
                         normalized_offsets = normalize_offsets(all_match)
                         current_paragraph_case_updated = random_case_change(text=current_paragraph,
                                                                             offsets=normalized_offsets,

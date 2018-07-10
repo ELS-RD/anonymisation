@@ -55,26 +55,9 @@ Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
-- priorities between tags
+- greffier may include Madame
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
 - train with all matches
 - build a dict of PM and match everywhere against this matcher
 - replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
-- look for president, lawyer by regex (lawyer -> Maitre|Me.)
-
-
-
-Magistrat
-Président ... Magistrat
-Président ... Cour
-Conseiller ... Président(e)
-Conseiller ... Cour
-Président ... chambre
-substitut général
-
-
-, Greffier
-
-
-Greffier : ...

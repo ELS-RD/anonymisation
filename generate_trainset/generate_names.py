@@ -214,3 +214,15 @@ def get_clerk_name(text: str) -> list:
     result1 = [(t.start(), t.end(), "GREFFIER") for t in extract_clerk_pattern_1.finditer(text)]
     result2 = [(t.start(), t.end(), "GREFFIER") for t in extract_clerk_pattern_2.finditer(text)]
     return result1 + result2
+
+
+extract_lawyer = regex.compile("(?<=(Me|Me.|Ma(i|î)tre)\s)([A-Z]+[[:alnum:]-']+\s*)+", flags=regex.VERSION1)
+
+
+def get_lawyer_name(text: str) -> list:
+    """
+        Extract lawyer name from text
+        :param text: original paragraph text
+        :return: offsets as a list
+        """
+    return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer .finditer(text)]
