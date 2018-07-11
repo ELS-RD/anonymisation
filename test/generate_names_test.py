@@ -1,3 +1,4 @@
+from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches
 from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
     get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name
@@ -33,7 +34,6 @@ def test_extend_names():
     assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == [(4, 18, 'PARTIE_PP'),
                                                                                               (28, 43, 'PARTIE_PP')]
 
-
 def test_random_case_change():
     text = "La Banque est fermée"
     offsets = [(3, 9, "PARTIE_PP")]
@@ -63,6 +63,12 @@ def test_extract_judge_names():
     assert get_judge_name(text10) == [(11, 26, 'PRESIDENT'), (50, 66, 'PRESIDENT')]
     text11 = "Mme Geneviève TOUVIER, présidente"
     assert get_judge_name(text11) == [(4, 21, 'PRESIDENT')]
+    text12 = "Monsieur Michel WACHTER, conseiller,"
+    assert get_judge_name(text12) == [(9, 23, 'PRESIDENT')]
+    text13 = "- Michel FICAGNA, conseiller"
+    assert get_judge_name(text13) == [(2, 16, 'PRESIDENT')]
+    text14 = "Audience tenue par Florence PAPIN, conseiller, faisant "
+    assert get_judge_name(text14) == [(19, 33, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
@@ -85,3 +91,17 @@ def test_extract_clerk_names():
 def test_extract_lawyer():
     text = "A la demande de Me Toto TOTO, avocat"
     assert get_lawyer_name(text) == [(19, 28, 'AVOCAT')]
+
+
+def test_get_first_name_dict():
+    first_name_dict = get_first_name_dict()
+    assert len(first_name_dict) == 12469
+    assert "Michaël " in first_name_dict
+    assert "Michaël" not in first_name_dict
+
+
+def test_get_phrase_matcher():
+    text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur."
+    first_name_matcher = get_first_name_matcher()
+    print(get_first_name_matches(first_name_matcher, text))
+    assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]

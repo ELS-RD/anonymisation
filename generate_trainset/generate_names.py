@@ -23,7 +23,8 @@ org_types = r"société|" \
             r"syndicat|" \
             r"(e|é)tablissement|" \
             r"mutuelle|" \
-            r"caisse"
+            r"caisse|" \
+            r"hôpital"
 
 remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
 
@@ -180,11 +181,11 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame |, )"
+extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame |, |- |audience.+)"
                                       "([A-Z]+[[:alnum:]-']+\s*)+"
                                       "(?=, "
                                       "((M|m)agistrat|"
-                                      "conseill.+(cour|président|magistrat|chambre)|"
+                                      "conseill.{0,5}(cour|président|magistrat|chambre|.{0,5}$|, )|"
                                       "président.+(cour|magistrat|chambre)|"
                                       "président.{0,5}$|"
                                       "Conseill.*|"

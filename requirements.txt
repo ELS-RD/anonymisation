@@ -1,3 +1,4 @@
+acora
 tqdm
 spacy
 lxml
