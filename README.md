@@ -66,4 +66,4 @@ Configuration is done through **resources/config.ini** file
 - replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
 - ajout Dr et Prof dans les recherches
 - lister les offsets qui contiennent une virgule
-
+- ajouter les rapporteurs
