@@ -82,5 +82,13 @@ Entities [('FABREGUETTES', 'PARTIE_PP')]
 Tokens [('Mme', '', 2), ('FABREGUETTES', 'PARTIE_PP', 3), (',', '', 2), ('Conseiller', '', 2)]
 
 
-114 rue Emile Zola
-14, Boulevard Marie et Alexandre Oyon
+Si pattern, appliquer dico
+pattern Prénom (né) le XX/YY
+- Ilona le 16 avril 2004 à Grenoble (38),
+•   Eugène né le 23 mars 1997 à Grenoble ( 38
+- Vanessa née le 1er octobre 1987 a TOULON (Var),
+
+
+
+
+Conseiller : Mélanie FILIATREAU

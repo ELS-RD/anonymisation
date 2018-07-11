@@ -8,6 +8,7 @@ org_types = r"société|" \
             r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
             r"e(\.|\s)*u(\.|\s)*rl(\.|\s)*|" \
             r"s(\.|\s)*c(\.|\s)*s|" \
+            r"s(\.|\s)*n(\.|\s)*c|" \
             r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
             r"s(\.|\s)*a(\.|\s)*s|" \
             r"s(\.|\s)*a(\.|\s)*|" \
@@ -181,8 +182,8 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame |, |- |audience.+)"
-                                      "([A-Z]+[[:alnum:]-']+\s*)+"
+extract_judge_pattern = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
+                                      "([A-Z]+[[:alnum:]-']+\s*|de\s+)+"
                                       "(?=, "
                                       "((M|m)agistrat|"
                                       "conseill.{0,5}(cour|président|magistrat|chambre|.{0,5}$|, )|"
@@ -209,7 +210,6 @@ extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(
                                         "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 
-
 extract_clerk_pattern_2 = regex.compile("(?<=(Greffi|greffi|GREFFI)[^:]{0,50}:.{0,10})"
                                         "((?!Madame |Monsieur |M. |Mme. |M |Mme )[A-Z][[:alnum:]-']+\s*)+",
                                         flags=regex.VERSION1)
@@ -231,8 +231,28 @@ extract_lawyer = regex.compile("(?<=(Me|Me.|Ma(i|î)tre)\s)([A-Z]+[[:alnum:]-']+
 
 def get_lawyer_name(text: str) -> list:
     """
-        Extract lawyer name from text
-        :param text: original paragraph text
-        :return: offsets as a list
-        """
-    return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer .finditer(text)]
+    Extract lawyer name from text
+    :param text: original paragraph text
+    :return: offsets as a list
+    """
+    return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
+
+
+extract_address_pattern = regex.compile("[\d,\-\s]*"
+                                        "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai))"
+                                        "\s+"
+                                        "([A-Z]+[[:alnum:]-\.]*"
+                                        "(\s*(de|le|la|les|et))?"
+                                        "\s*)+"
+                                        "[,\-\s]*\d*\s+"
+                                        "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
+                                        flags=regex.VERSION1)
+
+
+def get_addresses(text: str) -> list:
+    """
+    Extract addresses from text
+    :param text: original paragraph text
+    :return: offsets as a list
+    """
+    return [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]

@@ -1,7 +1,7 @@
 from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches
 from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
     get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
-    get_lawyer_name
+    get_lawyer_name, get_addresses
 
 
 def test_remove_corp_name():
@@ -69,6 +69,10 @@ def test_extract_judge_names():
     assert get_judge_name(text13) == [(2, 16, 'PRESIDENT')]
     text14 = "Audience tenue par Florence PAPIN, conseiller, faisant "
     assert get_judge_name(text14) == [(19, 33, 'PRESIDENT')]
+    text15 = "Vincent NICOLAS, Conseiller"
+    assert get_judge_name(text15) == [(0, 15, 'PRESIDENT')]
+    text16 = "2016, Monsieur Hubert de BECDELIEVRE, président de chambre"
+    assert get_judge_name(text16) == [(15, 36, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
@@ -105,3 +109,35 @@ def test_get_phrase_matcher():
     first_name_matcher = get_first_name_matcher()
     print(get_first_name_matches(first_name_matcher, text))
     assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
+
+
+def test_get_adress():
+    text1 = "avant 130-140, rue Victor HUGO    - 123456 Saint-Etienne après"
+    assert get_addresses(text1) == [(5, len(text1) - 5, 'ADRESSE')]
+    text2 = "avant 13 rue Ernest Renan après"
+    assert get_addresses(text2) == [(5, len(text2) - 5, 'ADRESSE')]
+    text3 = "avant 20 Avenue André Prothin après"
+    assert get_addresses(text3) == [(5, len(text3) - 5, 'ADRESSE')]
+    text4 = "avant 114 avenue Emile Zola après"
+    assert get_addresses(text4) == [(5, len(text4) - 5, 'ADRESSE')]
+    text5 = "avant 5 rue Jean Moulin après"
+    assert get_addresses(text5) == [(5, len(text5) - 5, 'ADRESSE')]
+    text6 = "avant 85, rue Gabriel Péri après"
+    assert get_addresses(text6) == [(5, len(text6) - 5, 'ADRESSE')]
+    text8 = "avant 3, rue Christophe Colomb après"
+    assert get_addresses(text8) == [(5, len(text8) - 5, 'ADRESSE')]
+    text9 = "avant 161, rue Andr Bisiaux - ZAC Solvay - Plateau de Haye après"
+    assert get_addresses(text9) == [(5, len(text9) - 5, 'ADRESSE')]
+    text10 = "avant 38, boulevard Georges Clémenceau après"
+    assert get_addresses(text10) == [(5, len(text10) - 5, 'ADRESSE')]
+    text11 = "avant 35, rue Maurice Flandin après"
+    assert get_addresses(text11) == [(5, len(text11) - 5, 'ADRESSE')]
+    text12 = "avant 22 rue Henri Rochefort - 75017 PARIS après"
+    assert get_addresses(text12) == [(5, len(text12) - 5, 'ADRESSE')]
+    text13 = "avant 14 Boulevard Marie et Alexandre Oyon - 72100 LE MANS après"
+    assert get_addresses(text13) == [(5, len(text13) - 5, 'ADRESSE')]
+    text14 = "avant allée Toto après"
+    assert get_addresses(text14) == [(5, len(text14) - 5, 'ADRESSE')]
+
+
+

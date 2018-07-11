@@ -11,7 +11,8 @@ from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary import get_first_name_matcher, get_first_name_matches
 from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change, \
-    get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name
+    get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
+    get_addresses
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -61,8 +62,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
-                    first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
-
+                    # TODO to reactivate when ready
+                    # first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
+                    addresses = get_addresses(current_paragraph)
 
                     all_matches = matcher_offset + \
                                   current_xml_offset + \
@@ -70,8 +72,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                   full_name_pp + \
                                   judge_names + \
                                   clerk_names + \
-                                  lawyer_names #+ \
-                                  #first_name_matches
+                                  lawyer_names + \
+                                  addresses
 
                     if (len(first_name_matches) > 0) and (len(all_matches) == 0):
                         print(current_paragraph)
