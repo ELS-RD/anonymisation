@@ -1,8 +1,6 @@
 # coding: utf8
 
-# https://github.com/explosion/spacy/blob/master/examples/training/train_ner.py
 # https://github.com/explosion/spaCy/issues/1530
-# https://spacy.io/usage/linguistic-features#named-entities
 
 
 import spacy
