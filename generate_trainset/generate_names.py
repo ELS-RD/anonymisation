@@ -203,7 +203,7 @@ extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(
                                         flags=regex.VERSION1)
 
 
-extract_clerk_pattern_2 = regex.compile("(?<=(G|g)reffier.{0,50})"
+extract_clerk_pattern_2 = regex.compile("(?<=(G|g)reffier[^:]{0,50}:.{0,10})"
                                         "((?!Madame |Monsieur )[A-Z][[:alnum:]-']+\s*)+",
                                         flags=regex.VERSION1)
 
