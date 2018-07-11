@@ -4,12 +4,11 @@
 
 
 import spacy
-from spacy.matcher import PhraseMatcher
 from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.first_name_dictionary import get_first_name_matcher, get_first_name_matches
+from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches
 from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change, \
     get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses
@@ -26,16 +25,22 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 nlp = spacy.blank('fr')
 current_case_paragraphs = list()
 current_case_offsets = list()
-current_items_to_find = None
 previous_case_id = None
 current_item_header = None
-matcher = None
+
+(matcher_partie_pm,
+ matcher_partie_pp,
+ matcher_partie_avocat,
+ matcher_partie_president,
+ matcher_partie_conseiller,
+ matcher_partie_greffier) = None, None, None, None, None, None
+
 first_name_matcher = get_first_name_matcher()
 doc_annotated = list()
 # TODO to delete when ready
@@ -49,12 +54,17 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                 current_doc_extend_name_pattern = get_extend_extracted_name_pattern(texts=current_case_paragraphs,
                                                                                     offsets=current_case_offsets,
                                                                                     type_name_to_keep="PARTIE_PP")
+
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
-                    current_parag_as_doc = nlp(current_paragraph)
-                    matcher_offset = [(current_parag_as_doc[start_word_index:end_word_index].start_char,
-                                       current_parag_as_doc[start_word_index:end_word_index].end_char,
-                                       nlp.vocab.strings[match_id])
-                                      for match_id, start_word_index, end_word_index in matcher(current_parag_as_doc)]
+                    # current_parag_as_doc = nlp(current_paragraph)
+
+                    match_from_headers = get_matches(matcher_partie_pp, current_paragraph, "PARTIE_PP")
+                    match_from_headers += get_matches(matcher_partie_pm, current_paragraph, "PARTIE_PM")
+                    match_from_headers += get_matches(matcher_partie_avocat, current_paragraph, "AVOCAT")
+                    match_from_headers += get_matches(matcher_partie_avocat, current_paragraph, "CONSEILLER")
+                    match_from_headers += get_matches(matcher_partie_president, current_paragraph, "PRESIDENT")
+                    match_from_headers += get_matches(matcher_partie_greffier, current_paragraph, "GREFFIER")
+
                     company_names_offset = get_company_names(current_paragraph)
                     full_name_pp = get_extended_extracted_name(text=current_paragraph,
                                                                pattern=current_doc_extend_name_pattern,
@@ -66,17 +76,17 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     # first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
                     addresses = get_addresses(current_paragraph)
 
-                    all_matches = matcher_offset + \
-                                  current_xml_offset + \
-                                  company_names_offset + \
-                                  full_name_pp + \
-                                  judge_names + \
-                                  clerk_names + \
-                                  lawyer_names + \
-                                  addresses
+                    all_matches = (match_from_headers +
+                                   current_xml_offset +
+                                   company_names_offset +
+                                   full_name_pp +
+                                   judge_names +
+                                   clerk_names +
+                                   lawyer_names +
+                                   addresses)
 
-                    if (len(first_name_matches) > 0) and (len(all_matches) == 0):
-                        print(current_paragraph)
+                    # if (len(first_name_matches) > 0) and (len(all_matches) == 0):
+                    #     print(current_paragraph)
 
                     if len(all_matches) > 0:
 
@@ -104,13 +114,13 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             current_case_offsets.clear()
             previous_case_id = current_case_id
             current_item_header = case_header_content[current_case_id]
-            current_items_to_find = get_list_of_items_to_search(current_item_header)
-            matcher = PhraseMatcher(nlp.tokenizer.vocab, max_length=10)
-            for type_span, text_span in current_items_to_find:
-                try:
-                    matcher.add(type_span, None, nlp(text_span))
-                except:
-                    pass
+
+            (matcher_partie_pm,
+             matcher_partie_pp,
+             matcher_partie_avocat,
+             matcher_partie_president,
+             matcher_partie_conseiller,
+             matcher_partie_greffier) = get_list_of_items_to_search(current_item_header)
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)

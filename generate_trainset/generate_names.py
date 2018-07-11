@@ -1,7 +1,9 @@
 import re
-from random import randint
 import string
+from random import randint
+
 import regex
+from acora import AcoraBuilder
 
 org_types = r"société|" \
             r"association|" \
@@ -73,43 +75,62 @@ def add_tag(l: list, tag: str) -> list:
     return [(tag, item) for item in l]
 
 
-def get_list_of_items_to_search(current_header: dict) -> list:
+def get_list_of_items_to_search(current_header: dict) -> tuple:
     """
     Create variations of items to search
     :param current_header: original list from headers
-    :return: expanded list of items
+    :return: expanded list of items -> as tuple (type_name, content)
     """
-    items_to_search = list()
+
+    (matcher_partie_pm,
+     matcher_partie_pp,
+     matcher_partie_avocat,
+     matcher_partie_president,
+     matcher_partie_conseiller,
+     matcher_partie_greffier) = (AcoraBuilder("@!#$%"),
+                                 AcoraBuilder("@!#$%"),
+                                 AcoraBuilder("@!#$%"),
+                                 AcoraBuilder("@!#$%"),
+                                 AcoraBuilder("@!#$%"),
+                                 AcoraBuilder("@!#$%"))
+
     for full_content, short_content in zip(
             current_header['defendeur_fullname'] + current_header['demandeur_fullname'],
             current_header['defendeur_hidden'] + current_header['demandeur_hidden']):
         if short_content is None:
-            items_to_search.append(("PARTIE_PM", full_content))
+            matcher_partie_pm.add(full_content)
             no_corp = remove_corp(full_content)
             if no_corp != full_content:
-                items_to_search.append(("PARTIE_PM", no_corp))
+                matcher_partie_pm.add(no_corp)
 
         else:
-            items_to_search.append(("PARTIE_PP", full_content.upper()))
-            items_to_search.append(("PARTIE_PP", full_content))
-            items_to_search.append(("PARTIE_PP", full_content.lower()))
-            items_to_search.append(("PARTIE_PP", get_title_case(full_content)))
+            matcher_partie_pp.add(full_content.upper())
+            matcher_partie_pp.add(full_content)
+            matcher_partie_pp.add(full_content.lower())
+            matcher_partie_pp.add(get_title_case(full_content))
             family_name = get_last_name(full_content)
-            items_to_search.append(("PARTIE_PP", family_name.upper()))
-            items_to_search.append(("PARTIE_PP", family_name))
-            items_to_search.append(("PARTIE_PP", family_name.lower()))
-            items_to_search.append(("PARTIE_PP", get_title_case(family_name)))
+            if len(family_name) > 0:
+                matcher_partie_pp.add(family_name.upper())
+                matcher_partie_pp.add(family_name)
+                matcher_partie_pp.add(family_name.lower())
+                matcher_partie_pp.add(get_title_case(family_name))
 
-    items_to_search.extend(add_tag(current_header['avocat'], "AVOCAT"))
+    matcher_partie_avocat.update(current_header['avocat'])
     # TODO AJOUTER DES VARIATIONS SANS LE Me
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    items_to_search.extend(add_tag(current_header['president'], "PRESIDENT"))
+    matcher_partie_president.update(current_header['president'])
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    items_to_search.extend(add_tag(current_header['conseiller'], "CONSEILLER"))
+    matcher_partie_president.update(current_header['conseiller'])
     # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    items_to_search.extend(add_tag(current_header['greffier'], "GREFFIER"))
-    # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    return items_to_search
+    matcher_partie_greffier.update(current_header['greffier'])
+    # TODO AJOUTER VARIATIONS Juste avec le nom de famille
+
+    return (matcher_partie_pm.build(),
+            matcher_partie_pp.build(),
+            matcher_partie_avocat.build(),
+            matcher_partie_president.build(),
+            matcher_partie_conseiller.build(),
+            matcher_partie_greffier.build())
 
 
 find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
@@ -153,7 +174,8 @@ def get_extend_extracted_name_pattern(texts: list, offsets: list, type_name_to_k
     extracted_names_pattern = '|'.join(extracted_names)
     return regex.compile("(?<=(M(\.?)|Mme(\.?)|Mlle(\.?)|(M|m)onsieur|(M|m)adame|(M|m)ademoiselle)\s+)"
                          "(([A-Z][[:alnum:]-]+\s*)+(" +
-                         extracted_names_pattern + "))", flags=regex.VERSION1)
+                         extracted_names_pattern + "))",
+                         flags=regex.VERSION1)
 
 
 def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name) -> list:

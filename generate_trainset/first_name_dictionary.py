@@ -36,14 +36,24 @@ def get_first_name_dict() -> set:
     return firs_name
 
 
-def get_first_name_matcher():
+def get_acora_object(content: list):
     builder = AcoraBuilder()
-    first_name_dict = get_first_name_dict()
-    builder.update(list(first_name_dict))
+    builder.update(content)
     return builder.build(ignore_case=False)
 
 
-def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
+def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list:
+    if matcher.__sizeof__() == 0:
+        return []
     results = matcher.findall(text)
     # - 1 to remove the space
-    return [(start_offset, start_offset + len(match_text) - 1, "PARTIE_PP") for match_text, start_offset in results]
+    return [(start_offset, start_offset + len(match_text) - 1, tag) for match_text, start_offset in results]
+
+
+def get_first_name_matcher():
+    first_name_dict = get_first_name_dict()
+    return get_acora_object(list(first_name_dict))
+
+
+def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
+    return get_matches(matcher, text, "PARTIE_PP")
