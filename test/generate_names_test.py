@@ -41,12 +41,26 @@ def test_random_case_change():
 
 
 def test_extract_judge_names():
-    text1 = "Madame Bingo TOTO, Conseiller près la cour de machin chose"
-    assert get_judge_name(text1) == [(7, 17, 'PRESIDENT')]
+    text1 = "sera jugé par Madame Bingo TOTO, Conseiller près la cour de machin chose"
+    assert get_judge_name(text1) == [(21, 31, 'PRESIDENT')]
     text2 = "Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président"
     assert get_judge_name(text2) == [(9, 25, 'PRESIDENT')]
     text3 = "Nous, Gilles BOURGEOIS, Conseiller faisant fonction de Président"
     assert get_judge_name(text3) == [(6, 22, 'PRESIDENT')]
+    text4 = "Mme Véronique BEBON, Présidente"
+    assert get_judge_name(text4) == [(4, 19, 'PRESIDENT')]
+    text5 = "M. Gérard FORET DODELIN, Président"
+    assert get_judge_name(text5) == [(3, 23, 'PRESIDENT')]
+    text6 = "Madame Florence DELORD, Conseiller"
+    assert get_judge_name(text6) == [(7, 22, 'PRESIDENT')]
+    text7 = "Madame Frédérique BRUEL, Conseillère"
+    assert get_judge_name(text7) == [(7, 23, 'PRESIDENT')]
+    text8 = "devant M. Gérard FORET DODELIN, Président, chargé d'instruire l'affaire."
+    assert get_judge_name(text8) == [(10, 30, 'PRESIDENT')]
+    text9 = "représenté lors des débats par Madame POUEY, substitut général "
+    assert get_judge_name(text9) == [(38, 43, 'PRESIDENT')]
+    text10 = "devant Mme Véronique BEBON, Présidente, et Madame Frédérique BRUEL, Conseillère, chargées du rapport."
+    assert get_judge_name(text10) == [(11, 26, 'PRESIDENT'), (50, 66, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
@@ -62,6 +76,9 @@ def test_extract_clerk_names():
     assert get_clerk_name(text5) == [(34, 57, 'GREFFIER')]
     text6 = "assistée de Geneviève JAUFFRES, greffière"
     assert get_clerk_name(text6) == [(12, 30, 'GREFFIER')]
+    text7 = "GREFFIER : Mme Marie Estelle CHAPON"
+    assert get_clerk_name(text7) == [(15, 35, 'GREFFIER')]
+
 
 
 def test_extract_lawyer():

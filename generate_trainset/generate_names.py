@@ -180,11 +180,16 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame | )"
-                                      "([[:alnum:]-']+\s*)+"
-                                      "(?=(?i), (magistrat|"
-                                      "conseiller.+(cour|président|magistrat|chambre)|"
-                                      "président.+(cour|magistrat|chambre)))",
+extract_judge_pattern = regex.compile("(?<=(?i)m |m. |mme |mme. |monsieur |madame |, )"
+                                      "([A-Z]+[[:alnum:]-']+\s*)+"
+                                      "(?=, "
+                                      "(Magistrat|"
+                                      "conseill.+(cour|président|magistrat|chambre)|"
+                                      "président.+(cour|magistrat|chambre)|"
+                                      "Conseill.*|"
+                                      "Président.*|"
+                                      "(s|S)ubstitut)"
+                                      ")",
                                       flags=regex.VERSION1)
 
 
@@ -203,8 +208,8 @@ extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(
                                         flags=regex.VERSION1)
 
 
-extract_clerk_pattern_2 = regex.compile("(?<=(G|g)reffier[^:]{0,50}:.{0,10})"
-                                        "((?!Madame |Monsieur )[A-Z][[:alnum:]-']+\s*)+",
+extract_clerk_pattern_2 = regex.compile("(?<=(Greffi|greffi|GREFFI)[^:]{0,50}:.{0,10})"
+                                        "((?!Madame |Monsieur |M. |Mme. |M |Mme )[A-Z][[:alnum:]-']+\s*)+",
                                         flags=regex.VERSION1)
 
 
