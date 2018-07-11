@@ -26,7 +26,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:1000]
+TRAIN_DATA = list(TRAIN_DATA)[0:10000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 nlp = spacy.blank('fr')
@@ -37,6 +37,8 @@ previous_case_id = None
 current_item_header = None
 matcher = None
 doc_annotated = list()
+# TODO to delete when ready
+no_offset_sentences_with_risk = list()
 
 with tqdm(total=len(case_header_content)) as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
@@ -60,21 +62,17 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
 
-                    if len(matcher_offset) + \
-                            len(current_xml_offset) + \
-                            len(company_names_offset) + \
-                            len(full_name_pp) + \
-                            len(judge_names) + \
-                            len(clerk_names) + \
-                            len(lawyer_names) > 0:
-                        all_match = matcher_offset + \
-                                    current_xml_offset + \
-                                    company_names_offset + \
-                                    full_name_pp + \
-                                    judge_names + \
-                                    clerk_names + \
-                                    lawyer_names
-                        normalized_offsets = normalize_offsets(all_match)
+                    all_matches = matcher_offset + \
+                                  current_xml_offset + \
+                                  company_names_offset + \
+                                  full_name_pp + \
+                                  judge_names + \
+                                  clerk_names + \
+                                  lawyer_names
+
+                    if len(all_matches) > 0:
+
+                        normalized_offsets = normalize_offsets(all_matches)
                         current_paragraph_case_updated = random_case_change(text=current_paragraph,
                                                                             offsets=normalized_offsets,
                                                                             rate=5)
@@ -84,6 +82,12 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     elif current_paragraph.isupper() and len(current_paragraph) > 10:
                         # add empty title paragraph to avoid fake solution
                         doc_annotated.append((current_paragraph, {'entities': []}))
+
+                    # TODO to delete when ready
+                    risk_keywords = ["Monsieur", "Madame", "M ", "Mme ", "M. "]
+                    if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
+                        no_offset_sentences_with_risk.append(current_paragraph)
+
             # update when one case is finished
             progress_bar.update()
 
@@ -103,11 +107,13 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
+for risk_sentence in no_offset_sentences_with_risk:
+    print(risk_sentence)
+
 for text, annot in doc_annotated:
     if len(annot['entities']) > 0:
         for start, end, type_name in annot['entities']:
             print(start, end, "|", text[start:end], "|", type_name)
-
 
 train_model(data=doc_annotated,
             folder_to_save_model=model_dir_path,

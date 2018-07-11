@@ -55,14 +55,13 @@ Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
-- ajout fonction pour lister les phrases sans offset pour repérer des erreurs
 - ajout fonction pour comparer les résultats entre Themis et Spacy sur les PP
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé)
 - add first name to dictionary
 - randomly remove company type (la société)
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
-- train with all matches
+- train with all matches (?)
 - build a dict of PM and match everywhere against this matcher
 - replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
 - ajout Dr et Prof dans les recherches
@@ -74,4 +73,22 @@ Tokens [('a', '', 2), ('rendu', '', 2), ("l'", '', 2), ('arrêt', '', 2), ('cont
 
 Entities [('Vincent THOMAS, SCP PGTA', 'AVOCAT')]
 Tokens [('Représenté', '', 2), ('par', '', 2), ('Me', '', 2), ('Vincent', 'AVOCAT', 3), ('THOMAS', 'AVOCAT', 1), (',', 'AVOCAT', 1), ('SCP', 'AVOCAT', 1), ('PGTA', 'AVOCAT', 1), (',', '', 2), ('avocat', '', 2), ('inscrit', '', 2), ('au', '', 2), ('barreau', '', 2), ('du', '', 2), ('GERS', '', 2)]
+
+
+Pattern to manage
+Mme Véronique BEBON, Présidente [END]
+Madame Frédérique BRUEL, Conseillère [END]
+devant M. Gérard FORET DODELIN, Président, chargé d'instruire l'affaire.
+M. Gérard FORET DODELIN, Président [END]
+Madame Florence DELORD, Conseiller [END]
+Monsieur Jean Luc CABAUSSEL, Conseiller [END]
+devant Madame Sylvie BLUME, Conseiller, chargé d'instruire l'affaire.
+devant Mme Véronique BEBON, Présidente, et Madame Frédérique BRUEL, Conseillère, chargées du rapport.
+M. Gérard FORET DODELIN, Président [END]
+Madame Florence DELORD, Conseiller [END]
+Mme Geneviève TOUVIER, présidente, [END]
+GREFFIER : Mme Marie Estelle CHAPON
+L'affaire a été communiquée au ministère public, représenté lors des débats par Madame POUEY, substitut général qui a fait connaître son avis.
+
+Utiliser les majuscules
 
