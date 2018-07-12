@@ -2,6 +2,7 @@ import re
 import string
 from random import randint
 
+import acora
 import regex
 from acora import AcoraBuilder
 
@@ -75,7 +76,7 @@ def add_tag(l: list, tag: str) -> list:
     return [(tag, item) for item in l]
 
 
-def get_list_of_partie_pp_from_headers_to_search(current_header: dict):
+def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -95,7 +96,7 @@ def get_list_of_partie_pp_from_headers_to_search(current_header: dict):
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_partie_pm_from_headers_to_search(current_header: dict):
+def get_list_of_partie_pm_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -113,8 +114,7 @@ def get_list_of_partie_pm_from_headers_to_search(current_header: dict):
 
 
 # TODO AJOUTER DES VARIATIONS SANS LE Me
-# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-def get_list_of_lawyers_from_headers_to_search(current_header: dict):
+def get_list_of_lawyers_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -123,11 +123,14 @@ def get_list_of_lawyers_from_headers_to_search(current_header: dict):
     header_content = current_header['avocat']
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
+    for content in header_content:
+        family_name = get_last_name(content)
+        if len(family_name) > 0:
+            matcher.add(family_name)
     return matcher.build(ignore_case=True)
 
 
-# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-def get_list_of_president_from_headers_to_search(current_header: dict):
+def get_list_of_president_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -136,11 +139,14 @@ def get_list_of_president_from_headers_to_search(current_header: dict):
     header_content = current_header['president']
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
+    for content in header_content:
+        family_name = get_last_name(content)
+        if len(family_name) > 0:
+            matcher.add(family_name)
     return matcher.build(ignore_case=True)
 
 
-# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-def get_list_of_conseiller_from_headers_to_search(current_header: dict):
+def get_list_of_conseiller_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -149,11 +155,14 @@ def get_list_of_conseiller_from_headers_to_search(current_header: dict):
     header_content = current_header['conseiller']
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
+    for content in header_content:
+        family_name = get_last_name(content)
+        if len(family_name) > 0:
+            matcher.add(family_name)
     return matcher.build(ignore_case=True)
 
 
-# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-def get_list_of_clerks_from_headers_to_search(current_header: dict):
+def get_list_of_clerks_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -162,6 +171,10 @@ def get_list_of_clerks_from_headers_to_search(current_header: dict):
     header_content = current_header['greffier']
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
+    for content in header_content:
+        family_name = get_last_name(content)
+        if len(family_name) > 0:
+            matcher.add(family_name)
     return matcher.build(ignore_case=True)
 
 

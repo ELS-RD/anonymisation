@@ -36,10 +36,10 @@ current_item_header = None
 
 matcher_partie_pm = None
 matcher_partie_pp = None
-matcher_avocat = None
+matcher_lawyers = None
 matcher_president = None
 matcher_conseiller = None
-matcher_greffier = None
+matcher_clerks = None
 
 first_name_matcher = get_first_name_matcher()
 doc_annotated = list()
@@ -58,10 +58,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
                     match_from_headers = get_matches(matcher_partie_pp, current_paragraph, "PARTIE_PP")
                     match_from_headers += get_matches(matcher_partie_pm, current_paragraph, "PARTIE_PM")
-                    match_from_headers += get_matches(matcher_avocat, current_paragraph, "AVOCAT")
-                    match_from_headers += get_matches(matcher_avocat, current_paragraph, "CONSEILLER")
+                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "AVOCAT")
+                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "CONSEILLER")
                     match_from_headers += get_matches(matcher_president, current_paragraph, "PRESIDENT")
-                    match_from_headers += get_matches(matcher_greffier, current_paragraph, "GREFFIER")
+                    match_from_headers += get_matches(matcher_clerks, current_paragraph, "GREFFIER")
 
                     company_names_offset = get_company_names(current_paragraph)
                     full_name_pp = get_extended_extracted_name(text=current_paragraph,
@@ -115,10 +115,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
 
             matcher_partie_pm = get_list_of_partie_pm_from_headers_to_search(current_item_header)
             matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(current_item_header)
-            matcher_avocat = get_list_of_lawyers_from_headers_to_search(current_item_header)
+            matcher_lawyers = get_list_of_lawyers_from_headers_to_search(current_item_header)
             matcher_president = get_list_of_president_from_headers_to_search(current_item_header)
             matcher_conseiller = get_list_of_conseiller_from_headers_to_search(current_item_header)
-            matcher_greffier = get_list_of_clerks_from_headers_to_search(current_item_header)
+            matcher_clerks = get_list_of_clerks_from_headers_to_search(current_item_header)
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)

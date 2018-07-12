@@ -43,11 +43,17 @@ def get_acora_object(content: list):
 
 
 def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list:
+    """
+    Apply the matcher and return offsets
+    :param matcher: the acora matcher (built)
+    :param text: original string where to find the matches
+    :param tag: the type of offset
+    :return: list of offsets
+    """
     if matcher.__sizeof__() == 0:
         return []
     results = matcher.findall(text)
-    # - 1 to remove the space
-    return [(start_offset, start_offset + len(match_text) - 1, tag) for match_text, start_offset in results]
+    return [(start_offset, start_offset + len(match_text), tag) for match_text, start_offset in results]
 
 
 def get_first_name_matcher():
@@ -56,4 +62,5 @@ def get_first_name_matcher():
 
 
 def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
-    return get_matches(matcher, text, "PARTIE_PP")
+    results = get_matches(matcher, text, "PARTIE_PP")
+    return [(start, end -1, type_name)for start, end, type_name in results]

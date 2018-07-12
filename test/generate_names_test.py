@@ -113,7 +113,6 @@ def test_get_first_name_dict():
 def test_get_phrase_matcher():
     text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur."
     first_name_matcher = get_first_name_matcher()
-    print(get_first_name_matches(first_name_matcher, text))
     assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
 
 
@@ -152,15 +151,16 @@ def test_match_patterns():
     header_content_all_cases = parse_xml_header(path=xml_path)
     case_id = list(header_content_all_cases.keys())[0]
     header_content = header_content_all_cases[case_id]
-    print(header_content)
     matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(header_content)
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
-    print()
-    assert get_matches(matcher_partie_pp, text1, "PARTIE_PP") == [(6, 21, 'PARTIE_PP'),
-                                                                  (16, 21, 'PARTIE_PP'),
-                                                                  (64, 76, 'PARTIE_PP')]
+
+    assert get_matches(matcher_partie_pp, text1, "PARTIE_PP") == [(6, 22, 'PARTIE_PP'),
+                                                                  (16, 22, 'PARTIE_PP'),
+                                                                  (64, 77, 'PARTIE_PP')]
     text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
     matcher_lawyers = get_list_of_lawyers_from_headers_to_search(header_content)
-    assert get_matches(matcher_lawyers, text2, "AVOCAT") == [(25, 37, 'AVOCAT')]
+    assert get_matches(matcher_lawyers, text2, "AVOCAT") == [(3, 10, 'AVOCAT'),
+                                                             (25, 38, 'AVOCAT'),
+                                                             (33, 38, 'AVOCAT')]
     matcher_clerks = get_list_of_clerks_from_headers_to_search(header_content)
-    assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 80, 'GREFFIER')]
+    assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 81, 'GREFFIER'), (76, 81, 'GREFFIER')]
