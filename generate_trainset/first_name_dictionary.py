@@ -1,7 +1,7 @@
 import acora
 from acora import AcoraBuilder
 
-from generate_trainset.generate_names import get_title_case
+from generate_trainset.modify_strings import get_title_case
 from resources.config_provider import get_config_default
 
 

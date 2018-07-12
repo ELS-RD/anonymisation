@@ -1,71 +1,10 @@
-import re
 import string
-from random import randint
 
 import acora
 import regex
 from acora import AcoraBuilder
 
-org_types = r"société(s)?|" \
-            r"association|" \
-            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
-            r"e(\.|\s)*u(\.|\s)*rl(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*s|" \
-            r"s(\.|\s)*n(\.|\s)*c|" \
-            r"s(\.|\s)*e(\.|\s)*m|" \
-            r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*s|" \
-            r"s(\.|\s)*a(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*r(\.|\s)*l|" \
-            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*i(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*o(\.|\s)*p(\.|\s)*|" \
-            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*a(\.|\s)*|" \
-            r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"syndic|" \
-            r"syndicat|" \
-            r"(e|é)tablissement|" \
-            r"mutuelle|" \
-            r"caisse|" \
-            r"hôpital"
-
-remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+",
-                                 flags=re.IGNORECASE)
-
-
-def remove_corp(original_text: str) -> str:
-    """
-    Remove corporation type name
-    :param original_text: Name of company included its type
-    :return: the cleaned string
-    """
-    return remove_corp_pattern.sub(repl="", string=original_text).strip()
-
-
-last_name_pattern = re.compile(r"[A-Z\s]+$")
-
-
-def get_last_name(original_text: str) -> str:
-    """
-    Extract last name from a full name
-    :param original_text: full name
-    :return: family name
-    """
-    result = last_name_pattern.search(original_text.strip())
-    if result:
-        return str(result.group(0)).strip()
-    return ""
-
-
-def get_title_case(original_text: str) -> str:
-    """
-    Upper case each first letter of a MWE
-    :param original_text: original full name
-    :return: transformed string
-    """
-    return ' '.join([word.capitalize() for word in original_text.split(' ')])
+from generate_trainset.modify_strings import get_last_name, org_types
 
 
 def add_tag(l: list, tag: str) -> list:
@@ -190,6 +129,11 @@ find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
 
 
 def get_company_names(text: str) -> list:
+    """
+    Extract company names from string text
+    :param text: original text
+    :return: a list of offsets
+    """
     return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
 
 
@@ -234,21 +178,6 @@ def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name) -> l
     :return: offset list
     """
     return [(t.start(), t.end(), type_name) for t in pattern.finditer(text)]
-
-
-def random_case_change(text: str, offsets: list, rate: int) -> str:
-    """
-    Randomly remove the offset case to make the NER more robust
-    :param text: original text
-    :param offsets: original offsets
-    :param rate: the percentage of offset to change (as integer)
-    :return: the updated text
-    """
-    for offset in offsets:
-        if randint(0, 99) <= rate:
-            extracted_content = text[offset[0]:offset[1]]
-            text = text[:offset[0]] + extracted_content.lower() + text[offset[1]:]
-    return text
 
 
 extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"

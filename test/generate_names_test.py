@@ -1,11 +1,12 @@
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches, \
     get_matches
-from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
-    get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
+from generate_trainset.match_patterns import get_last_name, get_company_names, \
+    get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, \
     get_list_of_clerks_from_headers_to_search, get_partie_pp
+from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp
 from resources.config_provider import get_config_default
 
 
@@ -45,7 +46,12 @@ def test_extend_names():
 def test_random_case_change():
     text = "La Banque est fermée"
     offsets = [(3, 9, "PARTIE_PP")]
-    assert random_case_change(text, offsets, 100) == "La banque est fermée"
+
+    results = [random_case_change(text, offsets, 100) for _ in range(1, 100)]
+
+    assert "La Banque est fermée" in results
+    assert "La banque est fermée" in results
+    assert "La BANQUE est fermée" in results
 
 
 def test_extract_judge_names():

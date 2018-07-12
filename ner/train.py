@@ -8,11 +8,11 @@ from tqdm import tqdm
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches
-from generate_trainset.generate_names import get_company_names, random_case_change, \
-    get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
+from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, get_list_of_president_from_headers_to_search, \
     get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp
+from generate_trainset.modify_strings import random_case_change
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -131,7 +131,7 @@ for risk_sentence in no_offset_sentences_with_risk:
 for text, annot in doc_annotated:
     if len(annot['entities']) > 0:
         for start, end, type_name in annot['entities']:
-            print(start, end, "|", text[start:end], "|", type_name)
+            print(start, end, text[start:end], type_name, sep="|")
 
 train_model(data=doc_annotated,
             folder_to_save_model=model_dir_path,
