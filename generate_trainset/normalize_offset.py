@@ -27,11 +27,16 @@ def normalize_offsets(offsets: list) -> list:
                                                                          tag_priority(current_type_tag,
                                                                                       previous_type_tag)
 
+        if current_end_offset - current_start_offset <= 3:
+            current_start_offset, current_end_offset, current_type_tag = previous_start_offset, \
+                                                                         previous_end_offset, \
+                                                                         previous_type_tag
+
         previous_start_offset, previous_end_offset, previous_type_tag = (current_start_offset,
                                                                          current_end_offset,
                                                                          current_type_tag)
-
-    offset_to_keep.append((previous_start_offset, previous_end_offset, previous_type_tag))
+    if previous_start_offset is not None:
+        offset_to_keep.append((previous_start_offset, previous_end_offset, previous_type_tag))
     return offset_to_keep
 
 

@@ -2,7 +2,7 @@ from random import randint
 
 import regex
 
-
+# some organization prefix patterns
 org_types = r"société(s)?|" \
             r"association|" \
             r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
@@ -40,7 +40,7 @@ def get_title_case(original_text: str) -> str:
 
 def random_case_change(text: str, offsets: list, rate: int) -> str:
     """
-    Randomly remove the offset case to make the NER more robust
+    Randomly change the case of the string inside the offset to make the NER more robust
     :param text: original text
     :param offsets: original offsets
     :param rate: the percentage of offset to change (as integer)
@@ -79,14 +79,19 @@ def remove_corp(original_text: str) -> str:
 last_name_pattern = regex.compile(r"[A-Z\s]+$")
 
 
-def get_last_name(original_text: str) -> str:
+def get_last_name(text: str) -> str:
     """
     Extract last name from a full name
-    :param original_text: full name
+    :param text: full name
     :return: family name
     """
-    result = last_name_pattern.search(original_text.strip())
+    result = last_name_pattern.search(text.strip())
     if result:
         return str(result.group(0)).strip()
     return ""
 
+
+def get_first_last_name(text: str):
+    last_name = get_last_name(text)
+    first_name = text[0:len(text) - len(last_name)] if len(last_name) > 0 else ""
+    return first_name, last_name

@@ -50,6 +50,7 @@ def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list
     :param tag: the type of offset
     :return: list of offsets
     """
+    # matcher not loaded with any pattern
     if matcher.__sizeof__() == 0:
         return []
     results = matcher.findall(text)

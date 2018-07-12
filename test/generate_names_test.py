@@ -5,7 +5,7 @@ from generate_trainset.match_patterns import get_last_name, get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, \
-    get_list_of_clerks_from_headers_to_search, get_partie_pp
+    get_list_of_clerks_from_headers_to_search, get_partie_pp, get_all_name_variation
 from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp
 from resources.config_provider import get_config_default
 
@@ -188,3 +188,15 @@ def test_match_partie_pp_regex():
     assert get_partie_pp(text3) == [(2, 10, 'PARTIE_PP')]
     text4 = "•   Eugène né le 23 mars 1997 à Grenoble ( 38"
     assert get_partie_pp(text4) == [(4, 11, 'PARTIE_PP')]
+
+
+def test_match_sub_pattern():
+    texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
+    offsets = [[(13, 28, "PARTIE_PP")], [], []]
+    assert get_all_name_variation(texts, offsets) == [[(13, 21, 'PARTIE_PP'),
+                                                       (13, 28, 'PARTIE_PP'),
+                                                       (21, 28, 'PARTIE_PP'),
+                                                       (13, 28, 'PARTIE_PP')],
+                                                      [(0, 8, 'PARTIE_PP')],
+                                                      [(12, 19, 'PARTIE_PP')]]
+

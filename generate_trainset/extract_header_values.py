@@ -74,6 +74,11 @@ def parse_xml_header(path: str):
 
 
 def parse_xml_headers(folder_path: str) -> dict:
+    """
+    Extract some values from all files from a provided folder using :func:`parse_xml_header`.
+    :param folder_path: path where the XML files are stored
+    :return: a dict, 1 slot per legal case, for each slot, there is a dict of list with values
+    """
     all_headers = dict()
     paths = os.listdir(folder_path)
     assert len(paths) > 0

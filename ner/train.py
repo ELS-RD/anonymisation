@@ -8,10 +8,12 @@ from tqdm import tqdm
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches
-from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
+from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
+    get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, get_list_of_president_from_headers_to_search, \
-    get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp
+    get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp, \
+    get_all_name_variation
 from generate_trainset.modify_strings import random_case_change
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
@@ -43,8 +45,10 @@ matcher_clerks = None
 
 first_name_matcher = get_first_name_matcher()
 doc_annotated = list()
+last_document_offsets = list()
+last_document_texts = list()
 # TODO to delete when ready
-no_offset_sentences_with_risk = list()
+to_delete_no_offset_sentences_with_risk = list()
 
 with tqdm(total=len(case_header_content)) as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
@@ -92,22 +96,31 @@ with tqdm(total=len(case_header_content)) as progress_bar:
 
                         normalized_offsets = normalize_offsets(all_matches)
 
-                        # TODO add new offsets here
-
                         current_paragraph_case_updated = random_case_change(text=current_paragraph,
                                                                             offsets=normalized_offsets,
-                                                                            rate=5)
-                        doc_annotated.append((current_paragraph_case_updated,
-                                              {'entities': normalized_offsets}))
+                                                                            rate=20)
+
+                        last_document_texts.append(current_paragraph_case_updated)
+                        last_document_offsets.append(normalized_offsets)
 
                     elif current_paragraph.isupper() and len(current_paragraph) > 10:
                         # add empty title paragraph to avoid fake solution
-                        doc_annotated.append((current_paragraph, {'entities': []}))
+                        last_document_texts.append(current_paragraph)
+                        last_document_offsets.append([])
 
                     # TODO to delete when ready
                     risk_keywords = ["Monsieur", "Madame", "M ", "Mme ", "M. "]
                     if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
-                        no_offset_sentences_with_risk.append(current_paragraph)
+                        to_delete_no_offset_sentences_with_risk.append(current_paragraph)
+
+            if len(last_document_offsets) > 0:
+                last_doc_new_offsets = get_all_name_variation(last_document_texts, last_document_offsets)
+                last_doc_new_offsets_normalized = [normalize_offsets(off) for off in last_doc_new_offsets]
+                [doc_annotated.append((txt, {'entities': off})) for txt, off in zip(last_document_texts,
+                                                                                    last_doc_new_offsets_normalized)]
+
+                last_document_texts.clear()
+                last_document_offsets.clear()
 
             # update when one case is finished
             progress_bar.update()
@@ -128,7 +141,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-for risk_sentence in no_offset_sentences_with_risk:
+for risk_sentence in to_delete_no_offset_sentences_with_risk:
     print(risk_sentence)
 
 for text, annot in doc_annotated:

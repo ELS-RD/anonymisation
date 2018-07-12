@@ -22,18 +22,19 @@ The main strategy is to generate as many training examples as possible, by:
 
 Main token types searched: 
 
-- PARTIE_PP
-- PARTIE_PM
-- AVOCAT
-- PRESIDENT
-- CONSEILLER
-- GREFFIER
+- PARTIE_PP (include first name unlike Temis)
+- PARTIE_PM (not done by Temis)
+- AVOCAT (not done by Temis)
+- PRESIDENT (not done by Temis)
+- CONSEILLER (not done by Temis)
+- GREFFIER (not done by Temis)
 - ADRESSE
 
 To add:
 
 - phone numbers
 - social security numbers
+- credit card number
 - RG
 
 ## Algorithm
@@ -61,7 +62,9 @@ Configuration is done through **resources/config.ini** file
 - search for all first last names discovered with other patterns
 - post process offsets to remove space at the begining and the end
 - post process offsets to detect offset starting or ending in the middle of a word
-
+- change first_name_dictionary and comment its functions
+- post process to remove M Mme, etc. in offsets
+- post process to remove spaces in offsets
 
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 

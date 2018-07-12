@@ -4,7 +4,8 @@ import acora
 import regex
 from acora import AcoraBuilder
 
-from generate_trainset.modify_strings import get_last_name, org_types
+from generate_trainset.first_name_dictionary import get_matches
+from generate_trainset.modify_strings import get_last_name, org_types, get_first_last_name
 
 
 def add_tag(l: list, tag: str) -> list:
@@ -275,3 +276,39 @@ def get_partie_pp(text: str) -> list:
     :return: offsets as a list
     """
     return [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern.finditer(text)]
+
+
+def get_all_name_variation(texts: list, offsets: list) -> list:
+    """
+    Search for any variation of known entities
+    :param texts: original text
+    :param offsets: discovered offsets
+    :return: discovered offsets
+    """
+    pp_patterns = AcoraBuilder("!@#$%%^&*")
+    pm_patterns = AcoraBuilder("!@#$%%^&*")
+    for current_offsets, text in zip(offsets, texts):
+        for offset in current_offsets:
+            start_offset, end_offset, type_name = offset
+            text_span = text[start_offset:end_offset]
+            if len(text_span) > 0:
+                if type_name == "PARTIE_PP":
+                    pp_patterns.add(text_span)
+                    first_name, last_name = get_first_last_name(text_span)
+                    if len(first_name) > 0:
+                        pp_patterns.add(first_name)
+                    if len(last_name) > 0:
+                        pp_patterns.add(last_name)
+
+                if type_name == "PARTIE_PM":
+                    pm_patterns.add(text_span)
+
+    pp_matcher = pp_patterns.build(ignore_case=True)
+    pm_matcher = pm_patterns.build(ignore_case=True)
+
+    results = list()
+
+    for text, offset in zip(texts, offsets):
+        results.append(get_matches(pp_matcher, text, "PARTIE_PP") + get_matches(pm_matcher, text, "PARTIE_PM") + offset)
+
+    return results
