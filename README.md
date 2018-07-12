@@ -57,6 +57,8 @@ Configuration is done through **resources/config.ini** file
 
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé)
 - randomly remove company type (la société)
+- randomly change case to title case
+- search for all first last names discovered with other patterns 
 
 - implement prediction with multi thread (pipe)
 - search for phone number, social security number, etc. 
@@ -65,14 +67,4 @@ Configuration is done through **resources/config.ini** file
 - ajout Dr et Prof dans les recherches
 - lister les offsets qui contiennent une virgule
 - ajouter les rapporteurs
-
-
-Entities [('Daniel TROUVE', 'PARTIE_PP'), ('Nathalie CAILHETON', 'GREFFIER')]
-Tokens [('Prononcé', '', 2), ('par', '', 2), ('mise', '', 2), ('à', '', 2), ('disposition', '', 2), ('au', '', 2), ('greffe', '', 2), ('conformément', '', 2), ('au', '', 2), ('second', '', 2), ('alinéa', '', 2), ('des', '', 2), ('articles', '', 2), ('450', '', 2), ('et', '', 2), ('453', '', 2), ('du', '', 2), ('code', '', 2), ('de', '', 2), ('procédure', '', 2), ('civile', '', 2), ('le', '', 2), ('deux', '', 2), ('Février', '', 2), ('deux', '', 2), ('mille', '', 2), ('quinze', '', 2), (',', '', 2), ('par', '', 2), ('Daniel', 'PARTIE_PP', 3), ('TROUVE', 'PARTIE_PP', 1), (',', '', 2), ('premier', '', 2), ('président', '', 2), (',', '', 2), ('assisté', '', 2), ('de', '', 2), ('Nathalie', 'GREFFIER', 3), ('CAILHETON', 'GREFFIER', 1), (',', '', 2), ('greffier', '', 2), (',', '', 2)]
-
-Entities [('WOLF', 'PARTIE_PP')]
-Tokens [('Mme', '', 2), ('WOLF', 'PARTIE_PP', 3), (',', '', 2), ('Conseiller', '', 2)]
-
-
-Entities [('FABREGUETTES', 'PARTIE_PP')]
-Tokens [('Mme', '', 2), ('FABREGUETTES', 'PARTIE_PP', 3), (',', '', 2), ('Conseiller', '', 2)]
+- ajouter les experts (qui font aussi un rapport)

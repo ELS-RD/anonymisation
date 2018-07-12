@@ -6,12 +6,13 @@ import acora
 import regex
 from acora import AcoraBuilder
 
-org_types = r"société|" \
+org_types = r"société(s)?|" \
             r"association|" \
             r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
             r"e(\.|\s)*u(\.|\s)*rl(\.|\s)*|" \
             r"s(\.|\s)*c(\.|\s)*s|" \
             r"s(\.|\s)*n(\.|\s)*c|" \
+            r"s(\.|\s)*e(\.|\s)*m|" \
             r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
             r"s(\.|\s)*a(\.|\s)*s|" \
             r"s(\.|\s)*a(\.|\s)*|" \
@@ -254,7 +255,7 @@ extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )
                                         "([A-Z]+[[:alnum:]-']+\s*|de\s+)+"
                                         "(?=, "
                                         "((M|m)agistrat|"
-                                        "conseill.{0,5}(cour|président|magistrat|chambre|.{0,5}$|, )|"
+                                        "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|, )|"
                                         "président.+(cour|magistrat|chambre)|"
                                         "président.{0,5}$|"
                                         "Conseill.*|"
@@ -320,7 +321,7 @@ def get_lawyer_name(text: str) -> list:
 
 
 extract_address_pattern = regex.compile("[\d,\-\s]*"
-                                        "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai))"
+                                        "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place))"
                                         "\s+"
                                         "([A-Z]+[[:alnum:]-\.]*"
                                         "(\s*(de|le|la|les|et))?"

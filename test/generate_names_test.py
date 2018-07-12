@@ -29,6 +29,8 @@ def test_extract_company_names():
     assert get_company_names(text1) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
     text2 = "Vu l'absence de l'Association pour l'Insertion et l'Accompagnement en Limousin (ASIIAL) assignée ;"
     assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
+    text3 = "Condamner solidairement les Sociétés OCM et OCS aux entiers dépens."
+    assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
 
 
 def test_extend_names():
@@ -38,6 +40,7 @@ def test_extend_names():
     pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
     assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == [(4, 18, 'PARTIE_PP'),
                                                                                               (28, 43, 'PARTIE_PP')]
+
 
 def test_random_case_change():
     text = "La Banque est fermée"
@@ -82,6 +85,8 @@ def test_extract_judge_names():
     assert get_judge_name(text17) == [(13, 31, 'PRESIDENT')]
     text18 = "Présidente : Mme Mélanie FILIATREAU"
     assert get_judge_name(text18) == [(17, 35, 'PRESIDENT')]
+    text19 = "Monsieur Benoît HOLLEAUX, conseiller faisant fonction de président"
+    assert get_judge_name(text19) == [(9, 24, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
