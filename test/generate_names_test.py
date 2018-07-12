@@ -181,13 +181,15 @@ def test_match_patterns():
 
 def test_match_partie_pp_regex():
     text1 = "- Toto Popo né le 30"
-    assert get_partie_pp(text1) == [(2, 12, 'PARTIE_PP')]
+    assert get_partie_pp(text1) == [(2, 11, 'PARTIE_PP')]
     text2 = "- Toto Popo, né le 30"
     assert get_partie_pp(text2) == [(2, 11, 'PARTIE_PP')]
     text3 = "- Vanessa née le 1er octobre 1987 a TOULON (Var),"
-    assert get_partie_pp(text3) == [(2, 10, 'PARTIE_PP')]
+    assert get_partie_pp(text3) == [(2, 9, 'PARTIE_PP')]
     text4 = "•   Eugène né le 23 mars 1997 à Grenoble ( 38"
-    assert get_partie_pp(text4) == [(4, 11, 'PARTIE_PP')]
+    assert get_partie_pp(text4) == [(4, 10, 'PARTIE_PP')]
+    text5 = "Elle ajoute que les sommes réclamées ne seraient éventuellement dues que pour les années 2016 et suivantes"
+    assert get_partie_pp(text5) == []
 
 
 def test_match_sub_pattern():

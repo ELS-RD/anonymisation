@@ -265,7 +265,7 @@ def get_addresses(text: str) -> list:
     return [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]
 
 
-extract_partie_pp_pattern = regex.compile("([A-Z]+[[:alnum:]-\.\s]*)+(?=.{0,20}né.{0,20}\d+)",
+extract_partie_pp_pattern = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
                                           flags=regex.VERSION1)
 
 

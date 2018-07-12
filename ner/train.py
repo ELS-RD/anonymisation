@@ -28,7 +28,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -108,7 +108,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                         last_document_texts.append(current_paragraph)
                         last_document_offsets.append([])
 
-                    # TODO to delete when ready
                     risk_keywords = ["Monsieur", "Madame", "M ", "Mme ", "M. "]
                     if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
                         to_delete_no_offset_sentences_with_risk.append(current_paragraph)
