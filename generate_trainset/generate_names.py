@@ -267,7 +267,7 @@ extract_judge_pattern_2 = regex.compile("(?<=(?i)"
                                         "^(magistrat|"
                                         "conseill[[:alnum:]]{1,3}|"
                                         "président[[:alnum:]]{0,3})\s+"
-                                        ":.{0,20}"                                        
+                                        ":.{0,20}"
                                         ")"
                                         "((?!(?i)madame |monsieur |m. |mme. |m |mme )[A-Z]+[[:alnum:]-']*\s*)+",
                                         flags=regex.VERSION1)
@@ -337,3 +337,16 @@ def get_addresses(text: str) -> list:
     :return: offsets as a list
     """
     return [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]
+
+
+extract_partie_pp_pattern = regex.compile("([A-Z]+[[:alnum:]-\.\s]*)+(?=.{0,20}né.{0,20}\d+)",
+                                          flags=regex.VERSION1)
+
+
+def get_partie_pp(text: str) -> list:
+    """
+    Extract people names from text
+    :param text: original paragraph text
+    :return: offsets as a list
+    """
+    return [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern.finditer(text)]

@@ -12,7 +12,7 @@ from generate_trainset.generate_names import get_company_names, random_case_chan
     get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, get_list_of_president_from_headers_to_search, \
-    get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search
+    get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -73,6 +73,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     # TODO to reactivate when ready
                     # first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
                     addresses = get_addresses(current_paragraph)
+                    partie_pp = get_partie_pp(current_paragraph)
 
                     all_matches = (match_from_headers +
                                    current_xml_offset +
@@ -81,6 +82,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    judge_names +
                                    clerk_names +
                                    lawyer_names +
+                                   partie_pp +
                                    addresses)
 
                     # if (len(first_name_matches) > 0) and (len(all_matches) == 0):

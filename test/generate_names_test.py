@@ -3,8 +3,9 @@ from generate_trainset.first_name_dictionary import get_first_name_dict, get_fir
     get_matches
 from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
     get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
-    get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, get_list_of_lawyers_from_headers_to_search, \
-    get_list_of_clerks_from_headers_to_search
+    get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, \
+    get_list_of_lawyers_from_headers_to_search, \
+    get_list_of_clerks_from_headers_to_search, get_partie_pp
 from resources.config_provider import get_config_default
 
 
@@ -165,3 +166,14 @@ def test_match_patterns():
                                                              (33, 38, 'AVOCAT')]
     matcher_clerks = get_list_of_clerks_from_headers_to_search(header_content)
     assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 81, 'GREFFIER'), (76, 81, 'GREFFIER')]
+
+
+def test_match_partie_pp_regex():
+    text1 = "- Toto Popo né le 30"
+    assert get_partie_pp(text1) == [(2, 12, 'PARTIE_PP')]
+    text2 = "- Toto Popo, né le 30"
+    assert get_partie_pp(text2) == [(2, 11, 'PARTIE_PP')]
+    text3 = "- Vanessa née le 1er octobre 1987 a TOULON (Var),"
+    assert get_partie_pp(text3) == [(2, 10, 'PARTIE_PP')]
+    text4 = "•   Eugène né le 23 mars 1997 à Grenoble ( 38"
+    assert get_partie_pp(text4) == [(4, 11, 'PARTIE_PP')]
