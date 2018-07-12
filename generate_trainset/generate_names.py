@@ -75,62 +75,94 @@ def add_tag(l: list, tag: str) -> list:
     return [(tag, item) for item in l]
 
 
-def get_list_of_items_to_search(current_header: dict) -> tuple:
+def get_list_of_partie_pp_from_headers_to_search(current_header: dict):
     """
     Create variations of items to search
     :param current_header: original list from headers
-    :return: expanded list of items -> as tuple (type_name, content)
+    :return: a matcher of string which ignore case
     """
+    matcher = AcoraBuilder("@!#$%")
 
-    (matcher_partie_pm,
-     matcher_partie_pp,
-     matcher_partie_avocat,
-     matcher_partie_president,
-     matcher_partie_conseiller,
-     matcher_partie_greffier) = (AcoraBuilder("@!#$%"),
-                                 AcoraBuilder("@!#$%"),
-                                 AcoraBuilder("@!#$%"),
-                                 AcoraBuilder("@!#$%"),
-                                 AcoraBuilder("@!#$%"),
-                                 AcoraBuilder("@!#$%"))
+    for full_content, short_content in zip(
+            current_header['defendeur_fullname'] + current_header['demandeur_fullname'],
+            current_header['defendeur_hidden'] + current_header['demandeur_hidden']):
+        if short_content is not None:
+            matcher.add(full_content)
+            family_name = get_last_name(full_content)
+            if len(family_name) > 0:
+                matcher.add(family_name)
+
+    return matcher.build(ignore_case=True)
+
+
+def get_list_of_partie_pm_from_headers_to_search(current_header: dict):
+    """
+    Create variations of items to search
+    :param current_header: original list from headers
+    :return: a matcher of string which ignore case
+    """
+    matcher = AcoraBuilder("@!#$%")
 
     for full_content, short_content in zip(
             current_header['defendeur_fullname'] + current_header['demandeur_fullname'],
             current_header['defendeur_hidden'] + current_header['demandeur_hidden']):
         if short_content is None:
-            matcher_partie_pm.add(full_content)
-            no_corp = remove_corp(full_content)
-            if no_corp != full_content:
-                matcher_partie_pm.add(no_corp)
+            matcher.add(full_content)
 
-        else:
-            matcher_partie_pp.add(full_content.upper())
-            matcher_partie_pp.add(full_content)
-            matcher_partie_pp.add(full_content.lower())
-            matcher_partie_pp.add(get_title_case(full_content))
-            family_name = get_last_name(full_content)
-            if len(family_name) > 0:
-                matcher_partie_pp.add(family_name.upper())
-                matcher_partie_pp.add(family_name)
-                matcher_partie_pp.add(family_name.lower())
-                matcher_partie_pp.add(get_title_case(family_name))
+    return matcher.build(ignore_case=True)
 
-    matcher_partie_avocat.update(current_header['avocat'])
-    # TODO AJOUTER DES VARIATIONS SANS LE Me
-    # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    matcher_partie_president.update(current_header['president'])
-    # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    matcher_partie_president.update(current_header['conseiller'])
-    # TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
-    matcher_partie_greffier.update(current_header['greffier'])
-    # TODO AJOUTER VARIATIONS Juste avec le nom de famille
 
-    return (matcher_partie_pm.build(),
-            matcher_partie_pp.build(),
-            matcher_partie_avocat.build(),
-            matcher_partie_president.build(),
-            matcher_partie_conseiller.build(),
-            matcher_partie_greffier.build())
+# TODO AJOUTER DES VARIATIONS SANS LE Me
+# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
+def get_list_of_lawyers_from_headers_to_search(current_header: dict):
+    """
+    Create variations of items to search
+    :param current_header: original list from headers
+    :return: a matcher of string which ignore case
+    """
+    header_content = current_header['avocat']
+    matcher = AcoraBuilder("@!#$%")
+    matcher.update(header_content)
+    return matcher.build(ignore_case=True)
+
+
+# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
+def get_list_of_president_from_headers_to_search(current_header: dict):
+    """
+    Create variations of items to search
+    :param current_header: original list from headers
+    :return: a matcher of string which ignore case
+    """
+    header_content = current_header['president']
+    matcher = AcoraBuilder("@!#$%")
+    matcher.update(header_content)
+    return matcher.build(ignore_case=True)
+
+
+# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
+def get_list_of_conseiller_from_headers_to_search(current_header: dict):
+    """
+    Create variations of items to search
+    :param current_header: original list from headers
+    :return: a matcher of string which ignore case
+    """
+    header_content = current_header['conseiller']
+    matcher = AcoraBuilder("@!#$%")
+    matcher.update(header_content)
+    return matcher.build(ignore_case=True)
+
+
+# TODO AJOUTER VARIATIONS Juste avec le nom de famille (si prenom)
+def get_list_of_clerks_from_headers_to_search(current_header: dict):
+    """
+    Create variations of items to search
+    :param current_header: original list from headers
+    :return: a matcher of string which ignore case
+    """
+    header_content = current_header['greffier']
+    matcher = AcoraBuilder("@!#$%")
+    matcher.update(header_content)
+    return matcher.build(ignore_case=True)
 
 
 find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"

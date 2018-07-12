@@ -16,7 +16,7 @@ DEV_DATA = get_paragraph_from_file(xml_dev_path,
 for case_id, texts, extracted_text, annotations in DEV_DATA:
     doc = nlp(texts)
     entities_spacy = set([ent.text for ent in doc.ents if ent.label_ in ["ADRESSE", "PARTIE_PP"]])
-    if len(entities_spacy) != len(extracted_text):
+    if (len(entities_spacy) != len(extracted_text)) and len(extracted_text) > 0:
         print(extracted_text)
         print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
         print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])

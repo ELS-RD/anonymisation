@@ -3,15 +3,16 @@
 # https://github.com/explosion/spaCy/issues/1530
 
 
-import spacy
 from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches
-from generate_trainset.generate_names import get_list_of_items_to_search, get_company_names, random_case_change, \
+from generate_trainset.generate_names import get_company_names, random_case_change, \
     get_extend_extracted_name_pattern, get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
-    get_addresses
+    get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
+    get_list_of_lawyers_from_headers_to_search, get_list_of_president_from_headers_to_search, \
+    get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -25,21 +26,20 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
-nlp = spacy.blank('fr')
 current_case_paragraphs = list()
 current_case_offsets = list()
 previous_case_id = None
 current_item_header = None
 
-(matcher_partie_pm,
- matcher_partie_pp,
- matcher_partie_avocat,
- matcher_partie_president,
- matcher_partie_conseiller,
- matcher_partie_greffier) = None, None, None, None, None, None
+matcher_partie_pm = None
+matcher_partie_pp = None
+matcher_avocat = None
+matcher_president = None
+matcher_conseiller = None
+matcher_greffier = None
 
 first_name_matcher = get_first_name_matcher()
 doc_annotated = list()
@@ -56,14 +56,12 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                                     type_name_to_keep="PARTIE_PP")
 
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
-                    # current_parag_as_doc = nlp(current_paragraph)
-
                     match_from_headers = get_matches(matcher_partie_pp, current_paragraph, "PARTIE_PP")
                     match_from_headers += get_matches(matcher_partie_pm, current_paragraph, "PARTIE_PM")
-                    match_from_headers += get_matches(matcher_partie_avocat, current_paragraph, "AVOCAT")
-                    match_from_headers += get_matches(matcher_partie_avocat, current_paragraph, "CONSEILLER")
-                    match_from_headers += get_matches(matcher_partie_president, current_paragraph, "PRESIDENT")
-                    match_from_headers += get_matches(matcher_partie_greffier, current_paragraph, "GREFFIER")
+                    match_from_headers += get_matches(matcher_avocat, current_paragraph, "AVOCAT")
+                    match_from_headers += get_matches(matcher_avocat, current_paragraph, "CONSEILLER")
+                    match_from_headers += get_matches(matcher_president, current_paragraph, "PRESIDENT")
+                    match_from_headers += get_matches(matcher_greffier, current_paragraph, "GREFFIER")
 
                     company_names_offset = get_company_names(current_paragraph)
                     full_name_pp = get_extended_extracted_name(text=current_paragraph,
@@ -115,12 +113,12 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             previous_case_id = current_case_id
             current_item_header = case_header_content[current_case_id]
 
-            (matcher_partie_pm,
-             matcher_partie_pp,
-             matcher_partie_avocat,
-             matcher_partie_president,
-             matcher_partie_conseiller,
-             matcher_partie_greffier) = get_list_of_items_to_search(current_item_header)
+            matcher_partie_pm = get_list_of_partie_pm_from_headers_to_search(current_item_header)
+            matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(current_item_header)
+            matcher_avocat = get_list_of_lawyers_from_headers_to_search(current_item_header)
+            matcher_president = get_list_of_president_from_headers_to_search(current_item_header)
+            matcher_conseiller = get_list_of_conseiller_from_headers_to_search(current_item_header)
+            matcher_greffier = get_list_of_clerks_from_headers_to_search(current_item_header)
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)

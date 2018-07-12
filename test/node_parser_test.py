@@ -4,6 +4,7 @@ from generate_trainset.extract_node_values import get_paragraph_with_entities, r
 config_training = get_config_default()
 xml_path = config_training["xml_unittest_file"]
 
+
 def test_xml_parser():
     tree = read_xml(xml_path)
 
