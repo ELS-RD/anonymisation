@@ -30,7 +30,8 @@ org_types = r"société|" \
             r"caisse|" \
             r"hôpital"
 
-remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+", flags=re.IGNORECASE)
+remove_corp_pattern = re.compile(r"\b(" + org_types + r")\b\s+",
+                                 flags=re.IGNORECASE)
 
 
 def remove_corp(original_text: str) -> str:
@@ -249,18 +250,27 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-extract_judge_pattern = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
-                                      "([A-Z]+[[:alnum:]-']+\s*|de\s+)+"
-                                      "(?=, "
-                                      "((M|m)agistrat|"
-                                      "conseill.{0,5}(cour|président|magistrat|chambre|.{0,5}$|, )|"
-                                      "président.+(cour|magistrat|chambre)|"
-                                      "président.{0,5}$|"
-                                      "Conseill.*|"
-                                      "Président.*|"
-                                      "(s|S)ubstitut)"
-                                      ")",
-                                      flags=regex.VERSION1)
+extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
+                                        "([A-Z]+[[:alnum:]-']+\s*|de\s+)+"
+                                        "(?=, "
+                                        "((M|m)agistrat|"
+                                        "conseill.{0,5}(cour|président|magistrat|chambre|.{0,5}$|, )|"
+                                        "président.+(cour|magistrat|chambre)|"
+                                        "président.{0,5}$|"
+                                        "Conseill.*|"
+                                        "Président.*|"
+                                        "(s|S)ubstitut)"
+                                        ")",
+                                        flags=regex.VERSION1)
+
+extract_judge_pattern_2 = regex.compile("(?<=(?i)"
+                                        "^(magistrat|"
+                                        "conseill[[:alnum:]]{1,3}|"
+                                        "président[[:alnum:]]{0,3})\s+"
+                                        ":.{0,20}"                                        
+                                        ")"
+                                        "((?!(?i)madame |monsieur |m. |mme. |m |mme )[A-Z]+[[:alnum:]-']*\s*)+",
+                                        flags=regex.VERSION1)
 
 
 def get_judge_name(text: str) -> list:
@@ -269,7 +279,10 @@ def get_judge_name(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    return [(t.start(), t.end(), "PRESIDENT") for t in extract_judge_pattern.finditer(text)]
+
+    r1 = [(t.start(), t.end(), "PRESIDENT") for t in extract_judge_pattern_1.finditer(text)]
+    r2 = [(t.start(), t.end(), "PRESIDENT") for t in extract_judge_pattern_2.finditer(text)]
+    return r1 + r2
 
 
 extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
@@ -293,7 +306,8 @@ def get_clerk_name(text: str) -> list:
     return result1 + result2
 
 
-extract_lawyer = regex.compile("(?<=(Me|Me.|Ma(i|î)tre)\s)([A-Z]+[[:alnum:]-']+\s*)+", flags=regex.VERSION1)
+extract_lawyer = regex.compile("(?<=(Me|Me.|Ma(i|î)tre)\s)([A-Z]+[[:alnum:]-']+\s*)+",
+                               flags=regex.VERSION1)
 
 
 def get_lawyer_name(text: str) -> list:

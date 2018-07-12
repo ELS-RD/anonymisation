@@ -1,11 +1,9 @@
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.extract_node_values import get_paragraph_from_file
 from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches, \
     get_matches
 from generate_trainset.generate_names import remove_corp, get_last_name, get_title_case, get_company_names, \
     get_extended_extracted_name, random_case_change, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
-    get_lawyer_name, get_addresses, get_list_of_partie_pm_from_headers_to_search, \
-    get_list_of_partie_pp_from_headers_to_search, get_list_of_lawyers_from_headers_to_search, \
+    get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, get_list_of_lawyers_from_headers_to_search, \
     get_list_of_clerks_from_headers_to_search
 from resources.config_provider import get_config_default
 
@@ -79,6 +77,10 @@ def test_extract_judge_names():
     assert get_judge_name(text15) == [(0, 15, 'PRESIDENT')]
     text16 = "2016, Monsieur Hubert de BECDELIEVRE, président de chambre"
     assert get_judge_name(text16) == [(15, 36, 'PRESIDENT')]
+    text17 = "Conseiller : Mélanie FILIATREAU"
+    assert get_judge_name(text17) == [(13, 31, 'PRESIDENT')]
+    text18 = "Présidente : Mme Mélanie FILIATREAU"
+    assert get_judge_name(text18) == [(17, 35, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():
@@ -116,7 +118,7 @@ def test_get_phrase_matcher():
     assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
 
 
-def test_get_adress():
+def test_get_address():
     text1 = "avant 130-140, rue Victor HUGO    - 123456 Saint-Etienne après"
     assert get_addresses(text1) == [(5, len(text1) - 5, 'ADRESSE')]
     text2 = "avant 13 rue Ernest Renan après"
@@ -153,7 +155,6 @@ def test_match_patterns():
     header_content = header_content_all_cases[case_id]
     matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(header_content)
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
-
     assert get_matches(matcher_partie_pp, text1, "PARTIE_PP") == [(6, 22, 'PARTIE_PP'),
                                                                   (16, 22, 'PARTIE_PP'),
                                                                   (64, 77, 'PARTIE_PP')]

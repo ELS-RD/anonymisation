@@ -63,4 +63,5 @@ def get_first_name_matcher():
 
 def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
     results = get_matches(matcher, text, "PARTIE_PP")
+    # names include a space so we fix the point by removing 1 to the offset
     return [(start, end -1, type_name)for start, end, type_name in results]

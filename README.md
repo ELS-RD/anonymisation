@@ -62,7 +62,6 @@ Configuration is done through **resources/config.ini** file
 - search for phone number, social security number, etc. 
 - train with all matches (?)
 - build a dict of common PM (> 100 occurences) and match everywhere against this matcher
-- replace spacy matcher by generic TRI function (https://github.com/pytries/marisa-trie)
 - ajout Dr et Prof dans les recherches
 - lister les offsets qui contiennent une virgule
 - ajouter les rapporteurs
@@ -88,7 +87,3 @@ pattern Prénom (né) le XX/YY
 •   Eugène né le 23 mars 1997 à Grenoble ( 38
 - Vanessa née le 1er octobre 1987 a TOULON (Var),
 
-
-
-
-Conseiller : Mélanie FILIATREAU
