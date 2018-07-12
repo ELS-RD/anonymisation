@@ -20,5 +20,7 @@ for case_id, texts, extracted_text, annotations in DEV_DATA:
         print(extracted_text)
         print('Entities', [(ent.text, ent.label_) for ent in doc.ents])
         print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])
-    # if len(entities_spacy) == 0 and any(word.isupper() and len(word) > 3 for word in texts.split()) and not texts.isupper():
+    # if len(entities_spacy) == 0 and \
+    #         any(word.isupper() and
+    #             len(word) > 3 for word in texts.split()) and not texts.isupper():
     #     print("[EMPTY LINE]", texts)

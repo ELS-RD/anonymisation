@@ -51,15 +51,15 @@ def parse_xml_header(path: str):
             numero.append(node.text)
         if node.tag == "Date":
             date.append(node.text)
-        if ("Defendeurs" in tree.getpath(node)):
-            if (node.tag == "Texte"):
+        if "Defendeurs" in tree.getpath(node):
+            if node.tag == "Texte":
                 defendeur_full.append(node.text)
-            if (node.tag == "TexteAnonymise"):
+            if node.tag == "TexteAnonymise":
                 defendeur_hidden.append(node.text)
-        if ("Demandeurs" in tree.getpath(node)):
-            if (node.tag == "Texte"):
+        if "Demandeurs" in tree.getpath(node):
+            if node.tag == "Texte":
                 demandeur_full.append(node.text)
-            if (node.tag == "TexteAnonymise"):
+            if node.tag == "TexteAnonymise":
                 demandeur_hidden.append(node.text)
         if node.tag == "Greffier":
             greffier.append(node.text)

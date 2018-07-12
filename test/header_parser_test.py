@@ -1,6 +1,5 @@
-from resources.config_provider import get_config_default
 from generate_trainset.extract_header_values import parse_xml_header
-import os
+from resources.config_provider import get_config_default
 
 
 def test_header_parser():

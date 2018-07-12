@@ -23,6 +23,8 @@ def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora.
     :param current_header: original list from headers
     :return: a matcher of string which ignore case
     """
+    # this way of init assure that the matcher doesn't expect binary data
+    # this may happen if we load empty arrays through update function for instance
     matcher = AcoraBuilder("@!#$%")
 
     for full_content, short_content in zip(
@@ -54,7 +56,6 @@ def get_list_of_partie_pm_from_headers_to_search(current_header: dict) -> acora.
     return matcher.build(ignore_case=True)
 
 
-# TODO AJOUTER DES VARIATIONS SANS LE Me
 def get_list_of_lawyers_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
@@ -135,12 +136,6 @@ def get_company_names(text: str) -> list:
     :return: a list of offsets
     """
     return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
-
-
-def get_list_of_pp(paragraphs: list, offsets: list) -> list:
-    extracted_names = [text[start_char: end_char] for (text, (start_char, end_char, type_name)) in
-                       zip(paragraphs, offsets) if type_name == "PARTIE_PP"]
-    return list(set(extracted_names))
 
 
 translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space

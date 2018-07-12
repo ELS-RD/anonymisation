@@ -58,7 +58,6 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé)
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- randomly change case to title case
 - search for all first last names discovered with other patterns
 - post process offsets to remove space at the begining and the end
 - post process offsets to detect offset starting or ending in the middle of a word

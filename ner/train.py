@@ -91,6 +91,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     if len(all_matches) > 0:
 
                         normalized_offsets = normalize_offsets(all_matches)
+
+                        # TODO add new offsets here
+
                         current_paragraph_case_updated = random_case_change(text=current_paragraph,
                                                                             offsets=normalized_offsets,
                                                                             rate=5)
