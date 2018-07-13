@@ -206,6 +206,8 @@ def test_match_partie_pp_regex():
     assert get_partie_pp(text5) == []
     text6 = "Je vois les consorts Toto BOBO au loin."
     assert get_partie_pp(text6) == [(21, 30, 'PARTIE_PP')]
+    text7 = "Ne serait-ce pas le Docteur Toto BOBO au loin."
+    assert get_partie_pp(text7) == [(28, 37, 'PARTIE_PP')]
 
 
 def test_match_sub_pattern():

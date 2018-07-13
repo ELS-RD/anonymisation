@@ -22,6 +22,15 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
     ner = nlp.create_pipe('ner')
     nlp.add_pipe(ner, last=True)
 
+    # https://github.com/explosion/spaCy/issues/1032
+    def prevent_sentence_boundary_detection(doc):
+        for token in doc:
+            # This will entirely disable spaCy's sentence detection
+            token.is_sent_start = False
+        return doc
+
+    nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', before='ner')
+
     # add labels
     for token_type in token_types:
         ner.add_label(token_type)

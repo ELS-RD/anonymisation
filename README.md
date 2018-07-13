@@ -107,3 +107,26 @@ Tokens [('3ème', '', 2), ('étage', '', 2), ('-', '', 2), ('Appart', '', 2), ('
 Entities []
 Tokens [('19C', '', 2), ('Rue', '', 2), ('de', '', 2), ('Brest', '', 2), ('-', '', 2), ('Appart', '', 2), ('5041', '', 2), ('-', '', 2), ('35000', '', 2), ('RENNES', '', 2)]
 ['MONTESINOS', 'LARIOS']
+
+
+
+('société AUDIBERT et de la société AMT', 'PARTIE_PM')
+
+
+['Castaing']
+Entities []
+Tokens [('-', '', 2), ('contre', '', 2), ("l'", '', 2), ('architecte', '', 2), ('Castaing', '', 2), ("d'", '', 2), ('une', '', 2), ('action', '', 2), ('en', '', 2), ('paiement', '', 2), ('de', '', 2), ('diverses', '', 2), ('sommes', '', 2)]
+
+
+['Kylian', 'DELAUNAY']
+Entities [('Isabelle DELAUNAY', 'PARTIE_PP')]
+Tokens [('-', '', 2), ('fixé', '', 2), ('la', '', 2), ('résidence', '', 2), ('habituelle', '', 2), ('des', '', 2), ('enfants', '', 2), ('Maryline', '', 2), (',', '', 2), ('Kylian', '', 2), ('et', '', 2), ('Katty', '', 2), ('au', '', 2), ('domicile', '', 2), ('de', '', 2), ('Madame', '', 2), ('Isabelle', 'PARTIE_PP', 3), ('DELAUNAY', 'PARTIE_PP', 1), (',', '', 2)]
+['CHARBONNIER', 'DELAUNAY', 'Kylian']
+
+
+Recherche dictionnaire sans espace plusieurs match ?
+Match prénom + dictionnaire
+
+penser a etendre tous les noms trouves
+
+meilleur selection des difference entre Themis et NER

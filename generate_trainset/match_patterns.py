@@ -278,7 +278,8 @@ def get_addresses(text: str) -> list:
 extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
                                             flags=regex.VERSION1)
 
-extract_partie_pp_pattern_2 = regex.compile("(?<=consorts\s+)([A-Z][[:alnum:]-]*(\s+[A-Z][[:alnum:]-]*)+)",
+extract_partie_pp_pattern_2 = regex.compile("(?<=((?i)consorts|époux|docteur|dr(\.)?|professeur|prof(\.)?)\s+)"
+                                            "([A-Z][[:alnum:]-]*(\s+[A-Z][[:alnum:]-]*)+)",
                                             flags=regex.VERSION1)
 
 
