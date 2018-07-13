@@ -55,7 +55,6 @@ def test_extend_names():
                                                                                   (48, 55, 'PARTIE_PP')]]
 
 
-
 def test_random_case_change():
     text = "La Banque est fermée"
     offsets = [(3, 9, "PARTIE_PP")]
@@ -223,9 +222,9 @@ def test_match_partie_pp_regex():
 def test_match_sub_pattern():
     texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
     offsets = [[(13, 28, "PARTIE_PP")], [], []]
-    assert get_all_name_variation(texts, offsets) == [[(13, 20, 'PARTIE_PP'),
-                                                       (13, 28, 'PARTIE_PP'),
-                                                       (21, 28, 'PARTIE_PP'),
-                                                       (13, 28, 'PARTIE_PP')],
-                                                      [(0, 7, 'PARTIE_PP')],
-                                                      [(12, 19, 'PARTIE_PP')]]
+    assert get_all_name_variation(texts, offsets, threshold_span_size=4) == [[(13, 20, 'PARTIE_PP'),
+                                                                              (13, 28, 'PARTIE_PP'),
+                                                                              (21, 28, 'PARTIE_PP'),
+                                                                              (13, 28, 'PARTIE_PP')],
+                                                                             [(0, 7, 'PARTIE_PP')],
+                                                                             [(12, 19, 'PARTIE_PP')]]

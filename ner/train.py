@@ -28,7 +28,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -106,27 +106,34 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                         to_delete_no_offset_sentences_with_risk.append(current_paragraph)
 
             if len(last_document_offsets) > 0:
-                last_doc_new_offsets = get_all_name_variation(last_document_texts, last_document_offsets)
+                last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
+                                                                  offsets=last_document_offsets,
+                                                                  threshold_span_size=4)
 
-                last_doc_extended_pp = get_extended_extracted_name_multiple_texts(texts=last_document_texts,
-                                                                                  offsets=last_doc_new_offsets,
-                                                                                  type_name="PARTIE_PP")
+                last_doc_with_extended_pp_offsets = get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_offset_with_var,
+                    type_name="PARTIE_PP")
 
-                last_doc_new_offsets_v2 = get_all_name_variation(last_document_texts, last_doc_extended_pp)
+                last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
+                                                                          offsets=last_doc_with_extended_pp_offsets,
+                                                                          threshold_span_size=4)
 
-                last_doc_new_offsets_normalized = [normalize_offsets(off) for off in last_doc_new_offsets_v2]
+                last_doc_offsets_no_space = [remove_offset_space(text, off) for text, off in
+                                             zip(last_document_texts,
+                                                 last_doc_with_ext_offset_and_var)]
 
-                last_doc_new_offsets_no_space = [remove_offset_space(text, off) for text, off in
-                                                 zip(last_document_texts,
-                                                     last_doc_new_offsets_normalized)]
+                last_doc_offsets_normalized = [normalize_offsets(off) for off in last_doc_offsets_no_space]
 
-                last_doc_case_updated = [random_case_change(text=text,
-                                                            offsets=off,
-                                                            rate=20) for text, off in zip(last_document_texts,
-                                                                                          last_doc_new_offsets_no_space)]
+                last_doc_txt_case_updated = [random_case_change(text=text,
+                                                                offsets=off,
+                                                                rate=20) for text, off in zip(last_document_texts,
+                                                                                              last_doc_offsets_normalized)]
 
-                [doc_annotated.append((txt, {'entities': off})) for txt, off in zip(last_doc_case_updated,
-                                                                                    last_doc_new_offsets_no_space)]
+                # , "case_id": previous_case_id
+                [doc_annotated.append((txt, {'entities': off})) for txt, off in
+                 zip(last_doc_txt_case_updated,
+                     last_doc_offsets_normalized)]
 
                 last_document_texts.clear()
                 last_document_offsets.clear()
@@ -153,9 +160,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
 for risk_sentence in to_delete_no_offset_sentences_with_risk:
     print(risk_sentence)
 
-for text, annot in doc_annotated:
-    if len(annot['entities']) > 0:
-        for start, end, type_name in annot['entities']:
+for text, tags in doc_annotated:
+    if len(tags['entities']) > 0:
+        for start, end, type_name in tags['entities']:
             print(start, end, text[start:end], type_name, sep="|")
 
 print("Number of tags:", sum([len(i[1]['entities']) for i in doc_annotated]))

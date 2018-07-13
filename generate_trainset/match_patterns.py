@@ -296,11 +296,12 @@ def get_partie_pp(text: str) -> list:
     return result1 + result2
 
 
-def get_all_name_variation(texts: list, offsets: list) -> list:
+def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int) -> list:
     """
     Search for any variation of known entities
     :param texts: original text
     :param offsets: discovered offsets
+    :param threshold_span_size: minimum size of a name (first / last) to be added to the list
     :return: discovered offsets
     """
     pp_patterns = AcoraBuilder("!@#$%%^&*")
@@ -313,9 +314,9 @@ def get_all_name_variation(texts: list, offsets: list) -> list:
                 if type_name == "PARTIE_PP":
                     pp_patterns.add(text_span)
                     first_name, last_name = get_first_last_name(text_span)
-                    if len(first_name) > 0:
+                    if len(first_name) > threshold_span_size:
                         pp_patterns.add(first_name)
-                    if len(last_name) > 0:
+                    if len(last_name) > threshold_span_size:
                         pp_patterns.add(last_name)
 
                 if type_name == "PARTIE_PM":
@@ -327,6 +328,8 @@ def get_all_name_variation(texts: list, offsets: list) -> list:
     results = list()
 
     for text, offset in zip(texts, offsets):
-        results.append(get_matches(pp_matcher, text, "PARTIE_PP") + get_matches(pm_matcher, text, "PARTIE_PM") + offset)
+        results.append(get_matches(pp_matcher, text, "PARTIE_PP") +
+                       get_matches(pm_matcher, text, "PARTIE_PM") +
+                       offset)
 
     return results
