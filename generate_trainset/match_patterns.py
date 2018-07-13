@@ -8,16 +8,6 @@ from generate_trainset.first_name_dictionary import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name
 
 
-def add_tag(l: list, tag: str) -> list:
-    """
-    Build a tag item tuple
-    :param l: list of items
-    :param tag: tag to add
-    :return: a list of tuples
-    """
-    return [(tag, item) for item in l]
-
-
 def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search

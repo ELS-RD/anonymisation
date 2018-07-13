@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches
+from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches, get_first_name_matches
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
@@ -28,7 +28,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -74,8 +74,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
-                    # TODO to reactivate when ready
-                    # first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
+
+                    first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
                     addresses = get_addresses(current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
 
@@ -87,10 +87,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    clerk_names +
                                    lawyer_names +
                                    partie_pp +
+                                   first_name_matches +
                                    addresses)
-
-                    # if (len(first_name_matches) > 0) and (len(all_matches) == 0):
-                    #     print(current_paragraph)
 
                     if len(all_matches) > 0:
 

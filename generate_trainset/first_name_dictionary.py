@@ -32,6 +32,7 @@ def get_first_name_dict() -> set:
                 firs_name.add(get_title_case(text))
 
     firs_name.remove("Elle ")
+    firs_name.remove("France ")
     firs_name.remove("Mercedes ")
     return firs_name
 
@@ -73,11 +74,16 @@ def get_first_name_matcher():
 
 def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
     """
-    Find match of first name in a text
+    Find match of first name in a text if the word enfant is present
     :param matcher: Dictionary based matcher
     :param text: original text
     :return: list of offsets
     """
-    results = get_matches(matcher, text, "PARTIE_PP")
+    offsets = get_matches(matcher, text, "PARTIE_PP")
     # names include a space so we fix the point by removing 1 to the offset
-    return [(start, end - 1, type_name)for start, end, type_name in results]
+    results = [(start, end - 1, type_name)for start, end, type_name in offsets]
+
+    if "enfant" in text:
+        return results
+    else:
+        return []

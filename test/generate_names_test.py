@@ -219,4 +219,3 @@ def test_match_sub_pattern():
                                                        (13, 28, 'PARTIE_PP')],
                                                       [(0, 7, 'PARTIE_PP')],
                                                       [(12, 19, 'PARTIE_PP')]]
-

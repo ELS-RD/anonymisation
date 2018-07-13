@@ -109,6 +109,13 @@ Tokens [('19C', '', 2), ('Rue', '', 2), ('de', '', 2), ('Brest', '', 2), ('-', '
 ['MONTESINOS', 'LARIOS']
 
 
+Approche liste métiers
+retirer président, conseiller, greffier avocat
+METIER (Monsieur) XXX
+Monsieur XXX, METIER
+http://popoblog.o.p.f.unblog.fr/files/2009/12/mtiers.txt
+https://www.data.gouv.fr/fr/datasets/repertoire-operationnel-des-metiers-et-des-emplois-rome/#_
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjp7qHV2pvcAhVMvRQKHVQHCB4QFggoMAA&url=https%3A%2F%2Fwww.federation-auto-entrepreneur.fr%2Fsites%2Fdefault%2Ffiles%2Frevue_metiers.xls&usg=AOvVaw0ncXlEx-4Eo6l5kjkwxdcM
 
 ('société AUDIBERT et de la société AMT', 'PARTIE_PM')
 
@@ -118,15 +125,4 @@ Entities []
 Tokens [('-', '', 2), ('contre', '', 2), ("l'", '', 2), ('architecte', '', 2), ('Castaing', '', 2), ("d'", '', 2), ('une', '', 2), ('action', '', 2), ('en', '', 2), ('paiement', '', 2), ('de', '', 2), ('diverses', '', 2), ('sommes', '', 2)]
 
 
-['Kylian', 'DELAUNAY']
-Entities [('Isabelle DELAUNAY', 'PARTIE_PP')]
-Tokens [('-', '', 2), ('fixé', '', 2), ('la', '', 2), ('résidence', '', 2), ('habituelle', '', 2), ('des', '', 2), ('enfants', '', 2), ('Maryline', '', 2), (',', '', 2), ('Kylian', '', 2), ('et', '', 2), ('Katty', '', 2), ('au', '', 2), ('domicile', '', 2), ('de', '', 2), ('Madame', '', 2), ('Isabelle', 'PARTIE_PP', 3), ('DELAUNAY', 'PARTIE_PP', 1), (',', '', 2)]
-['CHARBONNIER', 'DELAUNAY', 'Kylian']
-
-
-Recherche dictionnaire sans espace plusieurs match ?
-Match prénom + dictionnaire
-
 penser a etendre tous les noms trouves
-
-meilleur selection des difference entre Themis et NER
