@@ -61,7 +61,6 @@ Configuration is done through **resources/config.ini** file
 - randomly remove M Mme Mlle ...
 - post process offsets to detect offset starting or ending in the middle of a word
 - post process to remove M Mme, etc. in offsets
-- post process to remove spaces in offsets
 
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 

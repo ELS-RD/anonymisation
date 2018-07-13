@@ -165,7 +165,7 @@ def get_extend_extracted_name_pattern(texts: list, offsets: list, type_name_to_k
                          flags=regex.VERSION1)
 
 
-def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name) -> list:
+def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name: str) -> list:
     """
     Apply the generated regex pattern to current paragraph text
     :param text: current original text
@@ -174,6 +174,18 @@ def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name) -> l
     :return: offset list
     """
     return [(t.start(), t.end(), type_name) for t in pattern.finditer(text)]
+
+
+def get_extended_extracted_name_multiple_texts(texts: list, offsets: list, type_name: str) -> list:
+    pattern_to_apply = get_extend_extracted_name_pattern(texts=texts,
+                                                         offsets=offsets,
+                                                         type_name_to_keep=type_name)
+    result = list()
+    for offset, text in zip(offsets, texts):
+        current = get_extended_extracted_name(text=text, pattern=pattern_to_apply, type_name=type_name)
+        result.append(current + offset)
+
+    return result
 
 
 extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"

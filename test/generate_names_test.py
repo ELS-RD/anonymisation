@@ -5,7 +5,8 @@ from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, \
-    get_list_of_clerks_from_headers_to_search, get_partie_pp, get_all_name_variation
+    get_list_of_clerks_from_headers_to_search, get_partie_pp, get_all_name_variation, \
+    get_extended_extracted_name_multiple_texts
 from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
     get_first_last_name
 from resources.config_provider import get_config_default
@@ -42,9 +43,17 @@ def test_extend_names():
     text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
     texts = [text]
     offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
+    offset_expected_result = [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
     pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
-    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == [(4, 18, 'PARTIE_PP'),
-                                                                                              (28, 43, 'PARTIE_PP')]
+    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == offset_expected_result
+
+    assert get_extended_extracted_name_multiple_texts(texts=texts,
+                                                      offsets=offsets,
+                                                      type_name='PARTIE_PP') == [[(4, 18, 'PARTIE_PP'),
+                                                                                  (28, 43, 'PARTIE_PP'),
+                                                                                  (11, 18, 'PARTIE_PP'),
+                                                                                  (48, 55, 'PARTIE_PP')]]
+
 
 
 def test_random_case_change():
