@@ -123,13 +123,14 @@ def test_extract_lawyer():
 
 def test_get_first_name_dict():
     first_name_dict = get_first_name_dict()
-    assert len(first_name_dict) == 12469
+    assert len(first_name_dict) == 12468
     assert "Michaël " in first_name_dict
     assert "Michaël" not in first_name_dict
 
 
 def test_get_phrase_matcher():
-    text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur."
+    text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur, " \
+           "mais où sont donc les enfants ?"
     first_name_matcher = get_first_name_matcher()
     assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
 

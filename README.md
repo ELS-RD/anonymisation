@@ -64,7 +64,7 @@ Configuration is done through **resources/config.ini** file
 - post process to remove M Mme, etc. in offsets
 - post process to remove spaces in offsets
 
-- implement prediction with multi thread (pipe)
+- implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
 - train with all matches (?)
 - build a dict of common PM (> 100 occurences) and match everywhere against this matcher
