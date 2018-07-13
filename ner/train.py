@@ -15,7 +15,7 @@ from generate_trainset.match_patterns import get_company_names, get_extend_extra
     get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp, \
     get_all_name_variation
 from generate_trainset.modify_strings import random_case_change
-from generate_trainset.normalize_offset import normalize_offsets
+from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 
@@ -93,12 +93,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     if len(all_matches) > 0:
 
                         normalized_offsets = normalize_offsets(all_matches)
-
-                        current_paragraph_case_updated = random_case_change(text=current_paragraph,
-                                                                            offsets=normalized_offsets,
-                                                                            rate=20)
-
-                        last_document_texts.append(current_paragraph_case_updated)
+                        last_document_texts.append(current_paragraph)
                         last_document_offsets.append(normalized_offsets)
 
                     elif current_paragraph.isupper() and len(current_paragraph) > 10:
@@ -113,8 +108,18 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             if len(last_document_offsets) > 0:
                 last_doc_new_offsets = get_all_name_variation(last_document_texts, last_document_offsets)
                 last_doc_new_offsets_normalized = [normalize_offsets(off) for off in last_doc_new_offsets]
-                [doc_annotated.append((txt, {'entities': off})) for txt, off in zip(last_document_texts,
-                                                                                    last_doc_new_offsets_normalized)]
+
+                last_doc_new_offsets_no_space = [remove_offset_space(text, off) for text, off in
+                                                 zip(last_document_texts,
+                                                     last_doc_new_offsets)]
+
+                last_doc_case_updated = [random_case_change(text=text,
+                                                            offsets=off,
+                                                            rate=20) for text, off in zip(last_document_texts,
+                                                                                          last_doc_new_offsets)]
+
+                [doc_annotated.append((txt, {'entities': off})) for txt, off in zip(last_doc_case_updated,
+                                                                                    last_doc_new_offsets_no_space)]
 
                 last_document_texts.clear()
                 last_document_offsets.clear()

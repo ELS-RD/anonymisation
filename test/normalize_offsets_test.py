@@ -1,4 +1,4 @@
-from generate_trainset.normalize_offset import normalize_offsets
+from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space
 
 
 def test_normalize_offsets():
@@ -20,3 +20,13 @@ def test_normalize_offsets():
     assert normalize_offsets(data8) == []
     data9 = [(1, 3, "PARTIE_PP")]
     assert normalize_offsets(data9) == []
+
+
+def test_remove_spaces():
+    text = "Je suis ici et je programme."
+    offset = [(3, 8, "TEST")]
+    span_original = text[offset[0][0]:offset[0][1]]
+    assert span_original == "suis "
+    new_offset = remove_offset_space(text, offset)
+    span_new = text[new_offset[0][0]:new_offset[0][1]]
+    assert span_new == span_original.strip()

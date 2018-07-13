@@ -59,7 +59,6 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- post process offsets to remove space at the begining and the end
 - post process offsets to detect offset starting or ending in the middle of a word
 - post process to remove M Mme, etc. in offsets
 - post process to remove spaces in offsets
