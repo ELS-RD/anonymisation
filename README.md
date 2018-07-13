@@ -56,13 +56,11 @@ Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
-- ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé)
+- ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- search for all first last names discovered with other patterns
 - post process offsets to remove space at the begining and the end
 - post process offsets to detect offset starting or ending in the middle of a word
-- change first_name_dictionary and comment its functions
 - post process to remove M Mme, etc. in offsets
 - post process to remove spaces in offsets
 
@@ -74,3 +72,38 @@ Configuration is done through **resources/config.ini** file
 - lister les offsets qui contiennent une virgule
 - ajouter les rapporteurs
 - ajouter les experts (qui font aussi un rapport)
+
+
+
+Vincent VERGNE, Président
+retirer le de/le... a la fin des noms
+
+
+[('Bâtiment', '', 2), ('G', '', 2), (',', '', 2), ('Porte', '', 2), ('1', '', 2), ('B', '', 2), (',', '', 2), ('appartement', '', 2), ('142', '', 2)]
+
+Entities [('société ESPACE LUMIERE ET SOIN et Mme GUERIN', 'PARTIE_PM')]
+Tokens [('Vu', '', 2), ('le', '', 2), ('contredit', '', 2), ('formé', '', 2), ('le', '', 2), ('13', '', 2), ('novembre', '', 2), ('2014', '', 2), ('par', '', 2), ('la', '', 2), ('société', 'PARTIE_PM', 3), ('ESPACE', 'PARTIE_PM', 1), ('LUMIERE', 'PARTIE_PM', 1), ('ET', 'PARTIE_PM', 1), ('SOIN', 'PARTIE_PM', 1), ('et', 'PARTIE_PM', 1), ('Mme', 'PARTIE_PM', 1), ('GUERIN', 'PARTIE_PM', 1), (',', '', 2)]
+
+
+['MARTIN', 'STUTZ', 'MARTIN', 'MARTIN', 'VIVIE', 'STUTZ']
+Entities [('Patrice MARTIN', 'PARTIE_PP'), ('scp Odile STUTZ', 'PARTIE_PM'), ('Patrice MARTIN', 'PARTIE_PP'), ('Patrice MARTIN', 'PARTIE_PP'), ('Bénédicte DE VIVIE DE REGIE', 'PARTIE_PP'), ('Laurent CALBO', 'PARTIE_PP'), ('scp Odile STUTZ et la scp GRANIER DAVID', 'PARTIE_PM')]
+Tokens [('Attendu', '', 2), ('que', '', 2), ('par', '', 2), ('jugement', '', 2), ('du', '', 2), ('10', '', 2), ('octobre', '', 2), ('2014', '', 2), (',', '', 2), ('le', '', 2), ('Tribunal', '', 2), ('de', '', 2), ('Grande', '', 2), ('Instance', '', 2), ('de', '', 2), ('MARMANDE', '', 2), ('a', '', 2), ('constaté', '', 2), ("l'", '', 2), ('état', '', 2), ('de', '', 2), ('cessation', '', 2), ('des', '', 2), ('paiements', '', 2), ('de', '', 2), ('Patrice', 'PARTIE_PP', 3), ('MARTIN', 'PARTIE_PP', 1), (',', '', 2), ('fixé', '', 2), ('la', '', 2), ('date', '', 2), ('de', '', 2), ('cessation', '', 2), ('des', '', 2), ('paiements', '', 2), ('à', '', 2), ('ce', '', 2), ('jour', '', 2), (',', '', 2), ('fait', '', 2), ('droit', '', 2), ('à', '', 2), ('la', '', 2), ('demande', '', 2), ('de', '', 2), ('résolution', '', 2), ('du', '', 2), ('plan', '', 2), ('de', '', 2), ('la', '', 2), ('scp', 'PARTIE_PM', 3), ('Odile', 'PARTIE_PM', 1), ('STUTZ', 'PARTIE_PM', 1), ('pour', '', 2), ('défaut', '', 2), ('de', '', 2), ('paiement', '', 2), ('des', '', 2), ('dividendes', '', 2), ('par', '', 2), ('Patrice', 'PARTIE_PP', 3), ('MARTIN', 'PARTIE_PP', 1), (',', '', 2), ('prononcé', '', 2), ("l'", '', 2), ('ouverture', '', 2), ('de', '', 2), ('la', '', 2), ('liquidation', '', 2), ('judiciaire', '', 2), ('des', '', 2), ('biens', '', 2), ('de', '', 2), ('Patrice', 'PARTIE_PP', 3), ('MARTIN', 'PARTIE_PP', 1), (',', '', 2), ('désigné', '', 2), ('Bénédicte', 'PARTIE_PP', 3), ('DE', 'PARTIE_PP', 1), ('VIVIE', 'PARTIE_PP', 1), ('DE', 'PARTIE_PP', 1), ('REGIE', 'PARTIE_PP', 1), (',', '', 2), ('vice', '', 2), ('présidente', '', 2), (',', '', 2), ('en', '', 2), ('qualité', '', 2), ('de', '', 2), ('juge', '', 2), ('commissaire', '', 2), ('titulaire', '', 2), ('et', '', 2), ('Laurent', 'PARTIE_PP', 3), ('CALBO', 'PARTIE_PP', 1), (',', '', 2), ('juge', '', 2), (',', '', 2), ('en', '', 2), ('qualité', '', 2), ('de', '', 2), ('juge', '', 2), ('commissaire', '', 2), ('suppléant', '', 2), (',', '', 2), ('désigné', '', 2), ('en', '', 2), ('qualité', '', 2), ('de', '', 2), ('mandataire', '', 2), ('judiciaire', '', 2), ('à', '', 2), ('la', '', 2), ('liquidation', '', 2), ('la', '', 2), ('scp', 'PARTIE_PM', 3), ('Odile', 'PARTIE_PM', 1), ('STUTZ', 'PARTIE_PM', 1), ('et', 'PARTIE_PM', 1), ('la', 'PARTIE_PM', 1), ('scp', 'PARTIE_PM', 1), ('GRANIER', 'PARTIE_PM', 1), ('DAVID', 'PARTIE_PM', 1), (',', '', 2), ('huissier', '', 2), ('de', '', 2), ('justice', '', 2), (',', '', 2), ('aux', '', 2), ('fins', '', 2), ('de', '', 2), ('réaliser', '', 2), ("l'", '', 2), ('inventaire', '', 2), ('prévu', '', 2), ('aux', '', 2), ('articles', '', 2), ('L', '', 2), ('622', '', 2), ('-', '', 2), ('6', '', 2), ('et', '', 2), ('R', '', 2), ('622', '', 2), ('-', '', 2), ('4', '', 2), ('du', '', 2), ('code', '', 2), ('de', '', 2), ('commerce', '', 2), ('.', '', 2)]
+['MARTIN', 'STUTZ']
+
+
+['DUTEL']
+Entities []
+Tokens [('I.', '', 2), ('SUR', '', 2), ('LA', '', 2), ('DEMANDE', '', 2), ('PRINCIPALE', '', 2), ('DE', '', 2), ('JOSIANE', '', 2), ('DUTEL', '', 2)]
+
+['BENDJEBOUR']
+Entities []
+Tokens [('en', '', 2), ('qualité', '', 2), ('de', '', 2), ('représentante', '', 2), ('légale', '', 2), ('de', '', 2), ('BENDJEBOUR', '', 2), ('Riad', '', 2), (',', '', 2), ('né', '', 2), ('le', '', 2), ('15/08/1997', '', 2), ('à', '', 2), ('TOURS', '', 2), ('(', '', 2), ('37', '', 2), (')', '', 2)]
+
+
+['77400 SAINT THIBAULT DES VIGNES']
+Entities []
+Tokens [('3ème', '', 2), ('étage', '', 2), ('-', '', 2), ('Appart', '', 2), ('.', '', 2), ('38', '', 2), ('-', '', 2), ('77400', '', 2), ('SAINT', '', 2), ('THIBAULT', '', 2), ('DES', '', 2), ('VIGNES', '', 2)]
+['35000 RENNES']
+Entities []
+Tokens [('19C', '', 2), ('Rue', '', 2), ('de', '', 2), ('Brest', '', 2), ('-', '', 2), ('Appart', '', 2), ('5041', '', 2), ('-', '', 2), ('35000', '', 2), ('RENNES', '', 2)]
+['MONTESINOS', 'LARIOS']

@@ -5,7 +5,7 @@ import regex
 from acora import AcoraBuilder
 
 from generate_trainset.first_name_dictionary import get_matches
-from generate_trainset.modify_strings import get_last_name, org_types, get_first_last_name
+from generate_trainset.modify_strings import org_types, get_first_last_name
 
 
 def add_tag(l: list, tag: str) -> list:
@@ -33,9 +33,11 @@ def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora.
             current_header['defendeur_hidden'] + current_header['demandeur_hidden']):
         if short_content is not None:
             matcher.add(full_content)
-            family_name = get_last_name(full_content)
-            if len(family_name) > 0:
-                matcher.add(family_name)
+            first_name, last_name = get_first_last_name(full_content)
+            if len(first_name) > 0:
+                matcher.add(first_name)
+            if len(last_name) > 0:
+                matcher.add(last_name)
 
     return matcher.build(ignore_case=True)
 
@@ -67,9 +69,11 @@ def get_list_of_lawyers_from_headers_to_search(current_header: dict) -> acora._c
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
     for content in header_content:
-        family_name = get_last_name(content)
-        if len(family_name) > 0:
-            matcher.add(family_name)
+        first_name, last_name = get_first_last_name(content)
+        if len(first_name) > 0:
+            matcher.add(first_name)
+        if len(last_name) > 0:
+            matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
@@ -83,9 +87,11 @@ def get_list_of_president_from_headers_to_search(current_header: dict) -> acora.
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
     for content in header_content:
-        family_name = get_last_name(content)
-        if len(family_name) > 0:
-            matcher.add(family_name)
+        first_name, last_name = get_first_last_name(content)
+        if len(first_name) > 0:
+            matcher.add(first_name)
+        if len(last_name) > 0:
+            matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
@@ -99,9 +105,11 @@ def get_list_of_conseiller_from_headers_to_search(current_header: dict) -> acora
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
     for content in header_content:
-        family_name = get_last_name(content)
-        if len(family_name) > 0:
-            matcher.add(family_name)
+        first_name, last_name = get_first_last_name(content)
+        if len(first_name) > 0:
+            matcher.add(first_name)
+        if len(last_name) > 0:
+            matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
@@ -115,9 +123,11 @@ def get_list_of_clerks_from_headers_to_search(current_header: dict) -> acora._ca
     matcher = AcoraBuilder("@!#$%")
     matcher.update(header_content)
     for content in header_content:
-        family_name = get_last_name(content)
-        if len(family_name) > 0:
-            matcher.add(family_name)
+        first_name, last_name = get_first_last_name(content)
+        if len(first_name) > 0:
+            matcher.add(first_name)
+        if len(last_name) > 0:
+            matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
@@ -265,8 +275,11 @@ def get_addresses(text: str) -> list:
     return [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]
 
 
-extract_partie_pp_pattern = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
-                                          flags=regex.VERSION1)
+extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
+                                            flags=regex.VERSION1)
+
+extract_partie_pp_pattern_2 = regex.compile("(?<=consorts\s+)([A-Z][[:alnum:]-]*(\s+[A-Z][[:alnum:]-]*)+)",
+                                            flags=regex.VERSION1)
 
 
 def get_partie_pp(text: str) -> list:
@@ -275,7 +288,9 @@ def get_partie_pp(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    return [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern.finditer(text)]
+    result1 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_2.finditer(text)]
+    return result1 + result2
 
 
 def get_all_name_variation(texts: list, offsets: list) -> list:

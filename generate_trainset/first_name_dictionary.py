@@ -37,6 +37,11 @@ def get_first_name_dict() -> set:
 
 
 def get_acora_object(content: list):
+    """
+    Acora matcher factory
+    :param content: a list of items to search
+    :return: a built matcher
+    """
     builder = AcoraBuilder()
     builder.update(content)
     return builder.build(ignore_case=False)
@@ -58,11 +63,21 @@ def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list
 
 
 def get_first_name_matcher():
+    """
+    Build a matcher of first name based on a French names dictionary
+    :return: Acora matcher
+    """
     first_name_dict = get_first_name_dict()
     return get_acora_object(list(first_name_dict))
 
 
 def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
+    """
+    Find match of first name in a text
+    :param matcher: Dictionary based matcher
+    :param text: original text
+    :return: list of offsets
+    """
     results = get_matches(matcher, text, "PARTIE_PP")
     # names include a space so we fix the point by removing 1 to the offset
     return [(start, end - 1, type_name)for start, end, type_name in results]

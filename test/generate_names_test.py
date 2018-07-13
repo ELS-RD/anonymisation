@@ -1,12 +1,13 @@
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches, \
     get_matches
-from generate_trainset.match_patterns import get_last_name, get_company_names, \
+from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_list_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, \
     get_list_of_clerks_from_headers_to_search, get_partie_pp, get_all_name_variation
-from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp
+from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
+    get_first_last_name
 from resources.config_provider import get_config_default
 
 
@@ -17,8 +18,11 @@ def test_remove_corp_name():
 
 def test_extract_family_name():
     assert get_last_name("Mic BEN TITI") == "BEN TITI"
+    assert get_last_name(" Mic BEN TITI ") == "BEN TITI"
     assert get_last_name("Mic BEN") == "BEN"
     assert get_last_name("Mic BENp") == ""
+    assert get_first_last_name("Mic BEN TITI") == ("Mic", "BEN TITI")
+    assert get_first_last_name(" Mic BEN TITI ") == ("Mic", "BEN TITI")
 
 
 def test_title_case():
@@ -166,17 +170,26 @@ def test_match_patterns():
     case_id = list(header_content_all_cases.keys())[0]
     header_content = header_content_all_cases[case_id]
     matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(header_content)
+
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
-    assert get_matches(matcher_partie_pp, text1, "PARTIE_PP") == [(6, 22, 'PARTIE_PP'),
+
+    assert get_matches(matcher_partie_pp, text1, "PARTIE_PP") == [(6, 15, 'PARTIE_PP'),
+                                                                  (6, 22, 'PARTIE_PP'),
                                                                   (16, 22, 'PARTIE_PP'),
                                                                   (64, 77, 'PARTIE_PP')]
+
     text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
+
     matcher_lawyers = get_list_of_lawyers_from_headers_to_search(header_content)
     assert get_matches(matcher_lawyers, text2, "AVOCAT") == [(3, 10, 'AVOCAT'),
+                                                             (25, 32, 'AVOCAT'),
                                                              (25, 38, 'AVOCAT'),
                                                              (33, 38, 'AVOCAT')]
+
     matcher_clerks = get_list_of_clerks_from_headers_to_search(header_content)
-    assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 81, 'GREFFIER'), (76, 81, 'GREFFIER')]
+    assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 75, 'GREFFIER'),
+                                                              (70, 81, 'GREFFIER'),
+                                                              (76, 81, 'GREFFIER')]
 
 
 def test_match_partie_pp_regex():
@@ -188,17 +201,20 @@ def test_match_partie_pp_regex():
     assert get_partie_pp(text3) == [(2, 9, 'PARTIE_PP')]
     text4 = "•   Eugène né le 23 mars 1997 à Grenoble ( 38"
     assert get_partie_pp(text4) == [(4, 10, 'PARTIE_PP')]
-    text5 = "Elle ajoute que les sommes réclamées ne seraient éventuellement dues que pour les années 2016 et suivantes"
+    text5 = "Elle ajoute que les sommes réclamées ne seraient éventuellement " \
+            "dues que pour les années 2016 et suivantes"
     assert get_partie_pp(text5) == []
+    text6 = "Je vois les consorts Toto BOBO au loin."
+    assert get_partie_pp(text6) == [(21, 30, 'PARTIE_PP')]
 
 
 def test_match_sub_pattern():
     texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
     offsets = [[(13, 28, "PARTIE_PP")], [], []]
-    assert get_all_name_variation(texts, offsets) == [[(13, 21, 'PARTIE_PP'),
+    assert get_all_name_variation(texts, offsets) == [[(13, 20, 'PARTIE_PP'),
                                                        (13, 28, 'PARTIE_PP'),
                                                        (21, 28, 'PARTIE_PP'),
                                                        (13, 28, 'PARTIE_PP')],
-                                                      [(0, 8, 'PARTIE_PP')],
+                                                      [(0, 7, 'PARTIE_PP')],
                                                       [(12, 19, 'PARTIE_PP')]]
 
