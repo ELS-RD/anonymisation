@@ -8,7 +8,7 @@ from generate_trainset.first_name_dictionary import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name
 
 
-def get_matcher_of_partie_pp_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_partie_pp_from_headers(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -33,7 +33,7 @@ def get_matcher_of_partie_pp_from_headers_to_search(current_header: dict, thresh
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_partie_pm_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_partie_pm_from_headers(current_header: dict) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -50,7 +50,7 @@ def get_list_of_partie_pm_from_headers_to_search(current_header: dict) -> acora.
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_lawyers_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_lawyers_from_headers(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -69,7 +69,7 @@ def get_list_of_lawyers_from_headers_to_search(current_header: dict, threshold_s
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_president_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_president_from_headers(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -88,7 +88,7 @@ def get_list_of_president_from_headers_to_search(current_header: dict, threshold
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_conseiller_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_conseiller_from_headers(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -107,7 +107,7 @@ def get_list_of_conseiller_from_headers_to_search(current_header: dict, threshol
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_clerks_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_clerks_from_headers(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
@@ -194,13 +194,13 @@ def get_extended_extracted_name_multiple_texts(texts: list, offsets: list, type_
 
 
 extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
-                                        "((?!Conseill|Présid|Magistrat)[A-Z]+[[:alnum:]-']+\s*|de\s+)+"
+                                        "((?!Conseil|Présid|Magistrat)[A-Z]+[[:alnum:]-']+\s*|de\s+)+"
                                         "(?=, "
                                         "((M|m)agistrat|"
                                         "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|, )|"
                                         "président.+(cour|magistrat|chambre)|"
                                         "président.{0,5}$|"
-                                        "Conseill.*|"
+                                        "Conseil.*|"
                                         "Président.*|"
                                         "(s|S)ubstitut)"
                                         ")",
@@ -229,7 +229,9 @@ def get_judge_name(text: str) -> list:
 
 
 extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
-                                        "([A-Z]+[[:alnum:]-']*\s*)+(?=.{0,20}"
+                                        "("
+                                        "(?!Conseil|Présid|Magistrat|Mme|M |Madame|Monsieur)"
+                                        "[A-Z]+[[:alnum:]-']*\s*)+(?=.{0,20}"
                                         "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 

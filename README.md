@@ -159,16 +159,3 @@ Entities X ['CAMMAS', 'LUC']
 Entities S [('Françoise CAMMAS', 'PARTIE_PP')]
 Tokens [('Françoise', 'PARTIE_PP', 3), ('CAMMAS', 'PARTIE_PP', 1), ('épouse', '', 2), ('LUC', '', 2)]
 
-
-Supprimer les doublons
-
-
-# Extension
-Représenté et assisté par Me FABIEn MANOURY, avocat au barreau de GRASSE
-29|34
-last_document_texts = ["Représenté et assisté par Me FABIEn MANOURY, avocat au barreau de GRASSE"]
-last_document_offsets = [[(29, 34, "AVOCAT")]]
-
-
-Représenté et assisté par Me ROMAIN CHERFILS de la SELARL BOULAN CHERFILS IMPERATORE, avocat au barreau d'AIX EN PROVENCE
-29|39
