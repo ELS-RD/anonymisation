@@ -59,7 +59,7 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- post process to remove M Mme, [^Et] etc. in offsets
+- post process to remove M Mme, [^Et] [ de$] etc. in offsets
 
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
@@ -152,10 +152,22 @@ Iter 9
  90%|█████████ | 130544/145040.8 [19:46:28<2:23:44,  1.68it/s]{'ner': 27.52150698761693}
 
 
-
-
 A épouse B
 Entities X ['CAMMAS', 'LUC']
 Entities S [('Françoise CAMMAS', 'PARTIE_PP')]
 Tokens [('Françoise', 'PARTIE_PP', 3), ('CAMMAS', 'PARTIE_PP', 1), ('épouse', '', 2), ('LUC', '', 2)]
+
+Phrases mentionnant Madame
+
+
+XML
+Entities X ['45, rue de Gironis']
+Entities S [('Clinique MEDIPOLE GARONNE', 'PARTIE_PM')]
+Tokens [('Clinique', 'PARTIE_PM', 3), ('MEDIPOLE', 'PARTIE_PM', 1), ('GARONNE', 'PARTIE_PM', 1), ('45', '', 2), (',', '', 2), ('rue', '', 2), ('de', '', 2), ('Gironis', '', 2)]
+
+Expert judiciaire
+
+Adresse
+rue seul
+code postal + Ville (dico)
 

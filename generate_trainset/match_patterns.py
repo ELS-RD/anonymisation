@@ -264,15 +264,19 @@ def get_lawyer_name(text: str) -> list:
     return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
 
 
-extract_address_pattern = regex.compile("[\d,\-\s]*"
-                                        "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place))"
-                                        "\s+"
-                                        "([A-Z]+[[:alnum:]-\.]*"
-                                        "(\s*(de|le|la|les|et))?"
-                                        "\s*)+"
-                                        "[,\-\s]*\d*\s+"
-                                        "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
-                                        flags=regex.VERSION1)
+extract_address_pattern_1 = regex.compile("[\d,\-\s]*"
+                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place))"
+                                          "\s+"
+                                          "([A-Z]+[[:alnum:]-\.]*"
+                                          "(\s*(de|le|la|les|et))?"
+                                          "\s*)+"
+                                          "[,\-\s]*\d*\s+"
+                                          "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
+                                          flags=regex.VERSION1)
+
+extract_address_pattern_2 = regex.compile("\d{5}\s+"
+                                          "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
+                                          flags=regex.VERSION1)
 
 
 def get_addresses(text: str) -> list:
@@ -281,7 +285,9 @@ def get_addresses(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    return [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]
+    result1 = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_2.finditer(text)]
+    return result1 + result2
 
 
 extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",

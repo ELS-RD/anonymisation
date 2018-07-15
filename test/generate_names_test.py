@@ -149,7 +149,7 @@ def test_get_phrase_matcher():
 
 def test_get_address():
     text1 = "avant 130-140, rue Victor HUGO    - 123456 Saint-Etienne après"
-    assert get_addresses(text1) == [(5, len(text1) - 5, 'ADRESSE')]
+    assert get_addresses(text1) == [(5, 57, 'ADRESSE'), (37, 57, 'ADRESSE')]
     text2 = "avant 13 rue Ernest Renan après"
     assert get_addresses(text2) == [(5, len(text2) - 5, 'ADRESSE')]
     text3 = "avant 20 Avenue André Prothin après"
@@ -169,11 +169,15 @@ def test_get_address():
     text11 = "avant 35, rue Maurice Flandin après"
     assert get_addresses(text11) == [(5, len(text11) - 5, 'ADRESSE')]
     text12 = "avant 22 rue Henri Rochefort - 75017 PARIS après"
-    assert get_addresses(text12) == [(5, len(text12) - 5, 'ADRESSE')]
+    assert get_addresses(text12) == [(5, 43, 'ADRESSE'), (31, 43, 'ADRESSE')]
     text13 = "avant 14 Boulevard Marie et Alexandre Oyon - 72100 LE MANS après"
-    assert get_addresses(text13) == [(5, len(text13) - 5, 'ADRESSE')]
+    assert get_addresses(text13) == [(5, 59, 'ADRESSE'), (45, 59, 'ADRESSE')]
     text14 = "avant allée Toto après"
     assert get_addresses(text14) == [(5, len(text14) - 5, 'ADRESSE')]
+    text15 = "avant 14 Boulevard Marie et Alexandre Oyon après"
+    assert get_addresses(text15) == [(5, len(text15) - 5, 'ADRESSE')]
+    text16 = "avant 72100 LE MANS après"
+    assert get_addresses(text16) == [(6, len(text16) - 5, 'ADRESSE')]
 
 
 def test_match_patterns():
