@@ -10,7 +10,7 @@ from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches, get_first_name_matches
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
-    get_addresses, get_list_of_partie_pm_from_headers_to_search, get_list_of_partie_pp_from_headers_to_search, \
+    get_addresses, get_list_of_partie_pm_from_headers_to_search, get_matcher_of_partie_pp_from_headers_to_search, \
     get_list_of_lawyers_from_headers_to_search, get_list_of_president_from_headers_to_search, \
     get_list_of_conseiller_from_headers_to_search, get_list_of_clerks_from_headers_to_search, get_partie_pp, \
     get_all_name_variation, get_extended_extracted_name_multiple_texts
@@ -105,6 +105,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
                         to_delete_no_offset_sentences_with_risk.append(current_paragraph)
 
+                    # if 'Me FABIEn MANOURY, avocat au barreau de GRASSE'.lower() in current_paragraph.lower():
+                    #     raise Exception("SSSSTOP")
+
             if len(last_document_offsets) > 0:
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_document_offsets,
@@ -148,11 +151,16 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             current_item_header = case_header_content[current_case_id]
 
             matcher_partie_pm = get_list_of_partie_pm_from_headers_to_search(current_item_header)
-            matcher_partie_pp = get_list_of_partie_pp_from_headers_to_search(current_item_header)
-            matcher_lawyers = get_list_of_lawyers_from_headers_to_search(current_item_header)
-            matcher_president = get_list_of_president_from_headers_to_search(current_item_header)
-            matcher_conseiller = get_list_of_conseiller_from_headers_to_search(current_item_header)
-            matcher_clerks = get_list_of_clerks_from_headers_to_search(current_item_header)
+            matcher_partie_pp = get_matcher_of_partie_pp_from_headers_to_search(current_header=current_item_header,
+                                                                                threshold_size=3)
+            matcher_lawyers = get_list_of_lawyers_from_headers_to_search(current_header=current_item_header,
+                                                                         threshold_size=3)
+            matcher_president = get_list_of_president_from_headers_to_search(current_header=current_item_header,
+                                                                             threshold_size=3)
+            matcher_conseiller = get_list_of_conseiller_from_headers_to_search(current_header=current_item_header,
+                                                                               threshold_size=3)
+            matcher_clerks = get_list_of_clerks_from_headers_to_search(current_header=current_item_header,
+                                                                       threshold_size=3)
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
@@ -163,8 +171,7 @@ for risk_sentence in to_delete_no_offset_sentences_with_risk:
 for text, tags in doc_annotated:
     if len(tags['entities']) > 0:
         for start, end, type_name in tags['entities']:
-            if "," in text[start:end]:
-                print(start, end, text[start:end], type_name, text, sep="|")
+            print(start, end, text[start:end], type_name, text, sep="|")
 
 print("Number of tags:", sum([len(i[1]['entities']) for i in doc_annotated]))
 

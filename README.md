@@ -59,7 +59,7 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- post process to remove M Mme, etc. in offsets
+- post process to remove M Mme, [^Et] etc. in offsets
 
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
@@ -161,3 +161,14 @@ Tokens [('Françoise', 'PARTIE_PP', 3), ('CAMMAS', 'PARTIE_PP', 1), ('épouse', 
 
 
 Supprimer les doublons
+
+
+# Extension
+Représenté et assisté par Me FABIEn MANOURY, avocat au barreau de GRASSE
+29|34
+last_document_texts = ["Représenté et assisté par Me FABIEn MANOURY, avocat au barreau de GRASSE"]
+last_document_offsets = [[(29, 34, "AVOCAT")]]
+
+
+Représenté et assisté par Me ROMAIN CHERFILS de la SELARL BOULAN CHERFILS IMPERATORE, avocat au barreau d'AIX EN PROVENCE
+29|39

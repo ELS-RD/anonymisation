@@ -8,10 +8,11 @@ from generate_trainset.first_name_dictionary import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name
 
 
-def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_matcher_of_partie_pp_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
+    :param threshold_size: minimum size of a word to be added to the list
     :return: a matcher of string which ignore case
     """
     # this way of init assure that the matcher doesn't expect binary data
@@ -24,9 +25,9 @@ def get_list_of_partie_pp_from_headers_to_search(current_header: dict) -> acora.
         if short_content is not None:
             matcher.add(full_content)
             first_name, last_name = get_first_last_name(full_content)
-            if len(first_name) > 0:
+            if len(first_name) > threshold_size:
                 matcher.add(first_name)
-            if len(last_name) > 0:
+            if len(last_name) > threshold_size:
                 matcher.add(last_name)
 
     return matcher.build(ignore_case=True)
@@ -49,10 +50,11 @@ def get_list_of_partie_pm_from_headers_to_search(current_header: dict) -> acora.
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_lawyers_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_list_of_lawyers_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
+    :param threshold_size: minimum size of a word to be added to the list
     :return: a matcher of string which ignore case
     """
     header_content = current_header['avocat']
@@ -60,17 +62,18 @@ def get_list_of_lawyers_from_headers_to_search(current_header: dict) -> acora._c
     matcher.update(header_content)
     for content in header_content:
         first_name, last_name = get_first_last_name(content)
-        if len(first_name) > 0:
+        if len(first_name) > threshold_size:
             matcher.add(first_name)
-        if len(last_name) > 0:
+        if len(last_name) > threshold_size:
             matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_president_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_list_of_president_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
+    :param threshold_size: minimum size of a word to be added to the list
     :return: a matcher of string which ignore case
     """
     header_content = current_header['president']
@@ -78,17 +81,18 @@ def get_list_of_president_from_headers_to_search(current_header: dict) -> acora.
     matcher.update(header_content)
     for content in header_content:
         first_name, last_name = get_first_last_name(content)
-        if len(first_name) > 0:
+        if len(first_name) > threshold_size:
             matcher.add(first_name)
-        if len(last_name) > 0:
+        if len(last_name) > threshold_size:
             matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_conseiller_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_list_of_conseiller_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
+    :param threshold_size: minimum size of a word to be added to the list
     :return: a matcher of string which ignore case
     """
     header_content = current_header['conseiller']
@@ -96,17 +100,18 @@ def get_list_of_conseiller_from_headers_to_search(current_header: dict) -> acora
     matcher.update(header_content)
     for content in header_content:
         first_name, last_name = get_first_last_name(content)
-        if len(first_name) > 0:
+        if len(first_name) > threshold_size:
             matcher.add(first_name)
-        if len(last_name) > 0:
+        if len(last_name) > threshold_size:
             matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
 
-def get_list_of_clerks_from_headers_to_search(current_header: dict) -> acora._cacora.UnicodeAcora:
+def get_list_of_clerks_from_headers_to_search(current_header: dict, threshold_size: int) -> acora._cacora.UnicodeAcora:
     """
     Create variations of items to search
     :param current_header: original list from headers
+    :param threshold_size: minimum size of a word to be added to the list
     :return: a matcher of string which ignore case
     """
     header_content = current_header['greffier']
@@ -114,9 +119,9 @@ def get_list_of_clerks_from_headers_to_search(current_header: dict) -> acora._ca
     matcher.update(header_content)
     for content in header_content:
         first_name, last_name = get_first_last_name(content)
-        if len(first_name) > 0:
+        if len(first_name) > threshold_size:
             matcher.add(first_name)
-        if len(last_name) > 0:
+        if len(last_name) > threshold_size:
             matcher.add(last_name)
     return matcher.build(ignore_case=True)
 
