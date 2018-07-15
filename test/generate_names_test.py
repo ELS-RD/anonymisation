@@ -178,6 +178,8 @@ def test_get_address():
     assert get_addresses(text15) == [(5, len(text15) - 5, 'ADRESSE')]
     text16 = "avant 72100 LE MANS après"
     assert get_addresses(text16) == [(6, len(text16) - 5, 'ADRESSE')]
+    text17 = "avant 45, rue de Gironis après"
+    assert get_addresses(text17) == [(5, 25, 'ADRESSE')]
 
 
 def test_match_patterns():
@@ -228,6 +230,12 @@ def test_match_partie_pp_regex():
     assert get_partie_pp(text6) == [(21, 30, 'PARTIE_PP')]
     text7 = "Ne serait-ce pas le Docteur Toto BOBO au loin."
     assert get_partie_pp(text7) == [(28, 37, 'PARTIE_PP')]
+    text8 = "C'est Madame Titi Toto épouse POPO PIPI"
+    assert get_partie_pp(text8) == [(13, 39, 'PARTIE_PP')]
+    text9 = "C'est Madame Titi épouse POPO qui est là"
+    assert get_partie_pp(text9) == [(13, 40, 'PARTIE_PP')]
+    text10 = "C'est Madame TOTO épouse Popo"
+    assert get_partie_pp(text10) == [(13, 29, 'PARTIE_PP')]
 
 
 def test_match_sub_pattern():

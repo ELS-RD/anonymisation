@@ -265,7 +265,7 @@ def get_lawyer_name(text: str) -> list:
 
 
 extract_address_pattern_1 = regex.compile("[\d,\-\s]*"
-                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place))"
+                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place)(\s+de)?)"
                                           "\s+"
                                           "([A-Z]+[[:alnum:]-\.]*"
                                           "(\s*(de|le|la|les|et))?"
@@ -297,6 +297,9 @@ extract_partie_pp_pattern_2 = regex.compile("(?<=((?i)consorts|époux|docteur|dr
                                             "([A-Z][[:alnum:]-]*(\s+[A-Z][[:alnum:]-]*)+)",
                                             flags=regex.VERSION1)
 
+extract_partie_pp_pattern_3 = regex.compile("((?!Madame|Mme(\.)?)[A-Z][\w ]+)+épouse\s+([A-Z][[:alpha:] ]+)+",
+                                            flags=regex.VERSION1)
+
 
 def get_partie_pp(text: str) -> list:
     """
@@ -306,7 +309,8 @@ def get_partie_pp(text: str) -> list:
     """
     result1 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_1.finditer(text)]
     result2 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_2.finditer(text)]
-    return result1 + result2
+    result3 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_3.finditer(text)]
+    return result1 + result2 + result3
 
 
 def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int) -> list:
