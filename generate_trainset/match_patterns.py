@@ -189,7 +189,7 @@ def get_extended_extracted_name_multiple_texts(texts: list, offsets: list, type_
 
 
 extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
-                                        "([A-Z]+[[:alnum:]-']+\s*|de\s+)+"
+                                        "((?!Conseill|Présid|Magistrat)[A-Z]+[[:alnum:]-']+\s*|de\s+)+"
                                         "(?=, "
                                         "((M|m)agistrat|"
                                         "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|, )|"

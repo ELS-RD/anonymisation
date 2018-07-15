@@ -59,7 +59,6 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- post process offsets to detect offset starting or ending in the middle of a word
 - post process to remove M Mme, etc. in offsets
 
 - implement prediction with multi thread (pipe) V2.1 ?
@@ -73,7 +72,6 @@ Configuration is done through **resources/config.ini** file
 
 
 
-Vincent VERGNE, Président
 retirer le de/le... a la fin des noms
 
 
@@ -123,10 +121,6 @@ Entities []
 Tokens [('-', '', 2), ('contre', '', 2), ("l'", '', 2), ('architecte', '', 2), ('Castaing', '', 2), ("d'", '', 2), ('une', '', 2), ('action', '', 2), ('en', '', 2), ('paiement', '', 2), ('de', '', 2), ('diverses', '', 2), ('sommes', '', 2)]
 
 
-penser a etendre tous les noms trouves
-
-
-
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
   0%|          | 0/145040.8 [00:00<?, ?it/s]
@@ -164,3 +158,6 @@ A épouse B
 Entities X ['CAMMAS', 'LUC']
 Entities S [('Françoise CAMMAS', 'PARTIE_PP')]
 Tokens [('Françoise', 'PARTIE_PP', 3), ('CAMMAS', 'PARTIE_PP', 1), ('épouse', '', 2), ('LUC', '', 2)]
+
+
+Supprimer les doublons

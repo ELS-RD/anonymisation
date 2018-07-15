@@ -105,6 +105,9 @@ def test_extract_judge_names():
     assert get_judge_name(text18) == [(17, 35, 'PRESIDENT')]
     text19 = "Monsieur Benoît HOLLEAUX, conseiller faisant fonction de président"
     assert get_judge_name(text19) == [(9, 24, 'PRESIDENT')]
+    text20 = "Présidée par Isabelle BORDENAVE, Conseiller, magistrat rapporteur, qui en a rendu compte à la Cour."
+    print(get_judge_name(text20))
+    assert get_judge_name(text20) == [(13, 31, 'PRESIDENT')]
 
 
 def test_extract_clerk_names():

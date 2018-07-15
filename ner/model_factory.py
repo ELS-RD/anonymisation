@@ -12,7 +12,7 @@ def prevent_sentence_boundary_detection(doc):
     return doc
 
 
-def get_empty_model() -> spacy.lang.fr.French:
+def get_empty_model():
     """
     Generate an empty NER model
     :rtype: object
