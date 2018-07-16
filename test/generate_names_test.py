@@ -259,10 +259,10 @@ def test_remove_key_words():
     text = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
            "avocat au barreau de PARIS, toque: B1132"
     offsets = [(22, 44, "AVOCAT"), (51, 60, "AVOCAT")]
-    print(remove_key_words(text=text, offsets=offsets, rate=100))
-    assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil  Myriam MASSENGO LACAVE et  '
-                                                                      'Toto TITI, avocat au barreau de PARIS, toque: B1132',
-                                                                      [(20, 42, 'AVOCAT'),
-                                                                       (47, 56, 'AVOCAT')])
+    assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
+                                                                      'et Toto TITI, avocat au barreau de PARIS, '
+                                                                      'toque: B1132',
+                                                                      [(19, 41, 'AVOCAT'),
+                                                                       (45, 54, 'AVOCAT')])
 
     assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)

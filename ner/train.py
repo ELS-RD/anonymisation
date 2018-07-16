@@ -164,7 +164,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             previous_case_id = current_case_id
             current_item_header = case_header_content[current_case_id]
 
-            matcher_partie_pm = get_matcher_of_partie_pm_from_headers(current_item_header)
+            matcher_partie_pm = get_matcher_of_partie_pm_from_headers(current_header=current_item_header)
             matcher_partie_pp = get_matcher_of_partie_pp_from_headers(current_header=current_item_header,
                                                                       threshold_size=3)
             matcher_lawyers = get_matcher_of_lawyers_from_headers(current_header=current_item_header,

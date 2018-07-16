@@ -2,15 +2,16 @@ import acora
 from acora import AcoraBuilder
 
 
-def get_acora_object(content: list):
+def get_acora_object(content: list, ignore_case: bool):
     """
     Acora matcher factory
     :param content: a list of items to search
+    :param ignore_case: True to match any case
     :return: a built matcher
     """
     builder = AcoraBuilder()
     builder.update(content)
-    return builder.build(ignore_case=False)
+    return builder.build(ignore_case=ignore_case)
 
 
 def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list:

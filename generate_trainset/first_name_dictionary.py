@@ -43,10 +43,11 @@ def get_first_name_matcher():
     :return: Acora matcher
     """
     first_name_dict = get_first_name_dict()
-    return get_acora_object(list(first_name_dict))
+    return get_acora_object(list(first_name_dict),
+                            ignore_case=False)
 
 
-def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> list:
+def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str) -> list:
     """
     Find match of first name in a text if the word enfant is present
     :param matcher: Dictionary based matcher
@@ -55,7 +56,7 @@ def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str)-> lis
     """
     offsets = get_matches(matcher, text, "PARTIE_PP")
     # names include a space so we fix the point by removing 1 to the offset
-    results = [(start, end - 1, type_name)for start, end, type_name in offsets]
+    results = [(start, end - 1, type_name) for start, end, type_name in offsets]
 
     if "enfant" in text:
         return results

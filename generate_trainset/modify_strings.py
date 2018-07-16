@@ -103,9 +103,12 @@ def get_first_last_name(text: str):
     return first_name, last_name
 
 
-key_words_matcher = get_acora_object(["Monsieur", "Madame", "Mme",
-                                      "la société", "Me", "Maitre", "Maître",
-                                      "la SARL", "la SAS", "la SASU", "l'EURL"])
+key_words_matcher = get_acora_object(["Monsieur ", "Madame ", "Mme ",
+                                      "la société ", "Me ", "Maitre ", "Maître ",
+                                      "la SARL ", "la SAS ", "la SASU ", "l'EURL ",
+                                      "la SA", "la SNC ", "la SCP ", "la SELAS ",
+                                      "la SCI ", "la SELARL "],
+                                     ignore_case=True)
 
 
 def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
@@ -127,7 +130,8 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     for start_offset, end_offset, type_name in offsets:
         span_text = text[start_offset:end_offset]
         detected_spans[span_text] = type_name
-    original_content_offsets_matcher = get_acora_object(content=list(detected_spans.keys()))
+    original_content_offsets_matcher = get_acora_object(content=list(detected_spans.keys()),
+                                                        ignore_case=False)
 
     cleaned_text = list()
     start_selection_offset = 0
