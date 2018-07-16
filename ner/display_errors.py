@@ -16,7 +16,9 @@ DEV_DATA = get_paragraph_from_file(xml_dev_path,
 for case_id, texts, xml_extracted_text, annotations in DEV_DATA:
     doc = nlp(texts)
 
-    spacy_extracted_text = [ent.text for ent in doc.ents if ent.label_ in ["ADRESSE", "PARTIE_PP"]]
+    spacy_extracted_text_ad_pp = [ent.text for ent in doc.ents if ent.label_ in ["ADRESSE", "PARTIE_PP"]]
+
+    spacy_extracted_text = [ent.text for ent in doc.ents]
     str_rep_spacy = ' '.join(spacy_extracted_text)
     match = [span_xml in str_rep_spacy for span_xml in xml_extracted_text]
 
@@ -25,7 +27,7 @@ for case_id, texts, xml_extracted_text, annotations in DEV_DATA:
         print('Entities X', xml_extracted_text)
         print('Entities S', [(ent.text, ent.label_) for ent in doc.ents])
         print('Tokens', [(t.text, t.ent_type_, t.ent_iob) for t in doc])
-    elif len(xml_extracted_text) < len(spacy_extracted_text):
+    elif len(xml_extracted_text) < len(spacy_extracted_text_ad_pp):
         print("SPACY")
         print('Entities X', xml_extracted_text)
         print('Entities S', [(ent.text, ent.label_) for ent in doc.ents])

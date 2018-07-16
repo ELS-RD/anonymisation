@@ -75,7 +75,7 @@ Configuration is done through **resources/config.ini** file
 retirer le de/le... a la fin des noms
 
 
-[('Bâtiment', '', 2), ('G', '', 2), (',', '', 2), ('Porte', '', 2), ('1', '', 2), ('B', '', 2), (',', '', 2), ('appartement', '', 2), ('142', '', 2)]
+Bâtiment G, Porte 1 B, appartement 142, 120 rue quelque chose - 10000 Toto City
 
 Entities [('société ESPACE LUMIERE ET SOIN et Mme GUERIN', 'PARTIE_PM')]
 Tokens [('Vu', '', 2), ('le', '', 2), ('contredit', '', 2), ('formé', '', 2), ('le', '', 2), ('13', '', 2), ('novembre', '', 2), ('2014', '', 2), ('par', '', 2), ('la', '', 2), ('société', 'PARTIE_PM', 3), ('ESPACE', 'PARTIE_PM', 1), ('LUMIERE', 'PARTIE_PM', 1), ('ET', 'PARTIE_PM', 1), ('SOIN', 'PARTIE_PM', 1), ('et', 'PARTIE_PM', 1), ('Mme', 'PARTIE_PM', 1), ('GUERIN', 'PARTIE_PM', 1), (',', '', 2)]
@@ -151,7 +151,17 @@ Iter 8
 Iter 9
  90%|█████████ | 130544/145040.8 [19:46:28<2:23:44,  1.68it/s]{'ner': 27.52150698761693}
 
+--------------
+Number of tags: 1775635
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
 
+Iter 1
+ 50%|█████     | 14382/28763.26 [2:04:41<1:49:30,  2.19it/s]{'ner': 59.536253356406405}
+
+Iter 2
+100%|█████████▉| 28763/28763.26 [4:10:13<00:00,  1.89it/s]{'ner': 39.26536671542931}
+28764it [4:10:13,  2.14it/s]        
+-------------------
 
 Expert judiciaire
 

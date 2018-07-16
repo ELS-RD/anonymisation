@@ -27,7 +27,7 @@ def normalize_offsets(offsets: list) -> list:
                                                                          tag_priority(current_type_tag,
                                                                                       previous_type_tag)
 
-        if current_end_offset - current_start_offset <= 3:
+        if current_end_offset - current_start_offset <= 2:
             current_start_offset, current_end_offset, current_type_tag = previous_start_offset, \
                                                                          previous_end_offset, \
                                                                          previous_type_tag
