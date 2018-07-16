@@ -170,3 +170,7 @@ Idem Greffier
 -----
 Mettre en place des regles pour attraper toutes les mentions repérées par le NER
 -> comment les ajouter aux résultats ?
+-----
+Mettre MAGISTRAT au lieu de PRESIDENT
+------
+Trouver les adresses des parties avec certitude

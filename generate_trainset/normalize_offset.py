@@ -77,10 +77,11 @@ def remove_offset_space(text: str, offsets: list):
     """
     result = list()
     for start_offset, end_offset, type_name in offsets:
-        new_start = start_offset + 1 if text[start_offset].isspace() else start_offset
-        # remove 1 because the closing offset is not included in the selection in Python
-        new_end = end_offset - 1 if text[end_offset - 1].isspace() else end_offset
-        result.append((new_start, new_end, type_name))
+        if (start_offset >= 0) and (end_offset - 1 < len(text)) and (start_offset != end_offset):
+            new_start = start_offset + 1 if text[start_offset].isspace() else start_offset
+            # remove 1 because the closing offset is not included in the selection in Python
+            new_end = end_offset - 1 if text[end_offset - 1].isspace() else end_offset
+            result.append((new_start, new_end, type_name))
     return result
 
 
