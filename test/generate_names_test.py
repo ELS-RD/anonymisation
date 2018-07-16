@@ -68,47 +68,47 @@ def test_random_case_change():
 
 def test_extract_judge_names():
     text1 = "sera jugé par Madame Bingo TOTO, Conseiller près la cour de machin chose"
-    assert get_judge_name(text1) == [(21, 31, 'PRESIDENT')]
+    assert get_judge_name(text1) == [(21, 31, 'MAGISTRAT')]
     text2 = "Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président"
-    assert get_judge_name(text2) == [(9, 25, 'PRESIDENT')]
+    assert get_judge_name(text2) == [(9, 25, 'MAGISTRAT')]
     text3 = "Nous, Gilles BOURGEOIS, Conseiller faisant fonction de Président"
-    assert get_judge_name(text3) == [(6, 22, 'PRESIDENT')]
+    assert get_judge_name(text3) == [(6, 22, 'MAGISTRAT')]
     text4 = "Mme Véronique BEBON, Présidente"
-    assert get_judge_name(text4) == [(4, 19, 'PRESIDENT')]
+    assert get_judge_name(text4) == [(4, 19, 'MAGISTRAT')]
     text5 = "M. Gérard FORET DODELIN, Président"
-    assert get_judge_name(text5) == [(3, 23, 'PRESIDENT')]
+    assert get_judge_name(text5) == [(3, 23, 'MAGISTRAT')]
     text6 = "Madame Florence DELORD, Conseiller"
-    assert get_judge_name(text6) == [(7, 22, 'PRESIDENT')]
+    assert get_judge_name(text6) == [(7, 22, 'MAGISTRAT')]
     text7 = "Madame Frédérique BRUEL, Conseillère"
-    assert get_judge_name(text7) == [(7, 23, 'PRESIDENT')]
+    assert get_judge_name(text7) == [(7, 23, 'MAGISTRAT')]
     text8 = "devant M. Gérard FORET DODELIN, Président, chargé d'instruire l'affaire."
-    assert get_judge_name(text8) == [(10, 30, 'PRESIDENT')]
+    assert get_judge_name(text8) == [(10, 30, 'MAGISTRAT')]
     text9 = "représenté lors des débats par Madame POUEY, substitut général "
-    assert get_judge_name(text9) == [(38, 43, 'PRESIDENT')]
+    assert get_judge_name(text9) == [(38, 43, 'MAGISTRAT')]
     text10 = "devant Mme Véronique BEBON, Présidente, et Madame Frédérique BRUEL, Conseillère, chargées du rapport."
-    assert get_judge_name(text10) == [(11, 26, 'PRESIDENT'), (50, 66, 'PRESIDENT')]
+    assert get_judge_name(text10) == [(11, 26, 'MAGISTRAT'), (50, 66, 'MAGISTRAT')]
     text11 = "Mme Geneviève TOUVIER, présidente"
-    assert get_judge_name(text11) == [(4, 21, 'PRESIDENT')]
+    assert get_judge_name(text11) == [(4, 21, 'MAGISTRAT')]
     text12 = "Monsieur Michel WACHTER, conseiller,"
-    assert get_judge_name(text12) == [(9, 23, 'PRESIDENT')]
+    assert get_judge_name(text12) == [(9, 23, 'MAGISTRAT')]
     text13 = "- Michel FICAGNA, conseiller"
-    assert get_judge_name(text13) == [(2, 16, 'PRESIDENT')]
+    assert get_judge_name(text13) == [(2, 16, 'MAGISTRAT')]
     text14 = "Audience tenue par Florence PAPIN, conseiller, faisant "
-    assert get_judge_name(text14) == [(19, 33, 'PRESIDENT')]
+    assert get_judge_name(text14) == [(19, 33, 'MAGISTRAT')]
     text15 = "Vincent NICOLAS, Conseiller"
-    assert get_judge_name(text15) == [(0, 15, 'PRESIDENT')]
+    assert get_judge_name(text15) == [(0, 15, 'MAGISTRAT')]
     text16 = "2016, Monsieur Hubert de BECDELIEVRE, président de chambre"
-    assert get_judge_name(text16) == [(15, 36, 'PRESIDENT')]
+    assert get_judge_name(text16) == [(15, 36, 'MAGISTRAT')]
     text17 = "Conseiller : Mélanie FILIATREAU"
-    assert get_judge_name(text17) == [(13, 31, 'PRESIDENT')]
+    assert get_judge_name(text17) == [(13, 31, 'MAGISTRAT')]
     text18 = "Présidente : Mme Mélanie FILIATREAU"
-    assert get_judge_name(text18) == [(17, 35, 'PRESIDENT')]
+    assert get_judge_name(text18) == [(17, 35, 'MAGISTRAT')]
     text19 = "Monsieur Benoît HOLLEAUX, conseiller faisant fonction de président"
-    assert get_judge_name(text19) == [(9, 24, 'PRESIDENT')]
+    assert get_judge_name(text19) == [(9, 24, 'MAGISTRAT')]
     text20 = "Présidée par Isabelle BORDENAVE, Conseiller, magistrat rapporteur, qui en a rendu compte à la Cour."
-    assert get_judge_name(text20) == [(13, 31, 'PRESIDENT')]
+    assert get_judge_name(text20) == [(13, 31, 'MAGISTRAT')]
     text21 = "Madame Françoise AYMES BELLADINA, conseiller faisant fonction de président de chambre"
-    assert get_judge_name(text21) == [(7, 32, 'PRESIDENT')]
+    assert get_judge_name(text21) == [(7, 32, 'MAGISTRAT')]
 
 
 def test_extract_clerk_names():

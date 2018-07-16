@@ -64,8 +64,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     match_from_headers = get_matches(matcher_partie_pp, current_paragraph, "PARTIE_PP")
                     match_from_headers += get_matches(matcher_partie_pm, current_paragraph, "PARTIE_PM")
                     match_from_headers += get_matches(matcher_lawyers, current_paragraph, "AVOCAT")
-                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "CONSEILLER")
-                    match_from_headers += get_matches(matcher_president, current_paragraph, "PRESIDENT")
+                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "MAGISTRAT")
+                    match_from_headers += get_matches(matcher_president, current_paragraph, "MAGISTRAT")
                     match_from_headers += get_matches(matcher_clerks, current_paragraph, "GREFFIER")
 
                     company_names_offset = get_company_names(current_paragraph)
