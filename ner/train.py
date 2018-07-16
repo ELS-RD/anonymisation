@@ -15,7 +15,7 @@ from generate_trainset.match_patterns import get_company_names, get_extend_extra
     get_matcher_of_conseiller_from_headers, get_matcher_of_clerks_from_headers, get_partie_pp, \
     get_all_name_variation, get_extended_extracted_name_multiple_texts
 from generate_trainset.modify_strings import random_case_change
-from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space
+from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 
@@ -28,7 +28,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -105,7 +105,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
                         to_delete_no_offset_sentences_with_risk.append(current_paragraph)
 
-                    # if 'Arrêt signé par Monsieur LE GALLO, Président et par Madame HAON, Greffier'.lower() in current_paragraph.lower():
+                    # if """L'altercation avec Alexandre et la violence des propos et du geste de la salariée est attestée par Alexandre PAUL""".lower() in current_paragraph.lower():
                     #     raise Exception("SSSSTOP")
 
             if len(last_document_offsets) > 0:
@@ -122,16 +122,21 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                           offsets=last_doc_with_extended_pp_offsets,
                                                                           threshold_span_size=4)
 
+                last_doc_offset_unwanted_words_removed = [clean_offsets_from_unwanted_words(text, off) for text, off in
+                                                          zip(last_document_texts,
+                                                              last_doc_with_ext_offset_and_var)]
+
                 last_doc_offsets_no_space = [remove_offset_space(text, off) for text, off in
                                              zip(last_document_texts,
-                                                 last_doc_with_ext_offset_and_var)]
+                                                 last_doc_offset_unwanted_words_removed)]
 
                 last_doc_offsets_normalized = [normalize_offsets(off) for off in last_doc_offsets_no_space]
 
                 last_doc_txt_case_updated = [random_case_change(text=text,
                                                                 offsets=off,
-                                                                rate=20) for text, off in zip(last_document_texts,
-                                                                                              last_doc_offsets_normalized)]
+                                                                rate=20) for text, off in
+                                             zip(last_document_texts,
+                                                 last_doc_offsets_normalized)]
 
                 # , "case_id": previous_case_id
                 [doc_annotated.append((txt, {'entities': off})) for txt, off in

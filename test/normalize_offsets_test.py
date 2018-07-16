@@ -1,4 +1,4 @@
-from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space
+from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 
 
 def test_normalize_offsets():
@@ -32,3 +32,12 @@ def test_remove_spaces():
     new_offset = remove_offset_space(text, offset)
     span_new = text[new_offset[0][0]:new_offset[0][1]]
     assert span_new == span_original.strip()
+
+
+def test_remove_unwanted_words():
+    text1 = "Monsieur toto"
+    offset1 = [(0, len("Monsieur toto"), "PARTIE_PP")]
+    assert clean_offsets_from_unwanted_words(text=text1, offsets=offset1) == [(9, 13, "PARTIE_PP")]
+    text2 = "Succombant même partiellement, Madame GUERIN supportera la charge "
+    offset2 = [(31, 37, "PARTIE_PP"), (31, 44, "PARTIE_PP")]
+    assert clean_offsets_from_unwanted_words(text=text2, offsets=offset2) == [(37, 37, "PARTIE_PP"), (38, 44, "PARTIE_PP")]

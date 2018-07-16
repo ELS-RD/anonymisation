@@ -59,14 +59,14 @@ Configuration is done through **resources/config.ini** file
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
 - randomly remove company type (la société |sasu|sarl)
 - randomly remove M Mme Mlle ...
-- post process to remove M Mme, [^Et] [ de$] etc. in offsets
+- randomly remove street in address
+- randomly remove city / postal code in address
 
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
 - train with all matches (?)
 - build a dict of common PM (> 100 occurences) and match everywhere against this matcher
 - ajout Dr et Prof dans les recherches
-- lister les offsets qui contiennent une virgule
 - ajouter les rapporteurs
 - ajouter les experts (qui font aussi un rapport)
 
@@ -166,3 +166,9 @@ Iter 2
 Expert judiciaire
 
 
+-------
+Dictionnaire des présidents basé sur un seuil de décisions et ensuite match a fond avec le TRI
+Idem Greffier
+-----
+Mettre en place des regles pour attraper toutes les mentions repérées par le NER
+-> comment les ajouter aux résultats ?

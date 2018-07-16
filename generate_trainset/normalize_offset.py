@@ -1,3 +1,6 @@
+import regex
+
+
 def normalize_offsets(offsets: list) -> list:
     """
     Normalize the provided list of offsets by merging or removing some of them
@@ -78,4 +81,21 @@ def remove_offset_space(text: str, offsets: list):
         # remove 1 because the closing offset is not included in the selection in Python
         new_end = end_offset - 1 if text[end_offset - 1].isspace() else end_offset
         result.append((new_start, new_end, type_name))
+    return result
+
+
+pattern_to_remove = regex.compile("^\s*\\b((M|m)adame|(M|m)onsieur|Mme(\.)?|Me|société|M(\.)?)\\b\s*",
+                                  flags=regex.VERSION1)
+
+
+def clean_offsets_from_unwanted_words(text: str, offsets: list) -> list:
+    result = list()
+    for start_offset, end_offset, type_name in offsets:
+        offset_text = text[start_offset:end_offset]
+        unwanted_text_found = pattern_to_remove.match(offset_text)
+        if unwanted_text_found is not None:
+            found_string = unwanted_text_found.captures()[0]
+            result.append((start_offset + len(found_string), end_offset, type_name))
+        else:
+            result.append((start_offset, end_offset, type_name))
     return result
