@@ -129,7 +129,12 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     detected_spans = dict()
     for start_offset, end_offset, type_name in offsets:
         span_text = text[start_offset:end_offset]
-        detected_spans[span_text] = type_name
+        if len(span_text) > 0:
+            detected_spans[span_text] = type_name
+
+    if len(detected_spans) == 0:
+        return text, offsets
+
     original_content_offsets_matcher = get_acora_object(content=list(detected_spans.keys()),
                                                         ignore_case=False)
 
