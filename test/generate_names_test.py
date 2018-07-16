@@ -1,6 +1,6 @@
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches, \
-    get_matches
+from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches
+from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_matcher_of_partie_pp_from_headers, \
@@ -8,7 +8,7 @@ from generate_trainset.match_patterns import get_company_names, \
     get_matcher_of_clerks_from_headers, get_partie_pp, get_all_name_variation, \
     get_extended_extracted_name_multiple_texts
 from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
-    get_first_last_name
+    get_first_last_name, remove_key_words
 from resources.config_provider import get_config_default
 
 
@@ -253,3 +253,16 @@ def test_match_sub_pattern():
                                                                               (13, 28, 'PARTIE_PP')],
                                                                              [(0, 7, 'PARTIE_PP')],
                                                                              [(12, 19, 'PARTIE_PP')]]
+
+
+def test_remove_key_words():
+    text = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
+           "avocat au barreau de PARIS, toque: B1132"
+    offsets = [(22, 44, "AVOCAT"), (51, 60, "AVOCAT")]
+    print(remove_key_words(text=text, offsets=offsets, rate=100))
+    assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil  Myriam MASSENGO LACAVE et  '
+                                                                      'Toto TITI, avocat au barreau de PARIS, toque: B1132',
+                                                                      [(20, 42, 'AVOCAT'),
+                                                                       (47, 56, 'AVOCAT')])
+
+    assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)

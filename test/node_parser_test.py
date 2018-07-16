@@ -7,8 +7,6 @@ xml_path = config_training["xml_unittest_file"]
 
 def test_xml_parser():
     tree = read_xml(xml_path)
-
-    # r = tree.xpath('//TexteJuri/P|//MetaJuri/DecisionTraitee/Date|//MetaJuri/DecisionTraitee/Numero')
     r = tree.xpath('//TexteJuri/P')
 
     for i in r:

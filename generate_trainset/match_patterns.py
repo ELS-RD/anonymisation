@@ -4,7 +4,7 @@ import acora
 import regex
 from acora import AcoraBuilder
 
-from generate_trainset.first_name_dictionary import get_matches
+from generate_trainset.match_acora import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name
 
 

@@ -1,6 +1,6 @@
 from random import randint
-
 import regex
+from generate_trainset.match_acora import get_acora_object, get_matches
 
 # some organization prefix patterns
 org_types = r"société(s)?|" \
@@ -101,3 +101,58 @@ def get_first_last_name(text: str):
     last_name = get_last_name(clean_text)
     first_name = clean_text[0:len(clean_text) - len(last_name)].strip() if len(last_name) > 0 else ""
     return first_name, last_name
+
+
+key_words_matcher = get_acora_object(["Monsieur", "Madame", "Mme",
+                                      "la société", "Me", "Maitre", "Maître",
+                                      "la SARL", "la SAS", "la SASU", "l'EURL"])
+
+
+def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
+    """
+    Modify text to remove some key words, making the learning harder and the model more robust.
+    :param text: original paragraph as a string
+    :param offsets: list of extracted offsets
+    :param rate: chance as an integer between 1 and 100 that a key word is removed
+    :return: a tuple (new_text, offsets)
+    """
+    words_to_delete_offsets: list = get_matches(matcher=key_words_matcher,
+                                                text=text,
+                                                tag="TO_DELETE")
+
+    if (len(words_to_delete_offsets) == 0) or (len(offsets) == 0):
+        return text, offsets
+
+    detected_spans = dict()
+    for start_offset, end_offset, type_name in offsets:
+        span_text = text[start_offset:end_offset]
+        detected_spans[span_text] = type_name
+    original_content_offsets_matcher = get_acora_object(content=list(detected_spans.keys()))
+
+    cleaned_text = list()
+    start_selection_offset = 0
+    for start_offset, end_offset, _ in words_to_delete_offsets:
+        if randint(0, 99) <= rate:
+            cleaned_text.append(text[start_selection_offset:start_offset])
+            start_selection_offset = end_offset
+        else:
+            cleaned_text.append(text[start_selection_offset:end_offset])
+            start_selection_offset = end_offset
+
+    cleaned_text.append(text[start_selection_offset:len(text)])
+
+    cleaned_text = ''.join(cleaned_text)
+
+    updated_offsets = get_matches(matcher=original_content_offsets_matcher,
+                                  text=cleaned_text,
+                                  tag="UNKNOWN")
+
+    offsets_to_return = list()
+
+    # restore original offset type name
+    for start_offset, end_offset, _ in updated_offsets:
+        span_text = cleaned_text[start_offset:end_offset]
+        type_name = detected_spans[span_text]
+        offsets_to_return.append((start_offset, end_offset, type_name))
+
+    return cleaned_text, offsets_to_return

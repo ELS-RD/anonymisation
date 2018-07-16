@@ -1,6 +1,6 @@
 import acora
-from acora import AcoraBuilder
 
+from generate_trainset.match_acora import get_acora_object, get_matches
 from generate_trainset.modify_strings import get_title_case
 from resources.config_provider import get_config_default
 
@@ -35,32 +35,6 @@ def get_first_name_dict() -> set:
     firs_name.remove("France ")
     firs_name.remove("Mercedes ")
     return firs_name
-
-
-def get_acora_object(content: list):
-    """
-    Acora matcher factory
-    :param content: a list of items to search
-    :return: a built matcher
-    """
-    builder = AcoraBuilder()
-    builder.update(content)
-    return builder.build(ignore_case=False)
-
-
-def get_matches(matcher: acora._cacora.UnicodeAcora, text: str, tag: str)-> list:
-    """
-    Apply the matcher and return offsets
-    :param matcher: the acora matcher (built)
-    :param text: original string where to find the matches
-    :param tag: the type of offset
-    :return: list of offsets
-    """
-    # matcher not loaded with any pattern
-    if matcher.__sizeof__() == 0:
-        return []
-    results = matcher.findall(text)
-    return [(start_offset, start_offset + len(match_text), tag) for match_text, start_offset in results]
 
 
 def get_first_name_matcher():

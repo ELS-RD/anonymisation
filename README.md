@@ -57,8 +57,6 @@ Configuration is done through **resources/config.ini** file
 ### TODO:
 
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
-- randomly remove company type (la société |sasu|sarl)
-- randomly remove M Mme Mlle ...
 - randomly remove street in address
 - randomly remove city / postal code in address
 

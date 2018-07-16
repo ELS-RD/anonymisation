@@ -7,14 +7,15 @@ from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.first_name_dictionary import get_first_name_matcher, get_matches, get_first_name_matches
+from generate_trainset.first_name_dictionary import get_first_name_matcher, get_first_name_matches
+from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_matcher_of_partie_pm_from_headers, get_matcher_of_partie_pp_from_headers, \
     get_matcher_of_lawyers_from_headers, get_matcher_of_president_from_headers, \
     get_matcher_of_conseiller_from_headers, get_matcher_of_clerks_from_headers, get_partie_pp, \
     get_all_name_variation, get_extended_extracted_name_multiple_texts
-from generate_trainset.modify_strings import random_case_change
+from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -132,16 +133,24 @@ with tqdm(total=len(case_header_content)) as progress_bar:
 
                 last_doc_offsets_normalized = [normalize_offsets(off) for off in last_doc_offsets_no_space]
 
+                last_doc_remove_keywords = [remove_key_words(text=text,
+                                                             offsets=off,
+                                                             rate=20) for text, off in
+                                            zip(last_document_texts,
+                                                last_doc_offsets_normalized)]
+
+                last_doc_remove_keywords_text, last_doc_remove_keywords_offsets = zip(*last_doc_remove_keywords)
+
                 last_doc_txt_case_updated = [random_case_change(text=text,
                                                                 offsets=off,
                                                                 rate=20) for text, off in
-                                             zip(last_document_texts,
-                                                 last_doc_offsets_normalized)]
+                                             zip(last_doc_remove_keywords_text,
+                                                 last_doc_remove_keywords_offsets)]
 
                 # , "case_id": previous_case_id
                 [doc_annotated.append((txt, {'entities': off})) for txt, off in
                  zip(last_doc_txt_case_updated,
-                     last_doc_offsets_normalized)]
+                     last_doc_remove_keywords_offsets)]
 
                 last_document_texts.clear()
                 last_document_offsets.clear()
