@@ -89,6 +89,14 @@ pattern_to_remove = regex.compile("^\s*\\b((M|m)adame|(M|m)onsieur|Mme(\.)?|Me|s
 
 
 def clean_offsets_from_unwanted_words(text: str, offsets: list) -> list:
+    """
+    Remove some words which should not appear inside an offset (e.g.: Monsieur, Madame, etc.)
+    It is possible that sometimes the offset is empty because it only contains Madame for instance.
+    It has to be cleaned in a next step
+    :param text: original paragraph
+    :param offsets: list of already extracted offsets
+    :return: cleaned offsets
+    """
     result = list()
     for start_offset, end_offset, type_name in offsets:
         offset_text = text[start_offset:end_offset]
