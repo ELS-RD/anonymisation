@@ -54,11 +54,10 @@ def get_first_name_matches(matcher: acora._cacora.UnicodeAcora, text: str) -> li
     :param text: original text
     :return: list of offsets
     """
-    offsets = get_matches(matcher, text, "PARTIE_PP")
-    # names include a space so we fix the point by removing 1 to the offset
-    results = [(start, end - 1, type_name) for start, end, type_name in offsets]
-
     if "enfant" in text:
+        offsets = get_matches(matcher, text, "PARTIE_PP")
+        # names include a space so we fix the point by removing 1 to the offset
+        results = [(start, end - 1, type_name) for start, end, type_name in offsets]
         return results
     else:
         return []

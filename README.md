@@ -178,3 +178,6 @@ Date de l'arrêt
 RG
 ------
 date de naissance
+-------
+https://spacy.io/usage/linguistic-features#setting-entities
+https://spacy.io/api/goldparse#biluo_tags_from_offsets

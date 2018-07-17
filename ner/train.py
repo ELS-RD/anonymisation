@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.first_name_dictionary import get_first_name_matcher, get_first_name_matches
+from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
@@ -17,6 +17,7 @@ from generate_trainset.match_patterns import get_company_names, get_extend_extra
     get_all_name_variation, get_extended_extracted_name_multiple_texts
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
+from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher, get_postal_code_matches
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 
@@ -29,7 +30,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -45,6 +46,7 @@ matcher_conseiller = None
 matcher_clerks = None
 
 first_name_matcher = get_first_name_matcher()
+postal_code_city_matcher = get_postal_code_city_matcher()
 doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
@@ -76,7 +78,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
 
-                    first_name_matches = get_first_name_matches(first_name_matcher, current_paragraph)
+                    first_name_matches = get_first_name_matches(matcher=first_name_matcher,
+                                                                text=current_paragraph)
+                    postal_code_matches = get_postal_code_matches(matcher=postal_code_city_matcher,
+                                                                  text=current_paragraph)
                     addresses = get_addresses(current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
 
@@ -89,6 +94,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    lawyer_names +
                                    partie_pp +
                                    first_name_matches +
+                                   postal_code_matches +
                                    addresses)
 
                     if len(all_matches) > 0:

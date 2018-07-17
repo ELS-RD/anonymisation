@@ -17,10 +17,15 @@ nlp = nlp.from_disk(model_dir_path)
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
 docs = list()
-for (case_id, text, _, _) in DEV_DATA[1:1000]:
+for (case_id, text, _, _) in DEV_DATA[0:10]:
     doc = nlp(text)
     # doc.user_data['title'] = case_id
     docs.append(doc)
+
+# https://spacy.io/usage/linguistic-features#section-named-entities
+# check is None
+docs[10].char_span(0, 10, label='PRESIDENT')
+
 
 colors = {'PARTIE_PP': '#ff9933',
           'ADRESSE': '#ff99cc',

@@ -169,3 +169,4 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
         offsets_to_return.append((start_offset, end_offset, type_name))
 
     return cleaned_text, offsets_to_return
+

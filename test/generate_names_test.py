@@ -1,5 +1,5 @@
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.first_name_dictionary import get_first_name_dict, get_first_name_matcher, get_first_name_matches
+from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, get_first_name_matches
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
@@ -9,6 +9,7 @@ from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name_multiple_texts
 from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
     get_first_last_name, remove_key_words
+from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher
 from resources.config_provider import get_config_default
 
 
@@ -188,10 +189,11 @@ def test_get_address():
     assert get_addresses(text17) == [(5, 43, 'ADRESSE')]
     text18 = "un logement sis 1, rue d'Ebersheim à Strasbourg, moyennant"
     assert get_addresses(text18) == [(15, 47, 'ADRESSE')]
-    # text17 = "avant 72100 LE MANS après"
-    # assert get_addresses(text17) == [(6, len(text17) - 5, 'ADRESSE')]
-    # text18 = "avant Bâtiment G, Porte 1 B, appartement 142, 120 rue quelque chose - 10000 Toto City"
-    # assert get_addresses(text18) == [(5, 25, 'ADRESSE')]
+
+
+def test_get_postal_code_city():
+    matcher = get_postal_code_city_matcher()
+    assert get_matches(matcher, "avant 67000 Strasbourg après", "ADRESSE") == [(6, 22, 'ADRESSE')]
 
 
 def test_match_patterns():
