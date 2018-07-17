@@ -131,7 +131,7 @@ find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
                                                   "((?i)"
                                                   "(de |le |la |les |pour |l'|et |en )"
                                                   ")*"
-                                                  "(\()?[A-Z][[:alnum:]-'\.\)]+(\s|/|-)*)+"
+                                                  "(\()?[A-Z][[:alnum:]-'\.\)]+(\s|/|-|&)*)+"
                                                   ")", flags=regex.VERSION1)
 
 
@@ -197,9 +197,11 @@ extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )
                                         "((?!Conseil|Présid|Magistrat)[A-Z]+[[:alnum:]-']+\s*|de\s+)+"
                                         "(?=, "
                                         "((M|m)agistrat|"
-                                        "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|, )|"
+                                        "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|"
+                                        ", |application des dispositions)|"
                                         "président.+(cour|magistrat|chambre)|"
                                         "président.{0,5}$|"
+                                        "(p|P)remier (p|P)résident|"
                                         "Conseil.*|"
                                         "Président.*|"
                                         "(s|S)ubstitut)"
@@ -265,13 +267,13 @@ def get_lawyer_name(text: str) -> list:
 
 
 extract_address_pattern_1 = regex.compile("[\d,\-\s]*"
-                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place)(\s+de)?)"
-                                          "\s+"
+                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place)(\s+(de||d'))?)"
+                                          "\s*"
                                           "([A-Z]+[[:alnum:]-\.]*"
-                                          "(\s*(de|le|la|les|et))?"
+                                          "(\s*(de|le|la|les|et|d'))?"
                                           "\s*)+"
                                           "[,\-\sà]*\d*\s+"
-                                          "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
+                                          "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et|d')\s*)?)*",
                                           flags=regex.VERSION1)
 
 # Manage Euros Francs

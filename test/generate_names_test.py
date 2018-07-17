@@ -37,6 +37,8 @@ def test_extract_company_names():
     assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
     text3 = "Condamner solidairement les Sociétés OCM et OCS aux entiers dépens."
     assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
+    text4 = "La SARL ENZO & ROSSO n'est pas facile à extraire."
+    assert get_company_names(text4) == [(3, 21, 'PARTIE_PM')]
 
 
 def test_extend_names():
@@ -109,6 +111,8 @@ def test_extract_judge_names():
     assert get_judge_name(text20) == [(13, 31, 'MAGISTRAT')]
     text21 = "Madame Françoise AYMES BELLADINA, conseiller faisant fonction de président de chambre"
     assert get_judge_name(text21) == [(7, 32, 'MAGISTRAT')]
+    text22 = "outre elle même, de Daniel TROUVE, premier président, et "
+    assert get_judge_name(text22) == [(17, 33, 'MAGISTRAT')]
 
 
 def test_extract_clerk_names():
@@ -182,6 +186,8 @@ def test_get_address():
     assert get_addresses(text16) == [(5, 25, 'ADRESSE')]
     text17 = "avant 10 Boulevard Pasteur à BRY SUR MARNE après"
     assert get_addresses(text17) == [(5, 43, 'ADRESSE')]
+    text18 = "un logement sis 1, rue d'Ebersheim à Strasbourg, moyennant"
+    assert get_addresses(text18) == [(15, 47, 'ADRESSE')]
     # text17 = "avant 72100 LE MANS après"
     # assert get_addresses(text17) == [(6, len(text17) - 5, 'ADRESSE')]
     # text18 = "avant Bâtiment G, Porte 1 B, appartement 142, 120 rue quelque chose - 10000 Toto City"

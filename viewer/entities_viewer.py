@@ -16,16 +16,20 @@ nlp = nlp.from_disk(model_dir_path)
 
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
+docs = list()
+for (case_id, text, _, _) in DEV_DATA[1:1000]:
+    doc = nlp(text)
+    # doc.user_data['title'] = case_id
+    docs.append(doc)
 
-docs = [nlp(doc) for (_, doc, _, _) in DEV_DATA[2000:4000]]
-colors = {'PARTIE_PP': 'linear-gradient(90deg, #aa9cfc, #fc9ce7)',
-          'ADRESSE': '#9966ff',
-          'PARTIE_PM': '#ff6600',
-          'AVOCAT': '#ff33cc',
-          'MAGISTRAT': '#ffff00',
+colors = {'PARTIE_PP': '#ff9933',
+          'ADRESSE': '#ff99cc',
+          'PARTIE_PM': '#00ccff',
+          'AVOCAT': '#ccffcc',
+          'MAGISTRAT': '#ccccff',
           # TODO REMOVE CONSEILLER
-          'CONSEILLER': '#ffff00',
-          'PRESIDENT': '#ffff00',
-          'GREFFIER': '#00ff00'}
+          'CONSEILLER': '#ccccff',
+          'PRESIDENT': '#ccccff',
+          'GREFFIER': '#ccccff'}
 options = {'ents': None, 'colors': colors}
 displacy.serve(docs, style='ent', minify=True, port=5000, options=options)

@@ -172,3 +172,9 @@ Mettre en place des regles pour attraper toutes les mentions repérées par le N
 -> comment les ajouter aux résultats ?
 ------
 Trouver les adresses des parties avec certitude
+------
+Nom du tribunal + chambre
+Date de l'arrêt
+RG
+------
+date de naissance

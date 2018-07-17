@@ -6,7 +6,9 @@ from generate_trainset.match_acora import get_acora_object, get_matches
 org_types = r"société(s)?|" \
             r"association|" \
             r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
-            r"e(\.|\s)*u(\.|\s)*rl(\.|\s)*|" \
+            r"e(\.|\s)*u(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            r"e(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
             r"s(\.|\s)*c(\.|\s)*s|" \
             r"s(\.|\s)*n(\.|\s)*c|" \
             r"s(\.|\s)*e(\.|\s)*m|" \
@@ -20,13 +22,15 @@ org_types = r"société(s)?|" \
             r"s(\.|\s)*c(\.|\s)*o(\.|\s)*p(\.|\s)*|" \
             r"s(\.|\s)*e(\.|\s)*l(\.|\s)*|" \
             r"s(\.|\s)*c(\.|\s)*a(\.|\s)*|" \
-            r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
             r"syndic|" \
             r"syndicat|" \
             r"(e|é)tablissement|" \
             r"mutuelle|" \
             r"caisse|" \
-            r"hôpital"
+            r"hôpital|" \
+            r"banque|" \
+            r"compagnie|" \
+            r"compagnie d'assurance"
 
 
 def get_title_case(original_text: str) -> str:
