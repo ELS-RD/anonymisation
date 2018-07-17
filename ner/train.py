@@ -30,7 +30,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -185,8 +185,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-for risk_sentence in to_delete_no_offset_sentences_with_risk:
-    print(risk_sentence)
+# for risk_sentence in to_delete_no_offset_sentences_with_risk:
+#     print(risk_sentence)
 
 for text, tags in doc_annotated:
     if len(tags['entities']) > 0:

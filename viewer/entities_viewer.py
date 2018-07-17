@@ -32,9 +32,6 @@ colors = {'PARTIE_PP': '#ff9933',
           'PARTIE_PM': '#00ccff',
           'AVOCAT': '#ccffcc',
           'MAGISTRAT': '#ccccff',
-          # TODO REMOVE CONSEILLER
-          'CONSEILLER': '#ccccff',
-          'PRESIDENT': '#ccccff',
           'GREFFIER': '#ccccff'}
 options = {'ents': None, 'colors': colors}
 displacy.serve(docs, style='ent', minify=True, port=5000, options=options)

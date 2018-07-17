@@ -15,7 +15,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
     :param batch_size: more = less precise / less time to learn
     :param dropout_rate: more : learn less / better generalization
     """
-    nlp = get_empty_model()
+    nlp = get_empty_model(load_labels_for_training=True)
     optimizer = nlp.begin_training()
     with tqdm(total=n_iter * len(data) / batch_size) as pbar:
         for itn in range(n_iter):

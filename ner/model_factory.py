@@ -1,8 +1,7 @@
 import spacy
 
 # Managed type of tokens
-# TODO REMOVE CONSEILLER
-token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT", "CONSEILLER", "GREFFIER", "ADRESSE"]
+token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT", "GREFFIER", "ADRESSE"]
 
 
 # https://github.com/explosion/spaCy/issues/1032

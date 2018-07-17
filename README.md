@@ -57,8 +57,6 @@ Configuration is done through **resources/config.ini** file
 ### TODO:
 
 - ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
-- randomly remove street in address
-- randomly remove city / postal code in address
 
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
@@ -93,14 +91,6 @@ Tokens [('I.', '', 2), ('SUR', '', 2), ('LA', '', 2), ('DEMANDE', '', 2), ('PRIN
 Entities []
 Tokens [('en', '', 2), ('qualité', '', 2), ('de', '', 2), ('représentante', '', 2), ('légale', '', 2), ('de', '', 2), ('BENDJEBOUR', '', 2), ('Riad', '', 2), (',', '', 2), ('né', '', 2), ('le', '', 2), ('15/08/1997', '', 2), ('à', '', 2), ('TOURS', '', 2), ('(', '', 2), ('37', '', 2), (')', '', 2)]
 
-
-['77400 SAINT THIBAULT DES VIGNES']
-Entities []
-Tokens [('3ème', '', 2), ('étage', '', 2), ('-', '', 2), ('Appart', '', 2), ('.', '', 2), ('38', '', 2), ('-', '', 2), ('77400', '', 2), ('SAINT', '', 2), ('THIBAULT', '', 2), ('DES', '', 2), ('VIGNES', '', 2)]
-['35000 RENNES']
-Entities []
-Tokens [('19C', '', 2), ('Rue', '', 2), ('de', '', 2), ('Brest', '', 2), ('-', '', 2), ('Appart', '', 2), ('5041', '', 2), ('-', '', 2), ('35000', '', 2), ('RENNES', '', 2)]
-['MONTESINOS', 'LARIOS']
 
 
 Approche liste métiers
