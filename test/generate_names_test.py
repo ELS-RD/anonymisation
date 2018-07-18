@@ -40,6 +40,8 @@ def test_extract_company_names():
     assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
     text4 = "La SARL ENZO & ROSSO n'est pas facile à extraire."
     assert get_company_names(text4) == [(3, 21, 'PARTIE_PM')]
+    text5 = "la Caisse Nationale des Caisses d'Epargne était "
+    assert get_company_names(text5) == [(3, 42, "PARTIE_PM")]
 
 
 def test_extend_names():

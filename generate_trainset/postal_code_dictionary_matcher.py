@@ -4,7 +4,7 @@ from generate_trainset.match_acora import get_acora_object, get_matches
 from resources.config_provider import get_config_default
 
 
-def get_postal_code_city_tuples() -> list:
+def get_postal_code_city_list() -> list:
     """
     Build a dictionary of French cities
     :rtype: a set of postal code city name
@@ -18,18 +18,20 @@ def get_postal_code_city_tuples() -> list:
         for line in f1.readlines():
             fields = line.split(";")
             city = fields[1].strip()
-            postal_code = fields[2].strip()
-            results.append(postal_code + " " + city)
+            if len(city) >= 3:
+                postal_code = fields[2].strip()
+                results.append(postal_code + " " + city)
+    assert len(results) > 1000
     results.pop(0)
     return results
 
 
-def get_postal_code_city_matcher():
+def get_postal_code_city_matcher() -> acora._cacora.UnicodeAcora:
     """
     Build a matcher of first name based on a French names dictionary
     :return: Acora matcher
     """
-    postal_code_city_list = get_postal_code_city_tuples()
+    postal_code_city_list = get_postal_code_city_list()
     return get_acora_object(list(postal_code_city_list),
                             ignore_case=True)
 

@@ -3,6 +3,7 @@ from spacy import displacy
 import warnings
 
 from generate_trainset.extract_node_values import get_paragraph_from_file
+from generate_trainset.match_acora import get_acora_object, get_matches
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
 
@@ -16,15 +17,45 @@ nlp = nlp.from_disk(model_dir_path)
 
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
-docs = list()
-for (case_id, text, _, _) in DEV_DATA[0:10]:
-    doc = nlp(text)
-    # doc.user_data['title'] = case_id
-    docs.append(doc)
 
-# https://spacy.io/usage/linguistic-features#section-named-entities
-# check is None
-docs[10].char_span(0, 10, label='PRESIDENT')
+all_docs_to_view = list()
+last_case_spans = dict()
+last_case_docs = list()
+former_case_id = ""
+for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
+    if case_id != former_case_id:
+        last_case_matcher = get_acora_object(content=list(last_case_spans.keys()),
+                                             ignore_case=True)
+
+        for last_case_doc in last_case_docs:
+            matches = get_matches(matcher=last_case_matcher,
+                                  text=last_case_doc.text,
+                                  tag="UNKNOWN")
+            new_offsets = set()
+            for start_offset, end_offset, _ in matches:
+                span_text = last_case_doc.text[start_offset:end_offset]
+                # print(span_text)
+                type_name = last_case_spans[span_text.lower()]
+                # https://spacy.io/usage/linguistic-features#section-named-entities
+                span_doc = last_case_doc.char_span(start_offset, end_offset, label=type_name)
+                if span_doc is not None:
+                    # span will be none if the word is incomplete
+                    new_offsets.add(span_doc)
+
+            all_offsets = set(last_case_doc.ents)
+            all_offsets.update(new_offsets)
+            last_case_doc.ents = all_offsets
+            all_docs_to_view.append(last_case_doc)
+
+        last_case_spans.clear()
+        last_case_docs.clear()
+        former_case_id = case_id
+    spacy_doc = nlp(original_text)
+    # doc.user_data['title'] = case_id
+    all_docs_to_view.append(spacy_doc)
+    last_case_docs.append(spacy_doc)
+    entities_span = [(ent.text.lower(), ent.label_) for ent in spacy_doc.ents]
+    last_case_spans.update(entities_span)
 
 
 colors = {'PARTIE_PP': '#ff9933',
@@ -34,4 +65,4 @@ colors = {'PARTIE_PP': '#ff9933',
           'MAGISTRAT': '#ccccff',
           'GREFFIER': '#ccccff'}
 options = {'ents': None, 'colors': colors}
-displacy.serve(docs, style='ent', minify=True, port=5000, options=options)
+displacy.serve(all_docs_to_view, style='ent', minify=True, port=5000, options=options)

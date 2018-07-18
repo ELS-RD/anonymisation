@@ -129,7 +129,7 @@ def get_matcher_of_clerks_from_headers(current_header: dict, threshold_size: int
 find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
                                                   "("
                                                   "((?i)"
-                                                  "(de |le |la |les |pour |l'|et |en )"
+                                                  "(de |le |la |les |pour |l'|et |en |des |d')"
                                                   ")*"
                                                   "(\()?[A-Z][[:alnum:]-'\.\)]+(\s|/|-|&)*)+"
                                                   ")", flags=regex.VERSION1)
@@ -276,14 +276,6 @@ extract_address_pattern_1 = regex.compile("[\d,\-\s]*"
                                           "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et|d')\s*)?)*",
                                           flags=regex.VERSION1)
 
-# Manage Euros Francs
-# extract_address_pattern_2 = regex.compile("\d{5}\s+"
-#                                           "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et)\s*)?)*",
-#                                           flags=regex.VERSION1)
-
-
-# "(B|b)(â|a)t(\.|iment).+"
-
 
 def get_addresses(text: str) -> list:
     """
@@ -291,9 +283,8 @@ def get_addresses(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_1.finditer(text)]
-    # result2 = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_2.finditer(text)]
-    return result1  # + result2
+    result = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_1.finditer(text)]
+    return result  # + result2
 
 
 extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
