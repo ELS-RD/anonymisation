@@ -6,7 +6,7 @@ from generate_trainset.match_patterns import get_company_names, \
     get_lawyer_name, get_addresses, get_matcher_of_partie_pp_from_headers, \
     get_matcher_of_lawyers_from_headers, \
     get_matcher_of_clerks_from_headers, get_partie_pp, get_all_name_variation, \
-    get_extended_extracted_name_multiple_texts
+    get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
 from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
     get_first_last_name, remove_key_words
 from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher
@@ -284,3 +284,13 @@ def test_remove_key_words():
                                                                        (45, 54, 'AVOCAT')])
 
     assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)
+
+
+def test_find_address_in_paragraph_block():
+    texts = ["popo", "12 rue quelque chose", "12345 CITY", "popo", "", "", "", "", "", "", "", "", "", ""]
+    offsets1 = [[], [], [], [], [], [], [], []]
+    new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
+    assert new_offsets == [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
+    offsets2 = [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
+    new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets2)
+    assert new_offsets2 == offsets2

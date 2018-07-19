@@ -68,26 +68,6 @@ Configuration is done through **resources/config.ini** file
 
 
 
-retirer le de/le... a la fin des noms
-
-
-
-
-Approche liste métiers
-retirer président, conseiller, greffier avocat
-METIER (Monsieur) XXX
-Monsieur XXX, METIER
-http://popoblog.o.p.f.unblog.fr/files/2009/12/mtiers.txt
-https://www.data.gouv.fr/fr/datasets/repertoire-operationnel-des-metiers-et-des-emplois-rome/#_
-https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjp7qHV2pvcAhVMvRQKHVQHCB4QFggoMAA&url=https%3A%2F%2Fwww.federation-auto-entrepreneur.fr%2Fsites%2Fdefault%2Ffiles%2Frevue_metiers.xls&usg=AOvVaw0ncXlEx-4Eo6l5kjkwxdcM
-
-('société AUDIBERT et de la société AMT', 'PARTIE_PM')
-
-
-['Castaing']
-Entities []
-Tokens [('-', '', 2), ('contre', '', 2), ("l'", '', 2), ('architecte', '', 2), ('Castaing', '', 2), ("d'", '', 2), ('une', '', 2), ('action', '', 2), ('en', '', 2), ('paiement', '', 2), ('de', '', 2), ('diverses', '', 2), ('sommes', '', 2)]
-
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -149,10 +129,6 @@ Iter 4
 Expert judiciaire
 
 
------
-Mettre en place des regles pour attraper toutes les mentions repérées par le NER
--> comment les ajouter aux résultats ?
-------
 Trouver les adresses des parties avec certitude
 ------
 Nom du tribunal + chambre
@@ -166,3 +142,6 @@ Tiret dans les noms d avocats
 -------
 Noms qui commencent par [de MAJ...]
 
+retirer le de/le... a la fin des noms
+--- 
+Documenter les sources du training set

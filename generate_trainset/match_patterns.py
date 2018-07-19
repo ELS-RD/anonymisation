@@ -266,23 +266,27 @@ def get_lawyer_name(text: str) -> list:
     return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
 
 
-extract_address_pattern_1 = regex.compile("([\d][\d,/\-\s]*)?"
-                                          "("
-                                          "(?i)(rue|boulevard|bd\.?|av.?|avenue|allée|quai|"
-                                          "(?<!(à la |en lieu et ))place|zi|zone industrielle)"
-                                          "(\s(de|d'|du|des))?"
-                                          "(\s(l'))?"
-                                          ")"
-                                          "\s*"
-                                          "([A-ZÉÈ]+[[:alnum:]-\.']*"
-                                          "(\s*(de|le|la|les|et|d'))?"
-                                          "\s*)+"
-                                          "[,\-\sà]*\d*\s*"
-                                          "("
-                                          "[A-Z]+[[:alnum:]-\.]*\s*-?\s*"
-                                          "((de|le|la|les|et|d')\s*)?"
-                                          ")*",
-                                          flags=regex.VERSION1)
+places_pattern = ("rue|boulevard|bd\.?|av(\.|e)?|avenue|allée|quai|"
+                  "(?<!(à la |en lieu et ))place|zi|zone industrielle")
+
+extract_address_pattern = regex.compile("([\d][\d,/\-\s]*)?"
+                                        "("
+                                        "(?i)\\b(" +
+                                        places_pattern +
+                                        ")\\b"
+                                        "(\s(de|d'|du|des))?"
+                                        "(\s(l'))?"
+                                        ")"
+                                        "\s*"
+                                        "([A-ZÉÈ]+[[:alnum:]-\.']*"
+                                        "(\s*(de|le|la|les|et|d'|du))?"
+                                        "\s*)+"
+                                        "[,\-\sà]*\d*\s*"
+                                        "("
+                                        "[A-Z]+[[:alnum:]-\.]*\s*-?\s*"
+                                        "((de|le|la|les|et|d'|du)\s*)?"
+                                        ")*",
+                                        flags=regex.VERSION1)
 
 
 def get_addresses(text: str) -> list:
@@ -291,8 +295,39 @@ def get_addresses(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern_1.finditer(text)]
-    return result  # + result2
+    result = [(t.start(), t.end(), "ADRESSE") for t in extract_address_pattern.finditer(text)]
+    return result
+
+
+contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1)
+start_with_postal_code = regex.compile("^\d{5} (?!Euro|Franc|Fr )[A-Z]", flags=regex.VERSION1)
+
+
+def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
+    """
+    Search a multi paragraph pattern of address in the first third of a case:
+    - a line mentioning a street
+    - followed by a line starting with a postal code
+    :param texts:
+    :param offsets:
+    :return:
+    """
+    limit = int(len(texts) / 3)
+    for (index, (text, current_offsets)) in enumerate(zip(texts, offsets)):
+        if index > limit:
+            return offsets
+        elif (index >= 1) and \
+                (len(text) < 100) and \
+                (len(texts[index - 1]) < 100) and \
+                ((len(offsets[index - 1]) == 0) or (len(offsets[index]) == 0)) and \
+                (start_with_postal_code.search(text) is not None) and \
+                (contain_place_pattern.search(texts[index - 1]) is not None):
+            if len(offsets[index - 1]) == 0:
+                offset_street = (0, len(texts[index - 1]) - 1, "ADRESSE")
+                offsets[index - 1].append(offset_street)
+            if len(offsets[index]) == 0:
+                postal_code_city = (0, len(text) - 1, "ADRESSE")
+                offsets[index].append(postal_code_city)
 
 
 extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",

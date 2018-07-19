@@ -14,7 +14,7 @@ from generate_trainset.match_patterns import get_company_names, get_extend_extra
     get_addresses, get_matcher_of_partie_pm_from_headers, get_matcher_of_partie_pp_from_headers, \
     get_matcher_of_lawyers_from_headers, get_matcher_of_president_from_headers, \
     get_matcher_of_conseiller_from_headers, get_matcher_of_clerks_from_headers, get_partie_pp, \
-    get_all_name_variation, get_extended_extracted_name_multiple_texts
+    get_all_name_variation, get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher, get_postal_code_matches
@@ -122,6 +122,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     # if """L'altercation avec Alexandre et la violence des propos et du geste de la salariée est attestée par Alexandre PAUL""".lower() in current_paragraph.lower():
                     #     raise Exception("SSSSTOP")
 
+                last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
+                                                                            offsets=last_document_offsets)
+
             if len(last_document_offsets) > 0:
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_document_offsets,
@@ -191,7 +194,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
-
 
 for text, tags in doc_annotated:
     if len(tags['entities']) > 0:
