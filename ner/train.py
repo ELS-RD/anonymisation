@@ -30,7 +30,7 @@ dropout_rate = float(config_training["dropout_rate"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -102,6 +102,13 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                         normalized_offsets = normalize_offsets(all_matches)
                         last_document_texts.append(current_paragraph)
                         last_document_offsets.append(normalized_offsets)
+
+                        # for start_offset, end_offset, type_name in normalized_offsets:
+                        #     if type_name == "ADRESSE":
+                        #         span_text = current_paragraph[start_offset:end_offset]
+                        #         if "Madame" in span_text:
+                        #             print(span_text)
+                        #             to_delete_address.append((span_text, normalized_offsets, current_paragraph))
 
                     elif current_paragraph.isupper() and len(current_paragraph) > 10:
                         # add empty title paragraph to avoid fake solution
@@ -185,8 +192,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-# for risk_sentence in to_delete_no_offset_sentences_with_risk:
-#     print(risk_sentence)
 
 for text, tags in doc_annotated:
     if len(tags['entities']) > 0:

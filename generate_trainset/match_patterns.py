@@ -266,14 +266,22 @@ def get_lawyer_name(text: str) -> list:
     return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
 
 
-extract_address_pattern_1 = regex.compile("[\d,\-\s]*"
-                                          "((?i)(rue|boulevard|bd.?|av.?|avenue|allée|quai|place)(\s+(de||d'))?)"
+extract_address_pattern_1 = regex.compile("([\d][\d,/\-\s]*)?"
+                                          "("
+                                          "(?i)(rue|boulevard|bd\.?|av.?|avenue|allée|quai|"
+                                          "(?<!(à la |en lieu et ))place|zi|zone industrielle)"
+                                          "(\s(de|d'|du|des))?"
+                                          "(\s(l'))?"
+                                          ")"
                                           "\s*"
-                                          "([A-Z]+[[:alnum:]-\.]*"
+                                          "([A-ZÉÈ]+[[:alnum:]-\.']*"
                                           "(\s*(de|le|la|les|et|d'))?"
                                           "\s*)+"
-                                          "[,\-\sà]*\d*\s+"
-                                          "([A-Z]+[[:alnum:]-\.]*\s*-?\s*((de|le|la|les|et|d')\s*)?)*",
+                                          "[,\-\sà]*\d*\s*"
+                                          "("
+                                          "[A-Z]+[[:alnum:]-\.]*\s*-?\s*"
+                                          "((de|le|la|les|et|d')\s*)?"
+                                          ")*",
                                           flags=regex.VERSION1)
 
 

@@ -46,16 +46,17 @@ def normalize_offsets(offsets: list) -> list:
 def tag_priority(previous_tag: str, current_tag: str) -> str:
     """
     Apply some rules to decide which tag to keep when merging 2 offsets
-    :param previous_tag: tag as a string
+    :param previous_tag: tag as a string starting the earliest (start character of the offset)
     :param current_tag: tag as a string
     :return: the selected tag
     """
-    if previous_tag in ["PARTIE_PP", "ADRESSE"]:
-        return previous_tag
-    elif current_tag in ["PARTIE_PP", "ADRESSE"]:
-        return current_tag
-    else:
-        return previous_tag
+    return previous_tag
+    # if previous_tag in ["PARTIE_PP", "ADRESSE"]:
+    #     return previous_tag
+    # elif current_tag in ["PARTIE_PP", "ADRESSE"]:
+    #     return current_tag
+    # else:
+    #     return previous_tag
 
 
 def remove_offset_space(text: str, offsets: list):

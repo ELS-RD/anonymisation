@@ -161,10 +161,8 @@ RG
 ------
 date de naissance
 -------
-https://spacy.io/usage/linguistic-features#setting-entities
-https://spacy.io/api/goldparse#biluo_tags_from_offsets
--------
-Chercher les mentions de Madame dans les offsets dans le fichier Train et identifier la source du bug
--------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
+-------
+Noms qui commencent par [de MAJ...]
+
