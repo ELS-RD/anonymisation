@@ -55,17 +55,13 @@ Configuration is done through **resources/config.ini** file
 
 ### TODO:
 
-- Use a dict + TRIE to find les MAGISTRATS, GREFFIERS, PM
-- ajout aléatoire de phrase sans offset (5% pour pas fausser si mal parsé) ? utile ?
+- Use a dict + TRIE to find les MAGISTRATS, GREFFIERS, PM (> 100 occurences) -> serialize dataset
 
+- Nom du tribunal + chambre // Date de l'arrêt // RG
 - implement prediction with multi thread (pipe) V2.1 ?
 - search for phone number, social security number, etc. 
-- train with all matches (?)
-- build a dict of common PM (> 100 occurences) and match everywhere against this matcher
-- ajout Dr et Prof dans les recherches
-- ajouter les rapporteurs
-- ajouter les experts (qui font aussi un rapport)
-
+- Add rapporteurs / experts (close to word rapport)
+- date de naissance
 
 
 
@@ -126,22 +122,12 @@ Iter 4
 57819it [8:29:44,  1.85it/s]{'ner': 40.70850695853477}
 57820it [8:29:44,  2.42it/s]
 ----------------------
-Expert judiciaire
 
-
-Trouver les adresses des parties avec certitude
-------
-Nom du tribunal + chambre
-Date de l'arrêt
-RG
-------
-date de naissance
 -------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------
 Noms qui commencent par [de MAJ...]
-
 retirer le de/le... a la fin des noms
 --- 
 Documenter les sources du training set

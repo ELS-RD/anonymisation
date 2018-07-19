@@ -7,68 +7,31 @@ from generate_trainset.match_patterns import get_company_names, \
     get_matcher_of_lawyers_from_headers, \
     get_matcher_of_clerks_from_headers, get_partie_pp, get_all_name_variation, \
     get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
-from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, get_last_name, \
-    get_first_last_name, remove_key_words
+from generate_trainset.modify_strings import get_last_name, \
+    get_first_last_name
 from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher
 from resources.config_provider import get_config_default
 
 
-def test_remove_corp_name():
-    assert remove_corp("SA Toto") == "Toto"
-    assert remove_corp("SA Toto Titi") == "Toto Titi"
+def test_find_address_in_paragraph_block():
+    texts = ["popo", "12 rue quelque chose", "12345 CITY", "popo", "", "", "", "", "", "", "", "", "", ""]
+    offsets1 = [[], [], [], [], [], [], [], []]
+    new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
+    assert new_offsets == [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
+    offsets2 = [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
+    new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets2)
+    assert new_offsets2 == offsets2
 
 
-def test_extract_family_name():
-    assert get_last_name("Mic BEN TITI") == "BEN TITI"
-    assert get_last_name(" Mic BEN TITI ") == "BEN TITI"
-    assert get_last_name("Mic BEN") == "BEN"
-    assert get_last_name("Mic BENp") == ""
-    assert get_first_last_name("Mic BEN TITI") == ("Mic", "BEN TITI")
-    assert get_first_last_name(" Mic BEN TITI ") == ("Mic", "BEN TITI")
-
-
-def test_title_case():
-    assert get_title_case("mic ben toto") == "Mic Ben Toto"
-
-
-def test_extract_company_names():
-    text1 = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
-    assert get_company_names(text1) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
-    text2 = "Vu l'absence de l'Association pour l'Insertion et l'Accompagnement en Limousin (ASIIAL) assignée ;"
-    assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
-    text3 = "Condamner solidairement les Sociétés OCM et OCS aux entiers dépens."
-    assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
-    text4 = "La SARL ENZO & ROSSO n'est pas facile à extraire."
-    assert get_company_names(text4) == [(3, 21, 'PARTIE_PM')]
-    text5 = "la Caisse Nationale des Caisses d'Epargne était "
-    assert get_company_names(text5) == [(3, 42, "PARTIE_PM")]
-
-
-def test_extend_names():
-    text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
-    texts = [text]
-    offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
-    offset_expected_result = [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
-    pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
-    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == offset_expected_result
-
-    assert get_extended_extracted_name_multiple_texts(texts=texts,
-                                                      offsets=offsets,
-                                                      type_name='PARTIE_PP') == [[(4, 18, 'PARTIE_PP'),
-                                                                                  (28, 43, 'PARTIE_PP'),
-                                                                                  (11, 18, 'PARTIE_PP'),
-                                                                                  (48, 55, 'PARTIE_PP')]]
-
-
-def test_random_case_change():
-    text = "La Banque est fermée"
-    offsets = [(3, 9, "PARTIE_PP")]
-
-    results = [random_case_change(text, offsets, 100) for _ in range(1, 100)]
-
-    assert "La Banque est fermée" in results
-    assert "La banque est fermée" in results
-    assert "La BANQUE est fermée" in results
+def test_match_sub_pattern():
+    texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
+    offsets = [[(13, 28, "PARTIE_PP")], [], []]
+    assert get_all_name_variation(texts, offsets, threshold_span_size=4) == [[(13, 20, 'PARTIE_PP'),
+                                                                              (13, 28, 'PARTIE_PP'),
+                                                                              (21, 28, 'PARTIE_PP'),
+                                                                              (13, 28, 'PARTIE_PP')],
+                                                                             [(0, 7, 'PARTIE_PP')],
+                                                                             [(12, 19, 'PARTIE_PP')]]
 
 
 def test_extract_judge_names():
@@ -262,35 +225,40 @@ def test_match_partie_pp_regex():
     assert get_partie_pp(text10) == [(13, 29, 'PARTIE_PP')]
 
 
-def test_match_sub_pattern():
-    texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
-    offsets = [[(13, 28, "PARTIE_PP")], [], []]
-    assert get_all_name_variation(texts, offsets, threshold_span_size=4) == [[(13, 20, 'PARTIE_PP'),
-                                                                              (13, 28, 'PARTIE_PP'),
-                                                                              (21, 28, 'PARTIE_PP'),
-                                                                              (13, 28, 'PARTIE_PP')],
-                                                                             [(0, 7, 'PARTIE_PP')],
-                                                                             [(12, 19, 'PARTIE_PP')]]
+def test_extract_company_names():
+    text1 = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
+    assert get_company_names(text1) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
+    text2 = "Vu l'absence de l'Association pour l'Insertion et l'Accompagnement en Limousin (ASIIAL) assignée ;"
+    assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
+    text3 = "Condamner solidairement les Sociétés OCM et OCS aux entiers dépens."
+    assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
+    text4 = "La SARL ENZO & ROSSO n'est pas facile à extraire."
+    assert get_company_names(text4) == [(3, 21, 'PARTIE_PM')]
+    text5 = "la Caisse Nationale des Caisses d'Epargne était "
+    assert get_company_names(text5) == [(3, 42, "PARTIE_PM")]
 
 
-def test_remove_key_words():
-    text = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
-           "avocat au barreau de PARIS, toque: B1132"
-    offsets = [(22, 44, "AVOCAT"), (51, 60, "AVOCAT")]
-    assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
-                                                                      'et Toto TITI, avocat au barreau de PARIS, '
-                                                                      'toque: B1132',
-                                                                      [(19, 41, 'AVOCAT'),
-                                                                       (45, 54, 'AVOCAT')])
+def test_extend_names():
+    text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
+    texts = [text]
+    offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
+    offset_expected_result = [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
+    pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
+    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == offset_expected_result
 
-    assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)
+    assert get_extended_extracted_name_multiple_texts(texts=texts,
+                                                      offsets=offsets,
+                                                      type_name='PARTIE_PP') == [[(4, 18, 'PARTIE_PP'),
+                                                                                  (28, 43, 'PARTIE_PP'),
+                                                                                  (11, 18, 'PARTIE_PP'),
+                                                                                  (48, 55, 'PARTIE_PP')]]
 
 
-def test_find_address_in_paragraph_block():
-    texts = ["popo", "12 rue quelque chose", "12345 CITY", "popo", "", "", "", "", "", "", "", "", "", ""]
-    offsets1 = [[], [], [], [], [], [], [], []]
-    new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
-    assert new_offsets == [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
-    offsets2 = [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
-    new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets2)
-    assert new_offsets2 == offsets2
+def test_extract_family_name():
+    assert get_last_name("Mic BEN TITI") == "BEN TITI"
+    assert get_last_name(" Mic BEN TITI ") == "BEN TITI"
+    assert get_last_name("Mic BEN") == "BEN"
+    assert get_last_name("Mic BENp") == ""
+    assert get_first_last_name("Mic BEN TITI") == ("Mic", "BEN TITI")
+    assert get_first_last_name(" Mic BEN TITI ") == ("Mic", "BEN TITI")
+
