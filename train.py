@@ -1,8 +1,3 @@
-# coding: utf8
-
-# https://github.com/explosion/spaCy/issues/1530
-
-
 from tqdm import tqdm
 import pickle
 from generate_trainset.extract_header_values import parse_xml_headers
@@ -31,7 +26,7 @@ training_set_export_path = config_training["training_set"]
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
