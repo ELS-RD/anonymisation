@@ -299,20 +299,20 @@ def get_addresses(text: str) -> list:
     return result
 
 
-contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1)
-start_with_postal_code = regex.compile("^\d{5} (?!Euro|Franc|Fr )[A-Z]", flags=regex.VERSION1)
+# contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1 | regex.IGNORECASE)
+start_with_postal_code = regex.compile("^\s*\d{5} (?!Euro.* |Franc.* |Fr )[A-Z]", flags=regex.VERSION1)
 
 
 def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
     """
-    Search a multi paragraph pattern of address in the first third of a case:
+    Search a multi paragraph pattern of address in the first half of a case:
     - a line mentioning a street
     - followed by a line starting with a postal code
     :param texts:
     :param offsets:
     :return:
     """
-    limit = int(len(texts) / 3)
+    limit = int(len(texts) / 2)
     for (index, (text, current_offsets)) in enumerate(zip(texts, offsets)):
         if index > limit:
             return offsets
@@ -320,14 +320,17 @@ def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
                 (len(text) < 100) and \
                 (len(texts[index - 1]) < 100) and \
                 ((len(offsets[index - 1]) == 0) or (len(offsets[index]) == 0)) and \
-                (start_with_postal_code.search(text) is not None) and \
-                (contain_place_pattern.search(texts[index - 1]) is not None):
+                (start_with_postal_code.search(text) is not None):
+            # and \
+            #     (contain_place_pattern.search(texts[index - 1]) is not None):
             if len(offsets[index - 1]) == 0:
                 offset_street = (0, len(texts[index - 1]) - 1, "ADRESSE")
                 offsets[index - 1].append(offset_street)
             if len(offsets[index]) == 0:
                 postal_code_city = (0, len(text) - 1, "ADRESSE")
                 offsets[index].append(postal_code_city)
+    # reached when offsets is empty
+    return offsets
 
 
 extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alnum:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",

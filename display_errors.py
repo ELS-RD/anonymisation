@@ -7,7 +7,7 @@ from resources.config_provider import get_config_default
 config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]
 xml_dev_path = config_training["xml_dev_path"]
-nlp = get_empty_model()
+nlp = get_empty_model(load_labels_for_training=False)
 nlp = nlp.from_disk(model_dir_path)
 
 DEV_DATA = get_paragraph_from_file(xml_dev_path,

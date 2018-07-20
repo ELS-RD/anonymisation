@@ -14,11 +14,11 @@ from resources.config_provider import get_config_default
 
 
 def test_find_address_in_paragraph_block():
-    texts = ["popo", "12 rue quelque chose", "12345 CITY", "popo", "", "", "", "", "", "", "", "", "", ""]
+    texts = ["popo", "9, rue Amiral Hamelin", "75783 PARIS", "popo", "", "", "", "", "", "", "", "", "", ""]
     offsets1 = [[], [], [], [], [], [], [], []]
     new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
-    assert new_offsets == [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
-    offsets2 = [[], [(0, 19, 'ADRESSE')], [(0, 9, 'ADRESSE')], [], [], [], [], []]
+    assert new_offsets == [[], [(0, 20, 'ADRESSE')], [(0, 10, 'ADRESSE')], [], [], [], [], []]
+    offsets2 = [[], [(0, 20, 'ADRESSE')], [(0, 10, 'ADRESSE')], [], [], [], [], []]
     new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets2)
     assert new_offsets2 == offsets2
 

@@ -4,7 +4,7 @@
 
 
 from tqdm import tqdm
-
+import pickle
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
@@ -27,10 +27,11 @@ model_dir_path = config_training["model_dir_path"]
 n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
+training_set_export_path = config_training["training_set"]
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -122,9 +123,11 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     # if """L'altercation avec Alexandre et la violence des propos et du geste de la salariée est attestée par Alexandre PAUL""".lower() in current_paragraph.lower():
                     #     raise Exception("SSSSTOP")
 
-                last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
-                                                                            offsets=last_document_offsets)
-
+            last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
+                                                                        offsets=last_document_offsets)
+            # TODO delete when not required
+            if last_document_offsets is None:
+                print(last_document_texts)
             if len(last_document_offsets) > 0:
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_document_offsets,
@@ -202,6 +205,9 @@ for text, tags in doc_annotated:
             print(start, end, text[start:end], type_name, text, sep="|")
 
 print("Number of tags:", sum([len(i[1]['entities']) for i in doc_annotated]))
+
+with open(training_set_export_path, 'wb') as export_training_set_file:
+    pickle.dump(doc_annotated, export_training_set_file)
 
 train_model(data=doc_annotated,
             folder_to_save_model=model_dir_path,
