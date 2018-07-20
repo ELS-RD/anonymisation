@@ -1,3 +1,5 @@
+from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
+    get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, get_first_name_matches
 from generate_trainset.match_acora import get_matches
@@ -262,3 +264,10 @@ def test_extract_family_name():
     assert get_first_last_name("Mic BEN TITI") == ("Mic", "BEN TITI")
     assert get_first_last_name(" Mic BEN TITI ") == ("Mic", "BEN TITI")
 
+
+def test_frequent_entities():
+    freq_entities = {"benesty": "AVOCAT", "jessica": "PARTIE_PP"}
+    matcher = get_frequent_entities_matcher(content=freq_entities)
+    text = "Me Benesty rencontre son client Jessica."
+    assert get_frequent_entities_matches(matcher=matcher, frequent_entities_dict=freq_entities, text=text) == \
+           [(3, 10, 'AVOCAT'), (32, 39, 'PARTIE_PP')]

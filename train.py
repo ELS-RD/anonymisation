@@ -1,9 +1,12 @@
 from tqdm import tqdm
 import pickle
+
+from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
+    get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
-from generate_trainset.match_acora import get_matches
+from generate_trainset.match_acora import get_matches, get_acora_object
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_matcher_of_partie_pm_from_headers, get_matcher_of_partie_pp_from_headers, \
@@ -49,6 +52,17 @@ last_document_texts = list()
 # TODO to delete when ready
 to_delete_no_offset_sentences_with_risk = list()
 
+train_dataset = True
+
+if not train_dataset:
+    # Disable this part to generate a new set of entities
+    frequent_entities_dict = get_frequent_entities(path_trainset=training_set_export_path,
+                                                   threshold_occurrences=100)
+else:
+    frequent_entities_dict = dict()
+
+frequent_entities_matcher = get_frequent_entities_matcher(content=frequent_entities_dict)
+
 with tqdm(total=len(case_header_content)) as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
@@ -80,6 +94,9 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                   text=current_paragraph)
                     addresses = get_addresses(current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
+                    frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
+                                                                      frequent_entities_dict=frequent_entities_dict,
+                                                                      text=current_paragraph)
 
                     all_matches = (match_from_headers +
                                    current_xml_offset +
@@ -91,6 +108,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    partie_pp +
                                    first_name_matches +
                                    postal_code_matches +
+                                   frequent_entities +
                                    addresses)
 
                     if len(all_matches) > 0:
@@ -201,11 +219,13 @@ for text, tags in doc_annotated:
 
 print("Number of tags:", sum([len(i[1]['entities']) for i in doc_annotated]))
 
-with open(training_set_export_path, 'wb') as export_training_set_file:
-    pickle.dump(doc_annotated, export_training_set_file)
+if train_dataset:
+    train_model(data=doc_annotated,
+                folder_to_save_model=model_dir_path,
+                n_iter=n_iter,
+                batch_size=batch_size,
+                dropout_rate=dropout_rate)
+else:
+    with open(training_set_export_path, 'wb') as export_training_set_file:
+        pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
 
-train_model(data=doc_annotated,
-            folder_to_save_model=model_dir_path,
-            n_iter=n_iter,
-            batch_size=batch_size,
-            dropout_rate=dropout_rate)

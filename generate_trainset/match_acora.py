@@ -2,7 +2,7 @@ import acora
 from acora import AcoraBuilder
 
 
-def get_acora_object(content: list, ignore_case: bool):
+def get_acora_object(content: list, ignore_case: bool) -> acora._cacora.UnicodeAcora:
     """
     Acora matcher factory
     :param content: a list of items to search

@@ -4,8 +4,13 @@ import spacy
 token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT", "GREFFIER", "ADRESSE"]
 
 
-# https://github.com/explosion/spaCy/issues/1032
 def prevent_sentence_boundary_detection(doc):
+    """
+    Disable the sentence splitting done by Spacy
+    More info: https://github.com/explosion/spaCy/issues/1032
+    :param doc: a Spacy doc
+    :return: a disable sentence splitting Spacy doc
+    """
     for token in doc:
         # This will entirely disable spaCy's sentence detection
         token.is_sent_start = False
