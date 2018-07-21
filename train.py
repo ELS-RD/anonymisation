@@ -1,12 +1,13 @@
-from tqdm import tqdm
 import pickle
+
+from tqdm import tqdm
 
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
-from generate_trainset.match_acora import get_matches, get_acora_object
+from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_matcher_of_partie_pm_from_headers, get_matcher_of_partie_pp_from_headers, \
@@ -29,7 +30,7 @@ training_set_export_path = config_training["training_set"]
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()

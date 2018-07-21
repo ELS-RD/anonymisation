@@ -103,14 +103,11 @@ All the project configuration is done through `resources/config.ini` file (mainl
 
 ### TODO:
 
-- Use a dict + TRIE to find les MAGISTRATS, GREFFIERS, PM (> 100 occurences) -> serialize dataset
-
 - Nom du tribunal + chambre // Date de l'arrêt // RG
 - implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530
 - search for phone number, social security number, etc. 
 - Add rapporteurs / experts (close to word rapport)
 - date de naissance
-
 
 
 Number of tags: 1773909
@@ -186,6 +183,40 @@ Iter 4
 58916it [8:51:00,  2.00it/s]
 {'ner': 41.01037724554021}
 -------
+Number of tags: 1838488
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+  0%|          | 0/147282.1 [00:00<?, ?it/s]
+Iter 1
+ 10%|▉         | 14728/147282.1 [2:08:14<18:56:38,  1.94it/s]{'ner': 66.24498462381916}
+
+Iter 2
+ 20%|██        | 29458/147282.1 [4:17:05<14:30:56,  2.25it/s]{'ner': 45.65171872189785}
+
+Iter 3
+ 30%|███       | 44187/147282.1 [6:26:10<12:32:49,  2.28it/s]{'ner': 41.7875151321731}
+
+Iter 4
+ 40%|████      | 58915/147282.1 [8:38:55<13:11:23,  1.86it/s]{'ner': 39.87230896325718}
+
+Iter 5
+ 50%|█████     | 73645/147282.1 [10:52:38<8:17:44,  2.47it/s] {'ner': 38.66143961688948}
+
+Iter 6
+ 60%|██████    | 88373/147282.1 [13:06:16<8:45:27,  1.87it/s]{'ner': 37.84853459032075}
+
+Iter 7
+ 70%|███████   | 103103/147282.1 [15:20:09<4:59:31,  2.46it/s]{'ner': 37.12548023300906}
+
+Iter 8
+ 80%|████████  | 117832/147282.1 [17:33:47<3:32:43,  2.31it/s]{'ner': 36.63719058544939}
+
+Iter 9
+ 90%|█████████ | 132560/147282.1 [19:47:40<2:16:39,  1.80it/s]{'ner': 36.07416604219725}
+
+Iter 10
+147289it [22:01:32,  1.91it/s]{'ner': 35.80839124857698}
+147290it [22:01:32,  2.25it/s]
+---------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------

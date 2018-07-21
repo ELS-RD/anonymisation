@@ -16,13 +16,19 @@ from resources.config_provider import get_config_default
 
 
 def test_find_address_in_paragraph_block():
-    texts = ["popo", "9, rue Amiral Hamelin", "75783 PARIS", "popo", "", "", "", "", "", "", "", "", "", ""]
+    texts = ["popo", "Zone Industrielle de Rossignol", "47110 SAINTE LIVRADE SUR LOT", "popo", "", "", "", "", "", "", "", "", "", ""]
     offsets1 = [[], [], [], [], [], [], [], []]
     new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
-    assert new_offsets == [[], [(0, 20, 'ADRESSE')], [(0, 10, 'ADRESSE')], [], [], [], [], []]
-    offsets2 = [[], [(0, 20, 'ADRESSE')], [(0, 10, 'ADRESSE')], [], [], [], [], []]
-    new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets2)
-    assert new_offsets2 == offsets2
+    expected_result = [[], [(0, 30, 'ADRESSE')], [(0, 28, 'ADRESSE')], [], [], [], [], []]
+    offsets3 = [[], [], [(0, 28, 'ADRESSE')], [], [], [], [], []]
+    offsets4 = [[], [(0, 30, 'ADRESSE')], [], [], [], [], [], []]
+    assert new_offsets == expected_result
+    new_offsets2 = find_address_in_block_of_paragraphs(texts=texts, offsets=expected_result)
+    assert new_offsets2 == expected_result
+    new_offsets3 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets3)
+    assert new_offsets3 == expected_result
+    new_offsets4 = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets4)
+    assert new_offsets4 == expected_result
 
 
 def test_match_sub_pattern():
