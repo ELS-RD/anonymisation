@@ -1,7 +1,8 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, get_first_name_matches
+from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, \
+    get_first_name_matches
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
@@ -16,7 +17,8 @@ from resources.config_provider import get_config_default
 
 
 def test_find_address_in_paragraph_block():
-    texts = ["popo", "Zone Industrielle de Rossignol", "47110 SAINTE LIVRADE SUR LOT", "popo", "", "", "", "", "", "", "", "", "", ""]
+    texts = ["popo", "Zone Industrielle de Rossignol", "47110 SAINTE LIVRADE SUR LOT", "popo", "", "", "", "", "", "",
+             "", "", "", ""]
     offsets1 = [[], [], [], [], [], [], [], []]
     new_offsets = find_address_in_block_of_paragraphs(texts=texts, offsets=offsets1)
     expected_result = [[], [(0, 30, 'ADRESSE')], [(0, 28, 'ADRESSE')], [], [], [], [], []]
@@ -247,19 +249,27 @@ def test_extract_company_names():
 
 
 def test_extend_names():
-    text = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
-    texts = [text]
-    offsets = [[(11, 18, "PARTIE_PP"), (48, 55, "PARTIE_PP")]]
-    offset_expected_result = [(4, 18, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
-    pattern = get_extend_extracted_name_pattern(texts=texts, offsets=offsets, type_name_to_keep='PARTIE_PP')
-    assert get_extended_extracted_name(text=text, pattern=pattern, type_name='PARTIE_PP') == offset_expected_result
+    text1 = "Mme Jessica SABBA épouse M. Mic Mac BENESTY"
+    texts1 = [text1]
+    offsets1 = [[(12, 17, "PARTIE_PP"), (36, 43, "PARTIE_PP")]]
+    offset_expected_result = [(4, 17, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
+    pattern1 = get_extend_extracted_name_pattern(texts=texts1, offsets=offsets1, type_name_to_keep='PARTIE_PP')
+    assert get_extended_extracted_name(text=text1, pattern=pattern1, type_name='PARTIE_PP') == offset_expected_result
 
-    assert get_extended_extracted_name_multiple_texts(texts=texts,
-                                                      offsets=offsets,
-                                                      type_name='PARTIE_PP') == [[(4, 18, 'PARTIE_PP'),
+    assert get_extended_extracted_name_multiple_texts(texts=texts1,
+                                                      offsets=offsets1,
+                                                      type_name='PARTIE_PP') == [[(4, 17, 'PARTIE_PP'),
                                                                                   (28, 43, 'PARTIE_PP'),
-                                                                                  (11, 18, 'PARTIE_PP'),
-                                                                                  (48, 55, 'PARTIE_PP')]]
+                                                                                  (12, 17, 'PARTIE_PP'),
+                                                                                  (36, 43, 'PARTIE_PP')]]
+
+    text2 = "Le testament de Wolfgang REUTHER est établi en Allemagne."
+    texts2 = [text2]
+    offsets2 = [[(25, 32, "PARTIE_PP")]]
+    # Should not match because it is not preceded by Monsieur / Madame
+    expected_offsets2 = []
+    pattern2 = get_extend_extracted_name_pattern(texts=texts2, offsets=offsets2, type_name_to_keep='PARTIE_PP')
+    assert get_extended_extracted_name(text=text2, pattern=pattern2, type_name='PARTIE_PP') == expected_offsets2
 
 
 def test_extract_family_name():

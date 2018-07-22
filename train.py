@@ -19,6 +19,7 @@ from generate_trainset.normalize_offset import normalize_offsets, remove_offset_
 from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher, get_postal_code_matches
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
+from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
@@ -30,7 +31,7 @@ training_set_export_path = config_training["training_set"]
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -118,13 +119,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                         last_document_texts.append(current_paragraph)
                         last_document_offsets.append(normalized_offsets)
 
-                        # for start_offset, end_offset, type_name in normalized_offsets:
-                        #     if type_name == "ADRESSE":
-                        #         span_text = current_paragraph[start_offset:end_offset]
-                        #         if "Madame" in span_text:
-                        #             print(span_text)
-                        #             to_delete_address.append((span_text, normalized_offsets, current_paragraph))
-
                     elif current_paragraph.isupper() and len(current_paragraph) > 10:
                         # add empty title paragraph to avoid fake solution
                         last_document_texts.append(current_paragraph)
@@ -134,18 +128,17 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
                         to_delete_no_offset_sentences_with_risk.append(current_paragraph)
 
-                    # if """L'altercation avec Alexandre et la violence des propos et du geste de la salariée est attestée par Alexandre PAUL""".lower() in current_paragraph.lower():
-                    #     raise Exception("SSSSTOP")
-
             last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
                                                                         offsets=last_document_offsets)
             # TODO delete when not required
             if last_document_offsets is None:
                 print(last_document_texts)
             if len(last_document_offsets) > 0:
+
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_document_offsets,
                                                                   threshold_span_size=4)
+                orginal_l = last_doc_offset_with_var.copy()
 
                 last_doc_with_extended_pp_offsets = get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
@@ -180,10 +173,12 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                              zip(last_doc_remove_keywords_text,
                                                  last_doc_remove_keywords_offsets)]
 
+                last_doc_remove_keywords_offsets_norm = [normalize_offsets(off) for off in last_doc_remove_keywords_offsets]
+
                 # , "case_id": previous_case_id
                 [doc_annotated.append((txt, {'entities': off})) for txt, off in
                  zip(last_doc_txt_case_updated,
-                     last_doc_remove_keywords_offsets)]
+                     last_doc_remove_keywords_offsets_norm)]
 
                 last_document_texts.clear()
                 last_document_offsets.clear()
@@ -229,4 +224,8 @@ if train_dataset:
 else:
     with open(training_set_export_path, 'wb') as export_training_set_file:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Display training set
+docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
+view_spacy_docs(docs)
 

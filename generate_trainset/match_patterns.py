@@ -129,7 +129,7 @@ def get_matcher_of_clerks_from_headers(current_header: dict, threshold_size: int
 find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
                                                   "("
                                                   "((?i)"
-                                                  "(de |le |la |les |pour |l'|et |en |des |d')"
+                                                  "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
                                                   ")*"
                                                   "(\()?[A-Z][[:alnum:]-'\.\)]+(\s|/|-|&)*)+"
                                                   ")", flags=regex.VERSION1)
@@ -149,7 +149,7 @@ translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  #
 
 def get_extend_extracted_name_pattern(texts: list, offsets: list, type_name_to_keep: str) -> regex.Regex:
     """
-    Extend names to include first and last name
+    Extend names to include first and last name when explicitely preceded by Monsieur / Madame
     :param type_name_to_keep: filter on type name
     :param texts: original text
     :param offsets: discovered offsets from other methods.
@@ -182,6 +182,13 @@ def get_extended_extracted_name(text: str, pattern: regex.Regex, type_name: str)
 
 
 def get_extended_extracted_name_multiple_texts(texts: list, offsets: list, type_name: str) -> list:
+    """
+    Extend known names for a list of texts and offsets
+    :param texts: list of original texts
+    :param offsets: list of original offsets
+    :param type_name: filter on the type name to extend
+    :return: a list of extended offsets
+    """
     pattern_to_apply = get_extend_extracted_name_pattern(texts=texts,
                                                          offsets=offsets,
                                                          type_name_to_keep=type_name)
@@ -267,7 +274,7 @@ def get_lawyer_name(text: str) -> list:
 
 
 places_pattern = ("rue|boulevard|bd\.?|av(\.|e)?|avenue|allée|quai|"
-                  "(?<!(à la |en lieu et ))place|zi|zone industrielle")
+                  "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
 extract_address_pattern = regex.compile("([\d][\d,/\-\s]*)?"
                                         "("

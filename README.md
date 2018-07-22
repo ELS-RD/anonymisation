@@ -217,6 +217,22 @@ Iter 10
 147289it [22:01:32,  1.91it/s]{'ner': 35.80839124857698}
 147290it [22:01:32,  2.25it/s]
 ---------
+Number of tags: 1838747
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+  0%|          | 0/58912.84 [00:00<?, ?it/s]
+Iter 1
+ 25%|██▌       | 14729/58912.84 [2:07:57<5:11:57,  2.36it/s]{'ner': 67.09906184357169}
+
+Iter 2
+ 50%|█████     | 29457/58912.84 [4:16:38<4:24:54,  1.85it/s]{'ner': 46.027869963762896}
+
+Iter 3
+ 75%|███████▌  | 44187/58912.84 [6:25:35<1:47:29,  2.28it/s]{'ner': 42.25843731397822}
+
+Iter 4
+58915it [8:38:10,  1.88it/s]{'ner': 40.20154718467688}
+58916it [8:38:10,  2.29it/s]
+---------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------
@@ -228,9 +244,4 @@ rechercher marocaine dans les références Témis
 -> la mention marocaine est parfois en majuscules...
 
 
-POURQUOI HEYER EST UN CONSEILLER ?
-Il est constant que ce n'est pas à l'initiative de la Banque CIC Est, 
-mais sur les conseils de M. Heyer, conseiller en gestion de patrimoine, 
-dont il n'est aucunement démontré qu'il avait un quelconque lien avec la Banque CIC Est, 
-que M. Dockter a souscrit le placement proposé par la société de droit allemand Harper DL, 
-qui s'est avéré être une escroquerie.
+Identifier les règles vides

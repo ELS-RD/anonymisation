@@ -8,6 +8,7 @@ from generate_trainset.match_patterns import find_address_in_block_of_paragraphs
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
+from viewer.spacy_viewer import view_spacy_docs
 
 warnings.filterwarnings('ignore')
 
@@ -43,7 +44,7 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                     # print(span_text)
                     type_name = last_case_spans[span_text.lower()]
                     matcher_offsets.append((start_offset, end_offset, type_name))
-
+                # TODO Disable extension below to simplify code
                 matcher_offsets_normalized = normalize_offsets(matcher_offsets + address_offset)
 
                 spacy_matcher_offset = list()
@@ -72,11 +73,4 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
     last_case_spans.update(entities_span)
 
 
-colors = {'PARTIE_PP': '#ff9933',
-          'ADRESSE': '#ff99cc',
-          'PARTIE_PM': '#00ccff',
-          'AVOCAT': '#ccffcc',
-          'MAGISTRAT': '#ccccff',
-          'GREFFIER': '#ccccff'}
-options = {'ents': None, 'colors': colors}
-displacy.serve(all_docs_to_view, style='ent', minify=True, port=5000, options=options)
+view_spacy_docs(all_docs_to_view)
