@@ -7,12 +7,10 @@ from generate_trainset.build_dict_from_recognized_entities import get_frequent_e
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
-from generate_trainset.match_acora import get_matches
+from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
-    get_addresses, get_matcher_of_partie_pm_from_headers, get_matcher_of_partie_pp_from_headers, \
-    get_matcher_of_lawyers_from_headers, get_matcher_of_president_from_headers, \
-    get_matcher_of_conseiller_from_headers, get_matcher_of_clerks_from_headers, get_partie_pp, \
+    get_addresses, get_partie_pp, \
     get_all_name_variation, get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
@@ -39,12 +37,7 @@ current_case_offsets = list()
 previous_case_id = None
 current_item_header = None
 
-matcher_partie_pm = None
-matcher_partie_pp = None
-matcher_lawyers = None
-matcher_president = None
-matcher_conseiller = None
-matcher_clerks = None
+headers_matcher = None
 
 first_name_matcher = get_first_name_matcher()
 postal_code_city_matcher = get_postal_code_city_matcher()
@@ -75,12 +68,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                                     type_name_to_keep="PARTIE_PP")
 
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
-                    match_from_headers = get_matches(matcher_partie_pp, current_paragraph, "PARTIE_PP")
-                    match_from_headers += get_matches(matcher_partie_pm, current_paragraph, "PARTIE_PM")
-                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "AVOCAT")
-                    match_from_headers += get_matches(matcher_lawyers, current_paragraph, "MAGISTRAT")
-                    match_from_headers += get_matches(matcher_president, current_paragraph, "MAGISTRAT")
-                    match_from_headers += get_matches(matcher_clerks, current_paragraph, "GREFFIER")
+                    match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
                     company_names_offset = get_company_names(current_paragraph)
                     full_name_pp = get_extended_extracted_name(text=current_paragraph,
@@ -192,17 +180,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
             previous_case_id = current_case_id
             current_item_header = case_header_content[current_case_id]
 
-            matcher_partie_pm = get_matcher_of_partie_pm_from_headers(current_header=current_item_header)
-            matcher_partie_pp = get_matcher_of_partie_pp_from_headers(current_header=current_item_header,
-                                                                      threshold_size=3)
-            matcher_lawyers = get_matcher_of_lawyers_from_headers(current_header=current_item_header,
-                                                                  threshold_size=3)
-            matcher_president = get_matcher_of_president_from_headers(current_header=current_item_header,
-                                                                      threshold_size=3)
-            matcher_conseiller = get_matcher_of_conseiller_from_headers(current_header=current_item_header,
-                                                                        threshold_size=3)
-            matcher_clerks = get_matcher_of_clerks_from_headers(current_header=current_item_header,
-                                                                threshold_size=3)
+            headers_matcher = MatchValuesFromHeaders(current_header=current_item_header, threshold_size=3)
 
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)

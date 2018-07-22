@@ -4,11 +4,10 @@ from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, \
     get_first_name_matches
 from generate_trainset.match_acora import get_matches
+from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
-    get_lawyer_name, get_addresses, get_matcher_of_partie_pp_from_headers, \
-    get_matcher_of_lawyers_from_headers, \
-    get_matcher_of_clerks_from_headers, get_partie_pp, get_all_name_variation, \
+    get_lawyer_name, get_addresses, get_partie_pp, get_all_name_variation, \
     get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
 from generate_trainset.modify_strings import get_last_name, \
     get_first_last_name
@@ -185,8 +184,8 @@ def test_match_patterns():
     header_content_all_cases = parse_xml_header(path=xml_path)
     case_id = list(header_content_all_cases.keys())[0]
     header_content = header_content_all_cases[case_id]
-    matcher_partie_pp = get_matcher_of_partie_pp_from_headers(current_header=header_content,
-                                                              threshold_size=3)
+    headers_matcher = MatchValuesFromHeaders(current_header=header_content, threshold_size=3)
+    matcher_partie_pp = headers_matcher.get_matcher_of_partie_pp_from_headers()
 
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
 
@@ -197,15 +196,13 @@ def test_match_patterns():
 
     text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
 
-    matcher_lawyers = get_matcher_of_lawyers_from_headers(current_header=header_content,
-                                                          threshold_size=3)
+    matcher_lawyers = headers_matcher.get_matcher_of_lawyers_from_headers()
     assert get_matches(matcher_lawyers, text2, "AVOCAT") == [(3, 10, 'AVOCAT'),
                                                              (25, 32, 'AVOCAT'),
                                                              (25, 38, 'AVOCAT'),
                                                              (33, 38, 'AVOCAT')]
 
-    matcher_clerks = get_matcher_of_clerks_from_headers(current_header=header_content,
-                                                        threshold_size=3)
+    matcher_clerks = headers_matcher.get_matcher_of_clerks_from_headers()
     assert get_matches(matcher_clerks, text2, "GREFFIER") == [(70, 75, 'GREFFIER'),
                                                               (70, 81, 'GREFFIER'),
                                                               (76, 81, 'GREFFIER')]

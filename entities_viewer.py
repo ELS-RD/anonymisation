@@ -1,5 +1,3 @@
-from spacy import displacy
-
 import warnings
 
 from generate_trainset.extract_node_values import get_paragraph_from_file
@@ -44,7 +42,6 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                     # print(span_text)
                     type_name = last_case_spans[span_text.lower()]
                     matcher_offsets.append((start_offset, end_offset, type_name))
-                # TODO Disable extension below to simplify code
                 matcher_offsets_normalized = normalize_offsets(matcher_offsets + address_offset)
 
                 spacy_matcher_offset = list()
