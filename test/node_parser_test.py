@@ -9,6 +9,8 @@ def test_xml_parser():
     tree = read_xml(xml_path)
     r = tree.xpath('//TexteJuri/P')
 
+    assert len(r) == 27
+
     for i in r:
         paragraph_text, extracted_text, offset = get_paragraph_with_entities(i)
         if len(extracted_text) > 0:

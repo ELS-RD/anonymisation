@@ -22,23 +22,30 @@ def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dic
             data = pickle.load(file=f)
 
         def get_default_dict_value() -> dict:
-            default_dict_value = dict([(token, 0) for token in token_types])
+            default_dict_value = dict([(token, set()) for token in token_types])
             # default_dict_value['general_count'] = 0
             return default_dict_value
 
         exhaustive_dict = dict()
 
-        for text, entities in data:
+        for case_id, text, entities in data:
             for start_offset, end_offset, type_name in entities['entities']:
                 entity_span = text[start_offset:end_offset].lower()
                 current_count = exhaustive_dict.get(entity_span, get_default_dict_value())
-                current_count[type_name] += 1
+                current_count[type_name].add(case_id)
                 exhaustive_dict[entity_span] = current_count
 
         final_list = list()
 
         for entity_span, dict_counts in exhaustive_dict.items():
-            max_count, max_type_name = max(zip(dict_counts.values(), dict_counts.keys()))
+
+            max_count = 0
+            max_type_name = None
+            for type_name, case_ids in dict_counts.items():
+                current_count = len(case_ids)
+                if current_count > max_count:
+                    max_type_name = type_name
+                    max_count = current_count
 
             if (max_count > threshold_occurrences) and \
                     (len(entity_span) > 3) \

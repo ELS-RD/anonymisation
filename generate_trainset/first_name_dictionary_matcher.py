@@ -34,6 +34,7 @@ def get_first_name_dict() -> set:
     firs_name.remove("Elle ")
     firs_name.remove("France ")
     firs_name.remove("Mercedes ")
+    firs_name.remove("Paris ")
     return firs_name
 
 

@@ -6,7 +6,6 @@ from generate_trainset.build_dict_from_recognized_entities import get_frequent_e
     get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.first_name_dictionary_matcher import get_first_name_matcher, get_first_name_matches
 from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
@@ -26,30 +25,26 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
+train_dataset = bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
 current_case_offsets = list()
 previous_case_id = None
 current_item_header = None
-
 headers_matcher = None
 
-first_name_matcher = get_first_name_matcher()
 postal_code_city_matcher = get_postal_code_city_matcher()
 doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
-# TODO to delete when ready
-to_delete_no_offset_sentences_with_risk = list()
 
-train_dataset = True
 
-if not train_dataset:
+if train_dataset:
     # Disable this part to generate a new set of entities
     frequent_entities_dict = get_frequent_entities(path_trainset=training_set_export_path,
                                                    threshold_occurrences=100)
@@ -78,8 +73,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
 
-                    first_name_matches = get_first_name_matches(matcher=first_name_matcher,
-                                                                text=current_paragraph)
                     postal_code_matches = get_postal_code_matches(matcher=postal_code_city_matcher,
                                                                   text=current_paragraph)
                     addresses = get_addresses(current_paragraph)
@@ -96,7 +89,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    clerk_names +
                                    lawyer_names +
                                    partie_pp +
-                                   first_name_matches +
                                    postal_code_matches +
                                    frequent_entities +
                                    addresses)
@@ -112,21 +104,13 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                         last_document_texts.append(current_paragraph)
                         last_document_offsets.append([])
 
-                    risk_keywords = ["Monsieur", "Madame", " M ", "Mme ", "M. "]
-                    if any(keyword in current_paragraph for keyword in risk_keywords) and len(all_matches) == 0:
-                        to_delete_no_offset_sentences_with_risk.append(current_paragraph)
-
             last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
                                                                         offsets=last_document_offsets)
-            # TODO delete when not required
-            if last_document_offsets is None:
-                print(last_document_texts)
-            if len(last_document_offsets) > 0:
 
+            if len(last_document_offsets) > 0:
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_document_offsets,
                                                                   threshold_span_size=4)
-                orginal_l = last_doc_offset_with_var.copy()
 
                 last_doc_with_extended_pp_offsets = get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
@@ -161,10 +145,11 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                              zip(last_doc_remove_keywords_text,
                                                  last_doc_remove_keywords_offsets)]
 
-                last_doc_remove_keywords_offsets_norm = [normalize_offsets(off) for off in last_doc_remove_keywords_offsets]
+                last_doc_remove_keywords_offsets_norm = [normalize_offsets(off) for off in
+                                                         last_doc_remove_keywords_offsets]
 
                 # , "case_id": previous_case_id
-                [doc_annotated.append((txt, {'entities': off})) for txt, off in
+                [doc_annotated.append((previous_case_id, txt, {'entities': off})) for txt, off in
                  zip(last_doc_txt_case_updated,
                      last_doc_remove_keywords_offsets_norm)]
 
@@ -185,13 +170,12 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-for text, tags in doc_annotated:
+for case_id, text, tags in doc_annotated:
     if len(tags['entities']) > 0:
         for start, end, type_name in tags['entities']:
-            # if "Madame".lower() in text[start:end].lower():
             print(start, end, text[start:end], type_name, text, sep="|")
 
-print("Number of tags:", sum([len(i[1]['entities']) for i in doc_annotated]))
+print("Number of tags:", sum([len(i[2]['entities']) for i in doc_annotated]))
 
 if train_dataset:
     train_model(data=doc_annotated,
@@ -204,6 +188,5 @@ else:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Display training set
-docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
-view_spacy_docs(docs)
-
+# docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
+# view_spacy_docs(docs)

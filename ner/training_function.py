@@ -25,7 +25,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
             batches = util.minibatch(data, batch_size)
 
             for current_batch_item in batches:
-                texts, annotations = zip(*current_batch_item)
+                case_id, texts, annotations = zip(*current_batch_item)
                 # current_case_id, texts, _, annotations = zip(*current_batch_item)
                 nlp.update(
                     texts,  # batch of texts

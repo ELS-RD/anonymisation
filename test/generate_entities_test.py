@@ -1,9 +1,9 @@
-from generate_trainset.modify_strings import get_title_case, random_case_change, remove_corp, remove_key_words
+from generate_trainset.modify_strings import get_title_case, random_case_change, remove_org_type, remove_key_words
 
 
 def test_remove_corp_name():
-    assert remove_corp("SA Toto") == "Toto"
-    assert remove_corp("SA Toto Titi") == "Toto Titi"
+    assert remove_org_type("SA Toto") == "Toto"
+    assert remove_org_type("SA Toto Titi") == "Toto Titi"
 
 
 def test_title_case():

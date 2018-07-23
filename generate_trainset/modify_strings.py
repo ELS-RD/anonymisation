@@ -9,11 +9,11 @@ org_types = r"société(s)?|" \
             r"e(\.|\s)*u(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
             r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
             r"e(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*s|" \
-            r"s(\.|\s)*n(\.|\s)*c|" \
-            r"s(\.|\s)*e(\.|\s)*m|" \
+            r"s(\.|\s)*c(\.|\s)*s(\.|\s)*|" \
+            r"s(\.|\s)*n(\.|\s)*c(\.|\s)*|" \
+            r"s(\.|\s)*e(\.|\s)*m(\.|\s)*|" \
             r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*s|" \
+            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*|" \
             r"s(\.|\s)*a(\.|\s)*|" \
             r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
             r"s(\.|\s)*a(\.|\s)*r(\.|\s)*l|" \
@@ -67,17 +67,17 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-remove_corp_pattern = regex.compile(r"\b(" + org_types + r")\b\s+",
-                                    flags=regex.IGNORECASE)
+remove_org_type_pattern = regex.compile(r"\b(" + org_types + r")\b\s+",
+                                        flags=regex.IGNORECASE)
 
 
-def remove_corp(original_text: str) -> str:
+def remove_org_type(original_text: str) -> str:
     """
     Remove corporation type name
     :param original_text: Name of company included its type
     :return: the cleaned string
     """
-    return remove_corp_pattern.sub(repl="", string=original_text).strip()
+    return remove_org_type_pattern.sub(repl="", string=original_text).strip()
 
 
 last_name_pattern = regex.compile(r"[A-Z\s]+$")

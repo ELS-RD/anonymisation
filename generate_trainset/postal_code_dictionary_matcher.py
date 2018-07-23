@@ -21,6 +21,7 @@ def get_postal_code_city_list() -> list:
             if len(city) >= 3:
                 postal_code = fields[2].strip()
                 results.append(postal_code + " " + city)
+                results.append(city + " (" + postal_code + ")")
     assert len(results) > 1000
     results.pop(0)
     return results

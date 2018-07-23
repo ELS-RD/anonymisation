@@ -42,7 +42,7 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                     # print(span_text)
                     type_name = last_case_spans[span_text.lower()]
                     matcher_offsets.append((start_offset, end_offset, type_name))
-                matcher_offsets_normalized = normalize_offsets(matcher_offsets + address_offset)
+                matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + address_offset)
 
                 spacy_matcher_offset = list()
                 for start_offset, end_offset, type_name in matcher_offsets_normalized:
@@ -55,7 +55,8 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                         print("ERROR char offset", last_case_doc.text[start_offset:end_offset])
 
                 all_offsets = set(last_case_doc.ents)
-                all_offsets.update(spacy_matcher_offset)
+                if len(all_offsets) < len(spacy_matcher_offset):
+                    all_offsets.update(spacy_matcher_offset)
                 last_case_doc.ents = all_offsets
                 all_docs_to_view.append(last_case_doc)
 
@@ -64,7 +65,6 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
         former_case_id = case_id
     spacy_doc = nlp(original_text)
     # doc.user_data['title'] = case_id
-    all_docs_to_view.append(spacy_doc)
     last_case_docs.append(spacy_doc)
     entities_span = [(ent.text.lower(), ent.label_) for ent in spacy_doc.ents]
     last_case_spans.update(entities_span)

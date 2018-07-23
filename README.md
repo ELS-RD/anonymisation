@@ -32,6 +32,11 @@ The main focus of this work is to generate a large high quality training set, by
 - create some variation of the discovered entities and search for them (remove first or last name, change the case, etc.)
 - extending any discovered patterns to the neighbor words
 - building dictionaries of names and look for them
+- only showing paragraphs with entities 
+    - no entity paragraph may be due to an error in finding them, 
+        - In particular, true for company names which are not all found
+
+Because the main purpose of this work it to anonymize legal case, when there is a doubt, the span is always anonymised.
 
 ## Type of tokens recognized
 
@@ -41,6 +46,10 @@ The main focus of this work is to generate a large high quality training set, by
 - `MAGISTRAT`: judges (not done by Temis)
 - `GREFFIER`: court clerks (not done by Temis)
 - `ADRESSE`: addresses (very badly done by Temis)
+
+Only taking care of `PARTIE_PP` has been tried at first.  
+It appeared that there was some issues with the other types.  
+Therefore, they have been added, greatly improving the quality of `PARTIE_PP` recognition.
 
 To add in the future:
 
@@ -103,12 +112,19 @@ All the project configuration is done through `resources/config.ini` file (mainl
 
 ### TODO:
 
-- Nom du tribunal + chambre // Date de l'arrêt // RG
-- implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530
-- search for phone number, social security number, etc. 
+- Court name + formation // Case law date // RG number
+- social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
+ + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
+- credit card: (?:\d{4}-?){3}\d{4}
+- search for phone number, etc.
+- implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
 - Add rapporteurs / experts (close to word rapport)
-- date de naissance
-
+- Birthday (né le ...) ?
+- matche unknow multiword entities with those existing (for companies). Do we need better model for companies?
+- paste randomly the first word of a NER with the previous word to simulate recurrent errors
+- harmonisation des types (vote ?)
+- extension par la droite des noms (moins de risque)
+- annotation pour améliorer les cas complexes
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -233,6 +249,19 @@ Iter 4
 58915it [8:38:10,  1.88it/s]{'ner': 40.20154718467688}
 58916it [8:38:10,  2.29it/s]
 ---------
+Number of tags: 1855688
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+
+Iter 1
+ 33%|███▎      | 14750/44247.48 [2:10:24<3:34:44,  2.29it/s]{'ner': 71.92923828106768}
+
+Iter 2
+ 67%|██████▋   | 29499/44247.48 [4:29:25<2:21:42,  1.73it/s]{'ner': 50.688311473414615}
+
+Iter 3
+44249it [7:00:41,  1.66it/s]{'ner': 46.80857206960354}
+44250it [7:00:41,  2.13it/s]
+---------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------
@@ -240,8 +269,19 @@ Noms qui commencent par [de MAJ...]
 retirer le de/le... a la fin des noms
 --- 
 
-rechercher marocaine dans les références Témis
--> la mention marocaine est parfois en majuscules...
-
-
 Identifier les règles vides
+
+
+Trouver pourquoi certaines sociétés ne sont pas reconnues
+ Dit toutefois que CEK PARTICIPATIONS pourra s'acquitter de cette sopar 24 échéances mensuelles d'égal montant , pourla première à intervenir le 15 dcembre 2013 et la dernière, qui comprendra en outre les intérêts, frais et accessoires à intervenir le 15 novembre 2015, le défaut de paiement de l'une de ces échéances enraînant de plein droit la déchéance du terme et l'exigibilité intégrale des sommes dues.
+
+
+
+tribunal de commerce d'Auch
+LA COUR D'APPEL D'AGEN, 1ère chambre dans l'affaire,
+ARRÊT n° 101-15
+COUR D'APPEL D'AGEN
+Chambre Commerciale
+LA COUR D'APPEL D'AGEN, 1ère chambre dans l'affaire,
+APPELANTES d'un jugement du tribunal de commerce d'AUCH en date du 20 septembre 2013
+

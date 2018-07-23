@@ -33,14 +33,26 @@ def test_find_address_in_paragraph_block():
 
 
 def test_match_sub_pattern():
-    texts = ["Je suis avec Jessica BENESTY et elle est sympa.", "Jessica n'est pas là.", "Ou est Mme. Benesty ?"]
-    offsets = [[(13, 28, "PARTIE_PP")], [], []]
+    texts = ["Je suis avec Jessica BENESTY et elle est sympa.",
+             "Jessica n'est pas là.",
+             "Ou est Mme. Benesty ?",
+             "La SARL TOTO forme avec la SCI TOTO un groupe de sociétés.",
+             "Condamné CEK PARTICIPATIONS à payer à la SCI CEK PARTICIPATIONS la somme"]
+    offsets = [[(13, 28, "PARTIE_PP")], [], [], [(3, 12, "PARTIE_PM")], [(41, 63, "PARTIE_PM")]]
     assert get_all_name_variation(texts, offsets, threshold_span_size=4) == [[(13, 20, 'PARTIE_PP'),
                                                                               (13, 28, 'PARTIE_PP'),
                                                                               (21, 28, 'PARTIE_PP'),
                                                                               (13, 28, 'PARTIE_PP')],
                                                                              [(0, 7, 'PARTIE_PP')],
-                                                                             [(12, 19, 'PARTIE_PP')]]
+                                                                             [(12, 19, 'PARTIE_PP')],
+                                                                             [(3, 12, 'PARTIE_PM'),
+                                                                              (8, 12, 'PARTIE_PM'),
+                                                                              (31, 35, 'PARTIE_PM'),
+                                                                              (3, 12, 'PARTIE_PM')],
+                                                                             [(9, 27, 'PARTIE_PM'),
+                                                                              (41, 63, 'PARTIE_PM'),
+                                                                              (45, 63, 'PARTIE_PM'),
+                                                                              (41, 63, 'PARTIE_PM')]]
 
 
 def test_extract_judge_names():
@@ -116,7 +128,7 @@ def test_extract_lawyer():
 
 def test_get_first_name_dict():
     first_name_dict = get_first_name_dict()
-    assert len(first_name_dict) == 12468
+    assert len(first_name_dict) == 12467
     assert "Michaël " in first_name_dict
     assert "Michaël" not in first_name_dict
 
@@ -267,6 +279,12 @@ def test_extend_names():
     expected_offsets2 = []
     pattern2 = get_extend_extracted_name_pattern(texts=texts2, offsets=offsets2, type_name_to_keep='PARTIE_PP')
     assert get_extended_extracted_name(text=text2, pattern=pattern2, type_name='PARTIE_PP') == expected_offsets2
+    text3 = "M. Ludovic Frédéric Jean Nicolas REUTHER , majeur protégé"
+    texts3 = [text3]
+    offsets3 = [[(3, 24, "PARTIE_PP"), (33, 40, "PARTIE_PP")]]
+    offset_expected_result3 = [(3, 40, "PARTIE_PP")]
+    pattern3 = get_extend_extracted_name_pattern(texts=texts3, offsets=offsets3, type_name_to_keep='PARTIE_PP')
+    assert get_extended_extracted_name(text=text3, pattern=pattern3, type_name='PARTIE_PP') == offset_expected_result3
 
 
 def test_extract_family_name():

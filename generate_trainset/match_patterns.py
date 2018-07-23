@@ -4,7 +4,7 @@ import regex
 from acora import AcoraBuilder
 
 from generate_trainset.match_acora import get_matches
-from generate_trainset.modify_strings import org_types, get_first_last_name
+from generate_trainset.modify_strings import org_types, get_first_last_name, remove_org_type
 
 find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
                                                   "("
@@ -257,11 +257,14 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
     for current_offsets, text in zip(offsets, texts):
         for offset in current_offsets:
             start_offset, end_offset, type_name = offset
-            text_span = text[start_offset:end_offset]
+            text_span = text[start_offset:end_offset].strip()
             if len(text_span) > 0:
                 if type_name == "PARTIE_PP":
                     pp_patterns.add(text_span)
                     first_name, last_name = get_first_last_name(text_span)
+                    first_name = first_name.strip()
+                    last_name = last_name.strip()
+
                     if len(first_name) > threshold_span_size:
                         pp_patterns.add(first_name)
                     if len(last_name) > threshold_span_size:
@@ -269,6 +272,9 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
 
                 if type_name == "PARTIE_PM":
                     pm_patterns.add(text_span)
+                    short_org_name = remove_org_type(text_span).strip()
+                    if (len(short_org_name) > 0) and (short_org_name != text_span):
+                        pm_patterns.add(short_org_name)
 
     pp_matcher = pp_patterns.build(ignore_case=True)
     pm_matcher = pm_patterns.build(ignore_case=True)
