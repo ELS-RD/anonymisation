@@ -1,5 +1,6 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
+from generate_trainset.court_matcher import CourtName
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary_matcher import FirstName
 from generate_trainset.match_acora import get_matches
@@ -314,3 +315,9 @@ def test_extract_court_name():
     assert get_juridictions(text=text3) == [(0, 32, 'JURIDICTION')]
     text4 = "ARRET DE LA COUR D'APPEL D'AIX EN PROVENCE DU TRENTE AOUT"
     assert get_juridictions(text=text4) == [(12, 42, 'JURIDICTION')]
+
+
+def test_match_court_name():
+    matcher = CourtName()
+    text1 = "LA COUR D'Appel de Paris"
+    assert matcher.get_matches(text=text1) == [(3, 24, 'JURIDICTION')]

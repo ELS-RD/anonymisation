@@ -1,5 +1,3 @@
-import acora
-
 from generate_trainset.match_acora import get_acora_object, get_matches
 from resources.config_provider import get_config_default
 
@@ -11,18 +9,7 @@ class PostalCodeCity:
         """
         Build a matcher of first name based on a French names dictionary
         """
-        postal_code_city_list = self.get_postal_code_city_list()
-        self.matcher = get_acora_object(list(postal_code_city_list),
-                                        ignore_case=True)
-
-    @staticmethod
-    def get_postal_code_city_list() -> list:
-        """
-        Build a dictionary of French cities
-        :rtype: a set of postal code city name
-        """
-
-        results = list()
+        postal_code_city_list = list()
         config = get_config_default()
         file = config["postal_code_city"]
 
@@ -32,11 +19,12 @@ class PostalCodeCity:
                 city = fields[1].strip()
                 if len(city) >= 3:
                     postal_code = fields[2].strip()
-                    results.append(postal_code + " " + city)
-                    results.append(city + " (" + postal_code + ")")
-        assert len(results) > 1000
-        results.pop(0)
-        return results
+                    postal_code_city_list.append(postal_code + " " + city)
+                    postal_code_city_list.append(city + " (" + postal_code + ")")
+        assert len(postal_code_city_list) > 1000
+        postal_code_city_list.pop(0)
+        self.matcher = get_acora_object(list(postal_code_city_list),
+                                        ignore_case=True)
 
     def get_matches(self, text: str) -> list:
         """

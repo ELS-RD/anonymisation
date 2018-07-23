@@ -282,6 +282,6 @@ https://www.data.gouv.fr/fr/datasets/donnees-geocodees-des-structures-de-la-just
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
 Dictionnaire de juridictions ici :
-https://www.data.gouv.fr/fr/datasets/les-statistiques-par-juridiction/#_
+
 
 

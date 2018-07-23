@@ -4,6 +4,7 @@ from tqdm import tqdm
 
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
     get_frequent_entities_matches
+from generate_trainset.court_matcher import CourtName
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.match_header import MatchValuesFromHeaders
@@ -40,7 +41,8 @@ previous_case_id = None
 current_item_header = None
 headers_matcher = None
 
-postal_code_city = PostalCodeCity()
+postal_code_city_matcher = PostalCodeCity()
+court_names_matcher = CourtName()
 doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
@@ -77,7 +79,8 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     addresses = get_addresses(current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
                     court_name = get_juridictions(current_paragraph)
-                    postal_code_matches = postal_code_city.get_matches(text=current_paragraph)
+                    postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
+                    court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
                                                                       frequent_entities_dict=frequent_entities_dict,
                                                                       text=current_paragraph)
@@ -93,6 +96,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    postal_code_matches +
                                    frequent_entities +
                                    court_name +
+                                   court_names_matches +
                                    addresses)
 
                     if len(all_matches) > 0:
