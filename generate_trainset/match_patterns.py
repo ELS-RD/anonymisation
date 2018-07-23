@@ -287,3 +287,42 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
                        offset)
 
     return results
+
+
+# List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/
+juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal d'instance|Conseil de prud\.*hommes|"
+                                      "Tribunal de commerce|Tribunal des affaires de sécurité sociale|"
+                                      "Tribunal paritaire des baux ruraux|Cour d'assises|Tribunal correctionnel|"
+                                      "Tribunal de police|Juge de proximit.|Juge des enfants|Tribunal pour enfants|"
+                                      "Cour d'assises des mineurs|Cour d'appel|"
+                                      "Tribunal administratif|Cour administrative d'appel|"
+                                      "Cour nationale du droit d'asile|"
+                                      "\\bT(\.| )*G(\.| )*I(\.| )*|T(\.| )*I(\.| )*\\b|"
+                                      "\\bT(\.| )*A(\.| )*S(\.| )*S(\.| )*\\b)"
+                                      "[^A-Z]{0,5}"
+                                      "("
+                                      "(?!\\bDU\\b\s)"
+                                      "[A-Z][A-Z[:alpha:]-']*\s*"
+                                      "((de|d'|en)\s*)?"
+                                      ")+"
+                                      "(?!(?i)\\b(en|le|du)\\b)",
+                                      flags=regex.VERSION1)
+
+# http://fr.jurispedia.org/index.php/Liste_des_juridictions_(fr)
+juridiction_pattern_2 = regex.compile("Cour de cassation|Conseil d'.tat|INPI|Conseil des prises maritimes|"
+                                      "Commission des recours des r.fugi.s|Commissions d.partementales d'aide sociale|"
+                                      "Commision d'indemnisation des rapatri.s|Conseil sup.rieur de la magistrature|"
+                                      "Tribunal des conflits|Haute cour de justice|Cour de justice de la R.publique|"
+                                      "Conseil constitutionnel",
+                                      flags=regex.VERSION1 | regex.IGNORECASE)
+
+
+def get_juridictions(text: str) -> list:
+    """
+    Extract Courts name from text
+    :param text: original paragraph text
+    :return: offsets as a list
+    """
+    result1 = [(t.start(), t.end(), "JURIDICTION") for t in juridiction_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "JURIDICTION") for t in juridiction_pattern_2.finditer(text)]
+    return result1 + result2

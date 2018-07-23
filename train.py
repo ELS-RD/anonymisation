@@ -10,12 +10,14 @@ from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
     get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_partie_pp, \
-    get_all_name_variation, get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
+    get_all_name_variation, get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs, \
+    get_juridictions
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
-from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher, get_postal_code_matches
+from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
+from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
@@ -24,11 +26,12 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = bool(config_training["train_data_set"])
+train_dataset = False  # bool(config_training["train_data_set"])
+export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -37,18 +40,18 @@ previous_case_id = None
 current_item_header = None
 headers_matcher = None
 
-postal_code_city_matcher = get_postal_code_city_matcher()
+postal_code_city = PostalCodeCity()
 doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
 
 
-if train_dataset:
+if export_dataset:
+    frequent_entities_dict = dict()
+else:
     # Disable this part to generate a new set of entities
     frequent_entities_dict = get_frequent_entities(path_trainset=training_set_export_path,
                                                    threshold_occurrences=100)
-else:
-    frequent_entities_dict = dict()
 
 frequent_entities_matcher = get_frequent_entities_matcher(content=frequent_entities_dict)
 
@@ -71,11 +74,10 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
-
-                    postal_code_matches = get_postal_code_matches(matcher=postal_code_city_matcher,
-                                                                  text=current_paragraph)
                     addresses = get_addresses(current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
+                    court_name = get_juridictions(current_paragraph)
+                    postal_code_matches = postal_code_city.get_matches(text=current_paragraph)
                     frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
                                                                       frequent_entities_dict=frequent_entities_dict,
                                                                       text=current_paragraph)
@@ -90,6 +92,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    partie_pp +
                                    postal_code_matches +
                                    frequent_entities +
+                                   court_name +
                                    addresses)
 
                     if len(all_matches) > 0:
@@ -169,11 +172,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-for case_id, text, tags in doc_annotated:
-    if len(tags['entities']) > 0:
-        for start, end, type_name in tags['entities']:
-            print(start, end, text[start:end], type_name, text, sep="|")
-
 print("Number of tags:", sum([len(i[2]['entities']) for i in doc_annotated]))
 
 if train_dataset:
@@ -182,10 +180,11 @@ if train_dataset:
                 n_iter=n_iter,
                 batch_size=batch_size,
                 dropout_rate=dropout_rate)
-else:
+
+if export_dataset:
     with open(training_set_export_path, 'wb') as export_training_set_file:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Display training set
-# docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
-# view_spacy_docs(docs)
+docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
+view_spacy_docs(docs)

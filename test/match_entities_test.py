@@ -8,10 +8,10 @@ from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, \
     get_extended_extracted_name, get_extend_extracted_name_pattern, get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_partie_pp, get_all_name_variation, \
-    get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs
+    get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs, get_juridictions
 from generate_trainset.modify_strings import get_last_name, \
     get_first_last_name
-from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher
+from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
 from resources.config_provider import get_config_default
 
 
@@ -186,8 +186,8 @@ def test_get_address():
 
 
 def test_get_postal_code_city():
-    matcher = get_postal_code_city_matcher()
-    assert get_matches(matcher, "avant 67000 Strasbourg après", "ADRESSE") == [(6, 22, 'ADRESSE')]
+    matcher = PostalCodeCity()
+    assert matcher.get_matches(text="avant 67000 Strasbourg après") == [(6, 22, 'ADRESSE')]
 
 
 def test_match_patterns():
@@ -302,3 +302,14 @@ def test_frequent_entities():
     text = "Me Benesty rencontre son client Jessica."
     assert get_frequent_entities_matches(matcher=matcher, frequent_entities_dict=freq_entities, text=text) == \
            [(3, 10, 'AVOCAT'), (32, 39, 'PARTIE_PP')]
+
+
+def test_extract_court_name():
+    text1 = "LA COUR D'APPEL D'AGEN, 1ère chambre dans l'affaire,"
+    assert get_juridictions(text=text1) == [(3, 22, 'JURIDICTION')]
+    text2 = "Par jugement en date du 21 janvier 2003, le tribunal correctionnel de Mulhouse a"
+    assert get_juridictions(text=text2) == [(44, 79, 'JURIDICTION')]
+    text3 = "COUR D'APPEL D'AIX EN PROVENCE N. TRUC"
+    assert get_juridictions(text=text3) == [(0, 32, 'JURIDICTION')]
+    text4 = "ARRET DE LA COUR D'APPEL D'AIX EN PROVENCE DU TRENTE AOUT"
+    assert get_juridictions(text=text4) == [(12, 42, 'JURIDICTION')]

@@ -46,6 +46,7 @@ Because the main purpose of this work it to anonymize legal case, when there is 
 - `MAGISTRAT`: judges (not done by Temis)
 - `GREFFIER`: court clerks (not done by Temis)
 - `ADRESSE`: addresses (very badly done by Temis)
+- `JURIDICTION`: names of French courts
 
 Only taking care of `PARTIE_PP` has been tried at first.  
 It appeared that there was some issues with the other types.  
@@ -118,7 +119,6 @@ All the project configuration is done through `resources/config.ini` file (mainl
 
 ### TODO:
 
-- afficher résultats Témis pour comparaison
 - extension par la droite des noms (moins de risque)
 - Court name + formation // Case law date // RG number
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
@@ -276,12 +276,12 @@ Noms qui commencent par [de MAJ...]
 retirer le de/le... a la fin des noms
 --- 
 
+https://www.data.gouv.fr/fr/datasets/donnees-geocodees-des-structures-de-la-justice-30378257/
 
-tribunal de commerce d'Auch
-LA COUR D'APPEL D'AGEN, 1ère chambre dans l'affaire,
-ARRÊT n° 101-15
-COUR D'APPEL D'AGEN
-Chambre Commerciale
-LA COUR D'APPEL D'AGEN, 1ère chambre dans l'affaire,
-APPELANTES d'un jugement du tribunal de commerce d'AUCH en date du 20 septembre 2013
+
+Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
+
+Dictionnaire de juridictions ici :
+https://www.data.gouv.fr/fr/datasets/les-statistiques-par-juridiction/#_
+
 
