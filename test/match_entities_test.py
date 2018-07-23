@@ -1,8 +1,7 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.first_name_dictionary_matcher import get_first_name_dict, get_first_name_matcher, \
-    get_first_name_matches
+from generate_trainset.first_name_dictionary_matcher import FirstName
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, \
@@ -127,17 +126,19 @@ def test_extract_lawyer():
 
 
 def test_get_first_name_dict():
-    first_name_dict = get_first_name_dict()
-    assert len(first_name_dict) == 12467
-    assert "Michaël " in first_name_dict
-    assert "Michaël" not in first_name_dict
+    matcher = FirstName()
+    assert len(matcher.first_name_dict) == 12467
+    # with space
+    assert "Michaël " in matcher.first_name_dict
+    # without space
+    assert "Michaël" not in matcher.first_name_dict
 
 
 def test_get_phrase_matcher():
     text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur, " \
            "mais où sont donc les enfants ?"
-    first_name_matcher = get_first_name_matcher()
-    assert get_first_name_matches(first_name_matcher, text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
+    matcher = FirstName()
+    assert matcher.get_matches(text=text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
 
 
 def test_get_address():
