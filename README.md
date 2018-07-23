@@ -120,7 +120,7 @@ All the project configuration is done through `resources/config.ini` file (mainl
 ### TODO:
 
 - extension par la droite des noms (moins de risque)
-- Court name + formation // Case law date // RG number
+- Court formation // Case law date // RG number
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
  + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
 - credit card: (?:\d{4}-?){3}\d{4}
@@ -276,12 +276,7 @@ Noms qui commencent par [de MAJ...]
 retirer le de/le... a la fin des noms
 --- 
 
-https://www.data.gouv.fr/fr/datasets/donnees-geocodees-des-structures-de-la-justice-30378257/
-
-
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
-
-Dictionnaire de juridictions ici :
 
 
 

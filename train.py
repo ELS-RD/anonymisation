@@ -5,13 +5,13 @@ from tqdm import tqdm
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
+from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.match_header import MatchValuesFromHeaders
-from generate_trainset.match_patterns import get_company_names, get_extend_extracted_name_pattern, \
-    get_extended_extracted_name, get_judge_name, get_clerk_name, get_lawyer_name, \
+from generate_trainset.match_patterns import get_company_names, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_partie_pp, \
-    get_all_name_variation, get_extended_extracted_name_multiple_texts, find_address_in_block_of_paragraphs, \
+    get_all_name_variation, find_address_in_block_of_paragraphs, \
     get_juridictions
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
@@ -47,7 +47,6 @@ doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
 
-
 if export_dataset:
     frequent_entities_dict = dict()
 else:
@@ -62,17 +61,16 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
-                current_doc_extend_name_pattern = get_extend_extracted_name_pattern(texts=current_case_paragraphs,
-                                                                                    offsets=current_case_offsets,
-                                                                                    type_name_to_keep="PARTIE_PP")
+                current_doc_extend_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                                                              offsets=current_case_offsets,
+                                                              type_name_to_keep="PARTIE_PP")
 
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
                     company_names_offset = get_company_names(current_paragraph)
-                    full_name_pp = get_extended_extracted_name(text=current_paragraph,
-                                                               pattern=current_doc_extend_name_pattern,
-                                                               type_name="PARTIE_PP")
+                    full_name_pp = current_doc_extend_name_pattern.get_extended_names(text=current_paragraph,
+                                                                                      type_name="PARTIE_PP")
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
@@ -118,7 +116,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                   offsets=last_document_offsets,
                                                                   threshold_span_size=4)
 
-                last_doc_with_extended_pp_offsets = get_extended_extracted_name_multiple_texts(
+                last_doc_with_extended_pp_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_offset_with_var,
                     type_name="PARTIE_PP")
