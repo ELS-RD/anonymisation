@@ -96,10 +96,16 @@ Both are not strategic to the success of the learning but gives a little help.
 python3 train.py
 ```
 
-* To view results on a local web page ([`http://localhost:5000`](http://localhost:5000))
+* To view **Spacy** results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
 ```python
-python3 entities_viewer.py
+python3 entities_viewer_spacy.py
+```
+
+* To view **Témis** results on a local web page ([`http://localhost:5000`](http://localhost:5000))
+
+```python
+python3 entity_viewer_temis.py
 ```
 
 * To view differences with Temis (only on shared types)
@@ -112,6 +118,8 @@ All the project configuration is done through `resources/config.ini` file (mainl
 
 ### TODO:
 
+- afficher résultats Témis pour comparaison
+- extension par la droite des noms (moins de risque)
 - Court name + formation // Case law date // RG number
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
  + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
@@ -123,7 +131,6 @@ All the project configuration is done through `resources/config.ini` file (mainl
 - matche unknow multiword entities with those existing (for companies). Do we need better model for companies?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
 - harmonisation des types (vote ?)
-- extension par la droite des noms (moins de risque)
 - annotation pour améliorer les cas complexes
 
 Number of tags: 1773909
@@ -268,13 +275,6 @@ Tiret dans les noms d avocats
 Noms qui commencent par [de MAJ...]
 retirer le de/le... a la fin des noms
 --- 
-
-Identifier les règles vides
-
-
-Trouver pourquoi certaines sociétés ne sont pas reconnues
- Dit toutefois que CEK PARTICIPATIONS pourra s'acquitter de cette sopar 24 échéances mensuelles d'égal montant , pourla première à intervenir le 15 dcembre 2013 et la dernière, qui comprendra en outre les intérêts, frais et accessoires à intervenir le 15 novembre 2015, le défaut de paiement de l'une de ces échéances enraînant de plein droit la déchéance du terme et l'exigibilité intégrale des sommes dues.
-
 
 
 tribunal de commerce d'Auch

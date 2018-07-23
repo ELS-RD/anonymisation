@@ -16,7 +16,6 @@ from generate_trainset.normalize_offset import normalize_offsets, remove_offset_
 from generate_trainset.postal_code_dictionary_matcher import get_postal_code_city_matcher, get_postal_code_matches
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
-from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
