@@ -1,6 +1,7 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
+from generate_trainset.date_matcher import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary_matcher import FirstName
@@ -342,3 +343,11 @@ def test_match_court_name():
     matcher = CourtName()
     text1 = "LA COUR D'Appel de Paris"
     assert matcher.get_matches(text=text1) == [(3, 24, 'JURIDICTION')]
+
+
+def test_date():
+    assert get_date("le 12 janvier 2013 !") == [(3, 18, 'DATE')]
+    assert get_date("le 12/01/2016 !") == [(3, 13, 'DATE')]
+    assert get_date("le 12 / 01/2016 !") == [(3, 15, 'DATE')]
+    assert get_date("le 12 / 01/16 !") == [(3, 13, 'DATE')]
+    assert get_date("ARRÊT DU HUIT FÉVRIER DEUX MILLE TREIZE") == [(9, 39, 'DATE')]
