@@ -267,7 +267,7 @@ def test_extend_names():
     texts1 = [text1]
     offsets1 = [[(12, 17, "PARTIE_PP"), (36, 43, "PARTIE_PP")]]
     offset_expected_result = [(4, 17, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
-    pattern1 = ExtendNames(texts=texts1, offsets=offsets1, type_name_to_keep='PARTIE_PP')
+    pattern1 = ExtendNames(texts=texts1, offsets=offsets1, type_name='PARTIE_PP')
     assert pattern1.get_extended_names(text=text1) == offset_expected_result
 
     assert ExtendNames.get_extended_extracted_name_multiple_texts(texts=texts1,
@@ -282,26 +282,32 @@ def test_extend_names():
     offsets2 = [[(25, 32, "PARTIE_PP")]]
     # Should not match because it is not preceded by Monsieur / Madame
     expected_offsets2 = []
-    pattern2 = ExtendNames(texts=texts2, offsets=offsets2, type_name_to_keep='PARTIE_PP')
+    pattern2 = ExtendNames(texts=texts2, offsets=offsets2, type_name='PARTIE_PP')
     assert pattern2.get_extended_names(text=text2) == expected_offsets2
     text3 = "Monsieur Ludovic Frédéric Jean Nicolas REUTHER, majeur protégé"
     texts3 = [text3]
     offsets3 = [[(9, 16, "PARTIE_PP"), (39, 46, "PARTIE_PP")]]
     offset_expected_result3 = [(9, 46, "PARTIE_PP")]
-    pattern3 = ExtendNames(texts=texts3, offsets=offsets3, type_name_to_keep='PARTIE_PP')
+    pattern3 = ExtendNames(texts=texts3, offsets=offsets3, type_name='PARTIE_PP')
     assert pattern3.get_extended_names(text=text3) == offset_expected_result3
     text4 = text3
     texts4 = texts3
     offsets4 = [[(9, 16, "PARTIE_PP")]]
     offset_expected_result4 = offset_expected_result3
-    pattern4 = ExtendNames(texts=texts4, offsets=offsets4, type_name_to_keep='PARTIE_PP')
+    pattern4 = ExtendNames(texts=texts4, offsets=offsets4, type_name='PARTIE_PP')
     assert pattern4.get_extended_names(text=text4) == offset_expected_result4
     text5 = "Ludovic Frédéric Jean Nicolas REUTHER, majeur protégé"
     texts5 = [text5]
     offsets5 = [[(8, 16, "PARTIE_PP")]]
     offset_expected_result5 = [(8, 37, 'PARTIE_PP')]
-    pattern5 = ExtendNames(texts=texts5, offsets=offsets5, type_name_to_keep='PARTIE_PP')
+    pattern5 = ExtendNames(texts=texts5, offsets=offsets5, type_name='PARTIE_PP')
     assert pattern5.get_extended_names(text=text5) == offset_expected_result5
+    text6 = "EDF - DCPP MEDITERRANEE"
+    texts6 = [text6]
+    offsets6 = [[(0, 3, "PARTIE_PM")]]
+    offset_expected_result6 = [(0, 23, 'PARTIE_PM')]
+    pattern6 = ExtendNames(texts=texts6, offsets=offsets6, type_name='PARTIE_PM')
+    assert pattern6.get_extended_names(text=text6) == offset_expected_result6
 
 
 def test_extract_family_name():

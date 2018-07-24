@@ -61,19 +61,31 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
-                current_doc_extend_name_pattern = ExtendNames(texts=current_case_paragraphs,
-                                                              offsets=current_case_offsets,
-                                                              type_name_to_keep="PARTIE_PP")
+                current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                                                                 offsets=current_case_offsets,
+                                                                 type_name="PARTIE_PP")
+
+                # current_doc_extend_pm_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                #                                                  offsets=current_case_offsets,
+                #                                                  type_name="PARTIE_PM")
+                #
+                # current_doc_extend_lawyer_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                #                                                      offsets=current_case_offsets,
+                #                                                      type_name="AVOCAT")
+                #
+                # current_doc_extend_judge_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                #                                                     offsets=current_case_offsets,
+                #                                                     type_name="MAGISTRAT")
 
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
 
-                    # if "Par déclaration du 24 janvier 2011 Dominique FELLMANN".lower() in current_paragraph.lower():
+                    # if "ACM IARD - ASSURANCE CREDIT MUTUEL".lower() in current_paragraph.lower():
                     #     raise Exception("STOP")
 
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
                     company_names_offset = get_company_names(current_paragraph)
-                    full_name_pp = current_doc_extend_name_pattern.get_extended_names(text=current_paragraph)
+                    full_name_pp = current_doc_extend_pp_name_pattern.get_extended_names(text=current_paragraph)
                     partie_pp = get_partie_pp(current_paragraph)
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
@@ -119,13 +131,28 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                   offsets=last_document_offsets,
                                                                   threshold_span_size=4)
 
-                last_doc_with_extended_pp_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_offset_with_var,
                     type_name="PARTIE_PP")
 
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="PARTIE_PM")
+
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="AVOCAT")
+
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="MAGISTRAT")
+
                 last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
-                                                                          offsets=last_doc_with_extended_pp_offsets,
+                                                                          offsets=last_doc_with_extended_offsets,
                                                                           threshold_span_size=4)
 
                 last_doc_offset_unwanted_words_removed = [clean_offsets_from_unwanted_words(text, off) for text, off in

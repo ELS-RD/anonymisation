@@ -21,7 +21,7 @@ def convert_offsets_to_spacy_docs(doc_annotated: list, path_model: str) -> list:
             if span_doc is not None:
                 ents.append(span_doc)
             else:
-                print("Wrong Span", text[start_offset:end_offset], "|", text)
+                print("Issue in offset", text[start_offset:end_offset], text, sep="|")
         doc.ents = ents
         docs.append(doc)
     return docs

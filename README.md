@@ -290,4 +290,18 @@ Condamne l'Association Syndicale des arrosantsPARTIE_PM du PAILLON DE CONTES à 
 
 
 
-e Syndicat des CopropriétairesPARTIE_PM de la Résidence Le Jardin de la Galère 
+e Syndicat des CopropriétairesPARTIE_PM de la Résidence Le Jardin de la Galère
+
+
+Pb adresse
+
+demeurant 385 rue de Lyon - BPADRESSE 70004 - 13015 MARSEILLE
+demeurant Place Estrangin Pastré - BPADRESSE 108 - 13254 MARSEILLE CEDEX 6
+demeurant 9 avenue Désambrois Palais StellaADRESSE - 06000 NICEADRESSE
+demeurant 9 Avenue Desambrois - 06000 NICE FORNASEROADRESSE SAS, 20 rue De France 06000 FornaseroPARTIE_PP , en exercice domicilié en cette qualité au siège social,
+urore, demeurant 61 avenue Halley - 59866 VILLENEUVE D'ASQ CEDEX
+Réf : 35057719643, demeurant 6 rue du professeur LAVIGNOLLEPARTIE_PP - BP 189 - 33042 BORDEAUX CEDEXADRESSE 
+ demeurant 26 RUE DE MULHOUSE - BPADRESSE 77837 - 21078 DIJON CEDEX
+
+
+Adresse qui commence par demeurant

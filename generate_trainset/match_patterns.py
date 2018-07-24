@@ -6,13 +6,13 @@ from acora import AcoraBuilder
 from generate_trainset.match_acora import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name, remove_org_type
 
-find_corp = regex.compile(r"(((?i)" + org_types + ")\s+"
-                                                  "("
-                                                  "((?i)"
-                                                  "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
-                                                  ")*"
-                                                  "(\()?[A-Z][[:alpha:]-'\.\)]+(\s|/|-|&)*)+"
-                                                  ")", flags=regex.VERSION1)
+find_corp = regex.compile("(((?i)" + org_types + ")\s+"
+                                                 "("
+                                                 "((?i)"
+                                                 "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
+                                                 ")*"
+                                                 "(\()?[A-Z][[:alpha:]-'\.\)]+(\s|/|-|&)*)+"
+                                                 ")", flags=regex.VERSION1)
 
 
 def get_company_names(text: str) -> list:
@@ -84,7 +84,7 @@ def get_clerk_name(text: str) -> list:
     return result1 + result2
 
 
-extract_lawyer = regex.compile("(?<=(Me|Me.|Ma(i|î)tre)\s)([A-Z]+[[:alpha:]-']+\s*)+",
+extract_lawyer = regex.compile("(?<=(Me|Me.|(M|m)a(i|î)tre)\s)([A-Z]+[[:alpha:]-']+\s*)+",
                                flags=regex.VERSION1)
 
 
@@ -113,10 +113,13 @@ extract_address_pattern = regex.compile("([\d][\d,/\-\s]*)?"
                                         "(\s*(de|le|la|les|et|d'|du))?"
                                         "\s*)+"
                                         "[,\-\sà]*\d*\s*"
+                                        "( BP )?"
                                         "("
                                         "[A-Z]+[[:alnum:]-\.]*\s*-?\s*"
                                         "((de|le|la|les|et|d'|du)\s*)?"
-                                        ")*",
+                                        ")*"
+                                        "( BP )?"
+                                        "( CEDEX )?",
                                         flags=regex.VERSION1)
 
 
@@ -172,7 +175,7 @@ extract_partie_pp_pattern_2 = regex.compile("(?<=((?i)consorts|époux|docteur|dr
                                             "([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
                                             flags=regex.VERSION1)
 
-extract_partie_pp_pattern_3 = regex.compile("((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*) épouse "
+extract_partie_pp_pattern_3 = regex.compile("((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*) (épouse|veuve) "
                                             "([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
                                             flags=regex.VERSION1)
 

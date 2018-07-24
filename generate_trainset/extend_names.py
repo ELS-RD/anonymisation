@@ -11,22 +11,24 @@ class ExtendNames:
     type_name = None
     dont_detect = True
 
-    def __init__(self, texts: list, offsets: list, type_name_to_keep: str):
+    def __init__(self, texts: list, offsets: list, type_name: str):
         """
         Extend names to include first and last name when explicitly preceded by Monsieur / Madame
-        :param type_name_to_keep: filter on type name
+        :param type_name: filter on type name
         :param texts: original text
         :param offsets: discovered offsets from other methods.
         :return: a Regex pattern
         """
-        self.type_name = type_name_to_keep
+        self.type_name = type_name
         extracted_names = set()
         for text, current_offsets in zip(texts, offsets):
-            for (start, end, type_name) in current_offsets:
-                if type_name == type_name_to_keep:
+            for (start, end, current_type_name) in current_offsets:
+                if current_type_name == self.type_name:
                     # avoid parentheses and other regex interpreted characters inside the items
-                    item = text[start:end].translate(translator).strip()
+                    item: str = text[start:end].translate(translator).strip()
                     if len(item) > 3:
+                        extracted_names.add(item)
+                    elif (len(item) == 3) and (item[0].isupper()):
                         extracted_names.add(item)
 
         self.dont_detect = (len(extracted_names) == 0)
@@ -36,17 +38,17 @@ class ExtendNames:
                         "(" \
                         "(" \
                         "(?!\\b(M\.)\\b |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )" \
-                        "[A-Z]+[[:alnum:]-]*\s*)*" \
+                        "[A-Z\-]+\w*\s*)*" \
                         "\\b(" + \
                         extracted_names_pattern + \
                         ")\\b" \
-                        "(\s+[A-Z]+[[:alnum:]-]*)*" \
+                        "(\s+[A-Z\-]+\w*)*" \
                         ")"
 
         pattern_extend_right = "\\b(" + \
                                extracted_names_pattern + \
                                ")\\b" \
-                               "(\s+[A-Z]+[[:alnum:]-]*)+"
+                               "(\s+[A-Z\-]+\w*)+"
         self.pattern_title = regex.compile(pattern_title, flags=regex.VERSION1)
         self.pattern_extend_right = regex.compile(pattern_extend_right, flags=regex.VERSION1)
 
@@ -77,7 +79,7 @@ class ExtendNames:
         """
         pattern = ExtendNames(texts=texts,
                               offsets=offsets,
-                              type_name_to_keep=type_name)
+                              type_name=type_name)
         result = list()
         for offset, text in zip(offsets, texts):
             current = pattern.get_extended_names(text=text)

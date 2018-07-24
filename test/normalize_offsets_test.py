@@ -22,6 +22,8 @@ def test_normalize_offsets():
     assert normalize_offsets(data9) == []
     data10 = [(1, 10, "PARTIE_PP"), (1, 10, "PARTIE_PP"), (3, 10, "PARTIE_PP")]
     assert normalize_offsets(data10) == [(1, 10, "PARTIE_PP")]
+    data11 = [(0, 34, 'PARTIE_PM'), (0, 8, 'PARTIE_PM')]
+    assert normalize_offsets(data11) == [(0, 34, 'PARTIE_PM')]
 
 
 def test_remove_spaces():
