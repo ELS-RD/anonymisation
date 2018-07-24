@@ -144,7 +144,7 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     cleaned_text = list()
     start_selection_offset = 0
     for start_offset, end_offset, _ in words_to_delete_offsets:
-        if randint(0, 99) <= rate:
+        if randint(1, 99) < rate:
             cleaned_text.append(text[start_selection_offset:start_offset])
             start_selection_offset = end_offset
         else:
