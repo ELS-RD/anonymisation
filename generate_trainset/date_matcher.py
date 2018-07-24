@@ -12,8 +12,13 @@ months = ["janvier", "f.vrier", "mars", "avril", "mai", "juin", "juillet", "ao.t
         "septembre", "octobre", "novembre", "d.cembre"]
 
 
-def get_or_regex(numbers: list) -> str:
-    return '|'.join(numbers)
+def get_or_regex(original_list: list) -> str:
+    """
+    Transform a list of string to a [OR] regex
+    :param original_list:
+    :return: string to insert in a regex
+    """
+    return '|'.join(original_list)
 
 
 date_pattern_in_letters = "(" + get_or_regex(un_trent_et_un) + ") (" + get_or_regex(months) + ") (" + \
