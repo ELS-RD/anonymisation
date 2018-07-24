@@ -242,9 +242,11 @@ def test_match_partie_pp_regex():
     text8 = "C'est Madame Titi Toto épouse POPO PIPI"
     assert get_partie_pp(text8) == [(13, 39, 'PARTIE_PP')]
     text9 = "C'est Madame Titi épouse POPO qui est là"
-    assert get_partie_pp(text9) == [(13, 40, 'PARTIE_PP')]
+    assert get_partie_pp(text9) == [(13, 29, 'PARTIE_PP')]
     text10 = "C'est Madame TOTO épouse Popo"
     assert get_partie_pp(text10) == [(13, 29, 'PARTIE_PP')]
+    text11 = 'Par déclaration du 24 janvier 2011 Dominique FELLMANN et Marie Reine PIERRE épouse FELLMANN ont '
+    assert get_partie_pp(text11) == [(57, 91, 'PARTIE_PP')]
 
 
 def test_extract_company_names():

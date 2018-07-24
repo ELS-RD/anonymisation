@@ -281,3 +281,13 @@ Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
 
 Condamne madame Patricia PerreiraPARTIE_PP épouse CostetPARTIE_PP aux dépens de la procédure d'appel avec distraction au profit de la SCP Romulus Gille.PARTIE_PM
+
+
+scope Association stop with [du]
+Condamne l'Association Syndicale des arrosantsPARTIE_PM du PAILLON DE CONTES à payer
+
+
+
+
+
+e Syndicat des CopropriétairesPARTIE_PM de la Résidence Le Jardin de la Galère 
