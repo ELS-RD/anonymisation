@@ -69,8 +69,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
                     company_names_offset = get_company_names(current_paragraph)
-                    full_name_pp = current_doc_extend_name_pattern.get_extended_names(text=current_paragraph,
-                                                                                      type_name="PARTIE_PP")
+                    full_name_pp = current_doc_extend_name_pattern.get_extended_names(text=current_paragraph)
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)

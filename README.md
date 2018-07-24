@@ -280,3 +280,4 @@ Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
 
 
+Condamne madame Patricia PerreiraPARTIE_PP épouse CostetPARTIE_PP aux dépens de la procédure d'appel avec distraction au profit de la SCP Romulus Gille.PARTIE_PM
