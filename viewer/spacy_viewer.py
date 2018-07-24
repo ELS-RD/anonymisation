@@ -38,6 +38,7 @@ def view_spacy_docs(docs: list):
               'AVOCAT': '#ccffcc',
               'MAGISTRAT': '#ccccff',
               'GREFFIER': '#ccccff',
-              'JURIDICTION': '#ccffff'}
+              'JURIDICTION': '#ccffff',
+              'DATE': '#ccffff'}
     options = {'ents': None, 'colors': colors}
     displacy.serve(docs, style='ent', minify=True, port=5000, options=options)
