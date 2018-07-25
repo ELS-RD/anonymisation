@@ -1,5 +1,3 @@
-import string
-
 import regex
 from acora import AcoraBuilder
 

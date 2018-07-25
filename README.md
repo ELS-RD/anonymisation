@@ -269,6 +269,21 @@ Iter 3
 44249it [7:00:41,  1.66it/s]{'ner': 46.80857206960354}
 44250it [7:00:41,  2.13it/s]
 ---------
+Number of tags: 2660741
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+
+Iter 1
+ 25%|██▌       | 17340/69358.24 [2:34:08<6:58:10,  2.07it/s]{'ner': 77.59002592418801}
+
+Iter 2
+ 50%|█████     | 34680/69358.24 [5:07:29<4:10:34,  2.31it/s]{'ner': 52.346716683900695}
+
+Iter 3
+ 75%|███████▌  | 52020/69358.24 [7:42:34<2:40:01,  1.81it/s]{'ner': 48.173801577489485}
+
+Iter 4
+69360it [10:21:42,  2.04it/s]
+-------------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------

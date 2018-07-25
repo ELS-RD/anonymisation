@@ -29,7 +29,8 @@ org_types = "société(s)?|" \
             "caisse|" \
             "hôpital|" \
             "banque|" \
-            "compagnie( d'assurance)?"
+            "compagnie( d'assurance)?|" \
+            "cabinet"
 
 
 def get_title_case(original_text: str) -> str:

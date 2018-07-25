@@ -5,6 +5,7 @@ from tqdm import tqdm
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
+from generate_trainset.date_matcher import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
@@ -27,12 +28,12 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = False  # bool(config_training["train_data_set"])
+train_dataset = True  # bool(config_training["train_data_set"])
 export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -64,19 +65,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,
                                                                  type_name="PARTIE_PP")
-
-                # current_doc_extend_pm_name_pattern = ExtendNames(texts=current_case_paragraphs,
-                #                                                  offsets=current_case_offsets,
-                #                                                  type_name="PARTIE_PM")
-                #
-                # current_doc_extend_lawyer_name_pattern = ExtendNames(texts=current_case_paragraphs,
-                #                                                      offsets=current_case_offsets,
-                #                                                      type_name="AVOCAT")
-                #
-                # current_doc_extend_judge_name_pattern = ExtendNames(texts=current_case_paragraphs,
-                #                                                     offsets=current_case_offsets,
-                #                                                     type_name="MAGISTRAT")
-
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
 
                     # if "ACM IARD - ASSURANCE CREDIT MUTUEL".lower() in current_paragraph.lower():
@@ -92,6 +80,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     lawyer_names = get_lawyer_name(current_paragraph)
                     addresses = get_addresses(current_paragraph)
                     court_name = get_juridictions(current_paragraph)
+                    case_dates = get_date(current_paragraph)
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
@@ -110,6 +99,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    frequent_entities +
                                    court_name +
                                    court_names_matches +
+                                   case_dates +
                                    addresses)
 
                     if len(all_matches) > 0:

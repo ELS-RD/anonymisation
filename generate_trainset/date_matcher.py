@@ -32,7 +32,7 @@ date_pattern_in_numbers_1 = "[0-3]?\d (" + get_or_regex(months) + ") (19|20|20)?
 date_pattern_in_numbers_regex_1 = regex.compile(date_pattern_in_numbers_1,
                                                 flags=regex.VERSION1 | regex.IGNORECASE)
 
-date_pattern_in_numbers_regex_2 = regex.compile('(\d{1,2}.?/.?\d{1,2}.?/.?\d{2,4})',
+date_pattern_in_numbers_regex_2 = regex.compile('(\d{1,2}.?(/|\-).?\d{1,2}.?(/|\-).?\d{2,4})',
                                                 flags=regex.VERSION1 | regex.IGNORECASE)
 
 
