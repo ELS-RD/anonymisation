@@ -10,10 +10,9 @@ from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, \
     get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_partie_pp, get_all_name_variation, \
-    find_address_in_block_of_paragraphs, get_juridictions
+    find_address_in_block_of_paragraphs, get_juridictions, get_bar
 from generate_trainset.modify_strings import get_last_name, \
     get_first_last_name
-from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
 from resources.config_provider import get_config_default
 
 
@@ -351,3 +350,8 @@ def test_date():
     assert get_date("le 12 / 01/2016 !") == [(3, 15, 'DATE')]
     assert get_date("le 12 / 01/16 !") == [(3, 13, 'DATE')]
     assert get_date("ARRÊT DU HUIT FÉVRIER DEUX MILLE TREIZE") == [(9, 39, 'DATE')]
+
+
+def test_bar():
+    assert get_bar(text="Le barreau de PARIS toto") == [(3, 19, 'JURIDICTION')]
+
