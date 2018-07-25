@@ -1,4 +1,5 @@
 import pickle
+import warnings
 
 import acora
 
@@ -55,7 +56,7 @@ def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dic
         return dict(final_list)
 
     except:
-        print("Empty dict of frequent entities")
+        warnings.warn("Empty dict of frequent entities", Warning)
         return dict()
 
 

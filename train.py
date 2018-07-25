@@ -5,6 +5,7 @@ from tqdm import tqdm
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
+from generate_trainset.date_matcher import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
@@ -27,12 +28,12 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = False  # bool(config_training["train_data_set"])
+train_dataset = True  # bool(config_training["train_data_set"])
 export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)  # [0:100000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -61,22 +62,25 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
             if len(current_case_paragraphs) > 0:
-                current_doc_extend_name_pattern = ExtendNames(texts=current_case_paragraphs,
-                                                              offsets=current_case_offsets,
-                                                              type_name_to_keep="PARTIE_PP")
-
+                current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
+                                                                 offsets=current_case_offsets,
+                                                                 type_name="PARTIE_PP")
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
+
+                    # if "ACM IARD - ASSURANCE CREDIT MUTUEL".lower() in current_paragraph.lower():
+                    #     raise Exception("STOP")
+
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
                     company_names_offset = get_company_names(current_paragraph)
-                    full_name_pp = current_doc_extend_name_pattern.get_extended_names(text=current_paragraph,
-                                                                                      type_name="PARTIE_PP")
+                    full_name_pp = current_doc_extend_pp_name_pattern.get_extended_names(text=current_paragraph)
+                    partie_pp = get_partie_pp(current_paragraph)
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)
                     addresses = get_addresses(current_paragraph)
-                    partie_pp = get_partie_pp(current_paragraph)
                     court_name = get_juridictions(current_paragraph)
+                    case_dates = get_date(current_paragraph)
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
@@ -95,6 +99,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                    frequent_entities +
                                    court_name +
                                    court_names_matches +
+                                   case_dates +
                                    addresses)
 
                     if len(all_matches) > 0:
@@ -116,13 +121,28 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                   offsets=last_document_offsets,
                                                                   threshold_span_size=4)
 
-                last_doc_with_extended_pp_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_offset_with_var,
                     type_name="PARTIE_PP")
 
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="PARTIE_PM")
+
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="AVOCAT")
+
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="MAGISTRAT")
+
                 last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
-                                                                          offsets=last_doc_with_extended_pp_offsets,
+                                                                          offsets=last_doc_with_extended_offsets,
                                                                           threshold_span_size=4)
 
                 last_doc_offset_unwanted_words_removed = [clean_offsets_from_unwanted_words(text, off) for text, off in

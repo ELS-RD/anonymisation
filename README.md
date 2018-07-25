@@ -269,6 +269,21 @@ Iter 3
 44249it [7:00:41,  1.66it/s]{'ner': 46.80857206960354}
 44250it [7:00:41,  2.13it/s]
 ---------
+Number of tags: 2660741
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+
+Iter 1
+ 25%|██▌       | 17340/69358.24 [2:34:08<6:58:10,  2.07it/s]{'ner': 77.59002592418801}
+
+Iter 2
+ 50%|█████     | 34680/69358.24 [5:07:29<4:10:34,  2.31it/s]{'ner': 52.346716683900695}
+
+Iter 3
+ 75%|███████▌  | 52020/69358.24 [7:42:34<2:40:01,  1.81it/s]{'ner': 48.173801577489485}
+
+Iter 4
+69360it [10:21:42,  2.04it/s]
+-------------
 Tiret dans les noms d avocats
  Me Carine Chevalier - Kasprzak ...
 -------
@@ -280,3 +295,28 @@ Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
 
 
+Condamne madame Patricia PerreiraPARTIE_PP épouse CostetPARTIE_PP aux dépens de la procédure d'appel avec distraction au profit de la SCP Romulus Gille.PARTIE_PM
+
+
+scope Association stop with [du]
+Condamne l'Association Syndicale des arrosantsPARTIE_PM du PAILLON DE CONTES à payer
+
+
+
+
+
+e Syndicat des CopropriétairesPARTIE_PM de la Résidence Le Jardin de la Galère
+
+
+Pb adresse
+
+demeurant 385 rue de Lyon - BPADRESSE 70004 - 13015 MARSEILLE
+demeurant Place Estrangin Pastré - BPADRESSE 108 - 13254 MARSEILLE CEDEX 6
+demeurant 9 avenue Désambrois Palais StellaADRESSE - 06000 NICEADRESSE
+demeurant 9 Avenue Desambrois - 06000 NICE FORNASEROADRESSE SAS, 20 rue De France 06000 FornaseroPARTIE_PP , en exercice domicilié en cette qualité au siège social,
+urore, demeurant 61 avenue Halley - 59866 VILLENEUVE D'ASQ CEDEX
+Réf : 35057719643, demeurant 6 rue du professeur LAVIGNOLLEPARTIE_PP - BP 189 - 33042 BORDEAUX CEDEXADRESSE 
+ demeurant 26 RUE DE MULHOUSE - BPADRESSE 77837 - 21078 DIJON CEDEX
+
+
+Adresse qui commence par demeurant

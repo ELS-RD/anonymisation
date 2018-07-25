@@ -21,7 +21,7 @@ def convert_offsets_to_spacy_docs(doc_annotated: list, path_model: str) -> list:
             if span_doc is not None:
                 ents.append(span_doc)
             else:
-                print("Wrong Span", text[start_offset:end_offset], "|", text)
+                print("Issue in offset", text[start_offset:end_offset], text, sep="|")
         doc.ents = ents
         docs.append(doc)
     return docs
@@ -38,6 +38,7 @@ def view_spacy_docs(docs: list):
               'AVOCAT': '#ccffcc',
               'MAGISTRAT': '#ccccff',
               'GREFFIER': '#ccccff',
-              'JURIDICTION': '#ccffff'}
+              'JURIDICTION': '#ccffff',
+              'DATE': '#ffcc99'}
     options = {'ents': None, 'colors': colors}
     displacy.serve(docs, style='ent', minify=True, port=5000, options=options)

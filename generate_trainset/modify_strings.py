@@ -3,34 +3,34 @@ import regex
 from generate_trainset.match_acora import get_acora_object, get_matches
 
 # some organization prefix patterns
-org_types = r"société(s)?|" \
-            r"association|" \
-            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
-            r"e(\.|\s)*u(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"e(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*s(\.|\s)*|" \
-            r"s(\.|\s)*n(\.|\s)*c(\.|\s)*|" \
-            r"s(\.|\s)*e(\.|\s)*m(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
-            r"s(\.|\s)*a(\.|\s)*r(\.|\s)*l|" \
-            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*i(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*o(\.|\s)*p(\.|\s)*|" \
-            r"s(\.|\s)*e(\.|\s)*l(\.|\s)*|" \
-            r"s(\.|\s)*c(\.|\s)*a(\.|\s)*|" \
-            r"syndic|" \
-            r"syndicat|" \
-            r"(e|é)tablissement|" \
-            r"mutuelle|" \
-            r"caisse|" \
-            r"hôpital|" \
-            r"banque|" \
-            r"compagnie|" \
-            r"compagnie d'assurance"
+org_types = "société(s)?|" \
+            "association|" \
+            "s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
+            "e(\.|\s)*u(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            "e(\.|\s)*i(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            "e(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            "s(\.|\s)*c(\.|\s)*s(\.|\s)*|" \
+            "s(\.|\s)*n(\.|\s)*c(\.|\s)*|" \
+            "s(\.|\s)*e(\.|\s)*m(\.|\s)*|" \
+            "s(\.|\s)*c(\.|\s)*p(\.|\s)*|" \
+            "s(\.|\s)*a(\.|\s)*s(\.|\s)*|" \
+            "s(\.|\s)*a(\.|\s)*|" \
+            "s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
+            "s(\.|\s)*a(\.|\s)*r(\.|\s)*l|" \
+            "s(\.|\s)*e(\.|\s)*l(\.|\s)*a(\.|\s)*r(\.|\s)*l(\.|\s)*|" \
+            "s(\.|\s)*c(\.|\s)*i(\.|\s)*|" \
+            "s(\.|\s)*c(\.|\s)*o(\.|\s)*p(\.|\s)*|" \
+            "s(\.|\s)*e(\.|\s)*l(\.|\s)*|" \
+            "s(\.|\s)*c(\.|\s)*a(\.|\s)*|" \
+            "syndic|" \
+            "syndicat( des copropriétaires)?|" \
+            "(e|é)tablissement|" \
+            "mutuelle|" \
+            "caisse|" \
+            "hôpital|" \
+            "banque|" \
+            "compagnie( d'assurance)?|" \
+            "cabinet"
 
 
 def get_title_case(original_text: str) -> str:
@@ -67,8 +67,8 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     return text
 
 
-remove_org_type_pattern = regex.compile(r"\b(" + org_types + r")\b\s+",
-                                        flags=regex.IGNORECASE)
+remove_org_type_pattern = regex.compile("\\b(" + org_types + ")\\b\s+",
+                                        flags=regex.VERSION1 | regex.IGNORECASE)
 
 
 def remove_org_type(original_text: str) -> str:
@@ -80,7 +80,7 @@ def remove_org_type(original_text: str) -> str:
     return remove_org_type_pattern.sub(repl="", string=original_text).strip()
 
 
-last_name_pattern = regex.compile(r"[A-Z\s]+$")
+last_name_pattern = regex.compile("[A-Z\s]+$")
 
 
 def get_last_name(text: str) -> str:
@@ -145,7 +145,7 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     cleaned_text = list()
     start_selection_offset = 0
     for start_offset, end_offset, _ in words_to_delete_offsets:
-        if randint(0, 99) <= rate:
+        if randint(1, 99) < rate:
             cleaned_text.append(text[start_selection_offset:start_offset])
             start_selection_offset = end_offset
         else:

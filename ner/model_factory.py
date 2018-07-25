@@ -1,7 +1,7 @@
 import spacy
 
 # Managed type of tokens
-token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT", "GREFFIER", "ADRESSE", "JURIDICTION"]
+token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT", "GREFFIER", "ADRESSE", "JURIDICTION", "DATE"]
 
 
 def prevent_sentence_boundary_detection(doc):

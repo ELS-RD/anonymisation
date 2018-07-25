@@ -1,6 +1,7 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
+from generate_trainset.date_matcher import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_header
 from generate_trainset.first_name_dictionary_matcher import FirstName
@@ -242,9 +243,11 @@ def test_match_partie_pp_regex():
     text8 = "C'est Madame Titi Toto épouse POPO PIPI"
     assert get_partie_pp(text8) == [(13, 39, 'PARTIE_PP')]
     text9 = "C'est Madame Titi épouse POPO qui est là"
-    assert get_partie_pp(text9) == [(13, 40, 'PARTIE_PP')]
+    assert get_partie_pp(text9) == [(13, 29, 'PARTIE_PP')]
     text10 = "C'est Madame TOTO épouse Popo"
     assert get_partie_pp(text10) == [(13, 29, 'PARTIE_PP')]
+    text11 = 'Par déclaration du 24 janvier 2011 Dominique FELLMANN et Marie Reine PIERRE épouse FELLMANN ont '
+    assert get_partie_pp(text11) == [(57, 91, 'PARTIE_PP')]
 
 
 def test_extract_company_names():
@@ -265,8 +268,8 @@ def test_extend_names():
     texts1 = [text1]
     offsets1 = [[(12, 17, "PARTIE_PP"), (36, 43, "PARTIE_PP")]]
     offset_expected_result = [(4, 17, 'PARTIE_PP'), (28, 43, 'PARTIE_PP')]
-    pattern1 = ExtendNames(texts=texts1, offsets=offsets1, type_name_to_keep='PARTIE_PP')
-    assert pattern1.get_extended_names(text=text1, type_name='PARTIE_PP') == offset_expected_result
+    pattern1 = ExtendNames(texts=texts1, offsets=offsets1, type_name='PARTIE_PP')
+    assert pattern1.get_extended_names(text=text1) == offset_expected_result
 
     assert ExtendNames.get_extended_extracted_name_multiple_texts(texts=texts1,
                                                                   offsets=offsets1,
@@ -280,20 +283,32 @@ def test_extend_names():
     offsets2 = [[(25, 32, "PARTIE_PP")]]
     # Should not match because it is not preceded by Monsieur / Madame
     expected_offsets2 = []
-    pattern2 = ExtendNames(texts=texts2, offsets=offsets2, type_name_to_keep='PARTIE_PP')
-    assert pattern2.get_extended_names(text=text2, type_name='PARTIE_PP') == expected_offsets2
+    pattern2 = ExtendNames(texts=texts2, offsets=offsets2, type_name='PARTIE_PP')
+    assert pattern2.get_extended_names(text=text2) == expected_offsets2
     text3 = "Monsieur Ludovic Frédéric Jean Nicolas REUTHER, majeur protégé"
     texts3 = [text3]
     offsets3 = [[(9, 16, "PARTIE_PP"), (39, 46, "PARTIE_PP")]]
     offset_expected_result3 = [(9, 46, "PARTIE_PP")]
-    pattern3 = ExtendNames(texts=texts3, offsets=offsets3, type_name_to_keep='PARTIE_PP')
-    assert pattern3.get_extended_names(text=text3, type_name='PARTIE_PP') == offset_expected_result3
+    pattern3 = ExtendNames(texts=texts3, offsets=offsets3, type_name='PARTIE_PP')
+    assert pattern3.get_extended_names(text=text3) == offset_expected_result3
     text4 = text3
     texts4 = texts3
     offsets4 = [[(9, 16, "PARTIE_PP")]]
     offset_expected_result4 = offset_expected_result3
-    pattern4 = ExtendNames(texts=texts4, offsets=offsets4, type_name_to_keep='PARTIE_PP')
-    assert pattern4.get_extended_names(text=text4, type_name='PARTIE_PP') == offset_expected_result4
+    pattern4 = ExtendNames(texts=texts4, offsets=offsets4, type_name='PARTIE_PP')
+    assert pattern4.get_extended_names(text=text4) == offset_expected_result4
+    text5 = "Ludovic Frédéric Jean Nicolas REUTHER, majeur protégé"
+    texts5 = [text5]
+    offsets5 = [[(8, 16, "PARTIE_PP")]]
+    offset_expected_result5 = [(8, 37, 'PARTIE_PP')]
+    pattern5 = ExtendNames(texts=texts5, offsets=offsets5, type_name='PARTIE_PP')
+    assert pattern5.get_extended_names(text=text5) == offset_expected_result5
+    text6 = "EDF - DCPP MEDITERRANEE"
+    texts6 = [text6]
+    offsets6 = [[(0, 3, "PARTIE_PM")]]
+    offset_expected_result6 = [(0, 23, 'PARTIE_PM')]
+    pattern6 = ExtendNames(texts=texts6, offsets=offsets6, type_name='PARTIE_PM')
+    assert pattern6.get_extended_names(text=text6) == offset_expected_result6
 
 
 def test_extract_family_name():
@@ -328,3 +343,11 @@ def test_match_court_name():
     matcher = CourtName()
     text1 = "LA COUR D'Appel de Paris"
     assert matcher.get_matches(text=text1) == [(3, 24, 'JURIDICTION')]
+
+
+def test_date():
+    assert get_date("le 12 janvier 2013 !") == [(3, 18, 'DATE')]
+    assert get_date("le 12/01/2016 !") == [(3, 13, 'DATE')]
+    assert get_date("le 12 / 01/2016 !") == [(3, 15, 'DATE')]
+    assert get_date("le 12 / 01/16 !") == [(3, 13, 'DATE')]
+    assert get_date("ARRÊT DU HUIT FÉVRIER DEUX MILLE TREIZE") == [(9, 39, 'DATE')]
