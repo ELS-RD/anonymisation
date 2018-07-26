@@ -76,3 +76,18 @@ def convert_bilou_with_missing_action(doc, offsets) -> list:
     result = biluo_tags_from_offsets(doc, offsets)
     return ["-" if unknown_type_name in bilou else bilou for bilou in result]
 
+
+def tokenize_text(model, text: str, offsets: list) -> tuple:
+    doc = model(text)
+    bilou_annotations = convert_bilou_with_missing_action(doc, offsets)
+    return doc, bilou_annotations
+
+
+def tokenize_texts(model, texts, offsets):
+    docs = list()
+    bilou_annotations = list()
+    for text, current_offsets in zip(texts, offsets):
+        doc, bilou_annotation = tokenize_text(model=model, text=text, offsets=current_offsets)
+        docs.append(doc)
+        bilou_annotations.append(bilou_annotation)
+    return docs, bilou_annotations

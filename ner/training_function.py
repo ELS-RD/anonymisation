@@ -3,6 +3,7 @@ from pathlib import Path
 from spacy import util
 from tqdm import tqdm
 
+from generate_trainset.unknown_matcher import convert_bilou_with_missing_action
 from ner.model_factory import get_empty_model
 
 
@@ -26,7 +27,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
 
             for current_batch_item in batches:
                 case_id, texts, annotations = zip(*current_batch_item)
-                # current_case_id, texts, _, annotations = zip(*current_batch_item)
+                # tokenization here?
                 nlp.update(
                     texts,  # batch of texts
                     annotations,  # batch of annotations
