@@ -1,4 +1,5 @@
 import regex
+from spacy.gold import biluo_tags_from_offsets
 
 upcase_words = "(\s*[A-Z\-]+\w*)+"
 upcase_words_regex = regex.compile(upcase_words, flags=regex.VERSION1)
@@ -56,11 +57,22 @@ def clean_unknown_offsets(offsets: list) -> list:
             is_end_offset_ok = ((next_start_offset is not None) and
                                 (end_offset < next_start_offset) or (next_start_offset is None))
 
-
-
             if is_start_offset_ok and is_end_offset_ok:
                 result.append((start_offset, end_offset, type_name))
 
         else:
             result.append((start_offset, end_offset, type_name))
     return result
+
+
+def convert_bilou_with_missing_action(doc, offsets) -> list:
+    """
+    Convert unknown type token to missing value for NER
+    Therefore no Loss will be applied to these tokens
+    :param doc: text tokenized by Spacy
+    :param offsets: original offsets
+    :return: list of BILOU types
+    """
+    result = biluo_tags_from_offsets(doc, offsets)
+    return ["-" if unknown_type_name in bilou else bilou for bilou in result]
+
