@@ -353,5 +353,4 @@ def test_date():
 
 
 def test_bar():
-    assert get_bar(text="Le barreau de PARIS toto") == [(3, 19, 'JURIDICTION')]
-
+    assert get_bar(text="Le barreau de PARIS toto") == [(3, 19, 'BARREAU')]

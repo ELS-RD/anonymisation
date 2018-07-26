@@ -1,7 +1,7 @@
 from generate_trainset.extract_node_values import get_paragraph_from_file
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
-from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
+from viewer.spacy_viewer import view_spacy_docs
 
 config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]

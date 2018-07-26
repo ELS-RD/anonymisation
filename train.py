@@ -2,8 +2,8 @@ import pickle
 
 from tqdm import tqdm
 
-from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, get_frequent_entities_matcher, \
-    get_frequent_entities_matches
+from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, \
+    get_frequent_entities_matcher, get_frequent_entities_matches
 from generate_trainset.court_matcher import CourtName
 from generate_trainset.date_matcher import get_date
 from generate_trainset.extend_names import ExtendNames

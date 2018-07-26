@@ -92,8 +92,8 @@ def get_frequent_entities_matches(matcher: acora._cacora.UnicodeAcora, frequent_
         # so it can be equal to the last charcter offset of the text + 1
         last_char_ok = (end_offset == len(text)) or (not text[end_offset].isalnum())
 
-        first_char_ok = ((start_offset == 0 or not text[start_offset - 1].isalnum())) and \
-                        ((text[start_offset].isupper()) or (text[start_offset].isdecimal()))
+        first_char_ok = (start_offset == 0 or not text[start_offset - 1].isalnum()) and \
+                        (text[start_offset].isupper() or text[start_offset].isdecimal())
 
         if first_char_ok and last_char_ok:
             type_name = frequent_entities_dict[entity_span.lower()]
