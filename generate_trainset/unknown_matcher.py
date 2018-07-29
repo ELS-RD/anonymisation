@@ -1,10 +1,24 @@
 import regex
 from spacy.gold import biluo_tags_from_offsets
 
-upcase_words = "(\s*[A-Z\-]+\w*)+"
+upcase_words = "(?<=M\. |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )(\s*[A-Z\-]+\w*)+"
 upcase_words_regex = regex.compile(upcase_words, flags=regex.VERSION1)
 
 unknown_type_name = "UNKNOWN"
+
+
+def add_unknown_words_offsets(texts: list, offsets: list) -> list:
+    """
+    Add offsets of UNKNOWN words
+    :param texts: list of original texts
+    :param offsets: list of list of offsets
+    :return: list of list of offsets including offset of unknown words
+    """
+    result = list()
+    for text, current_offsets in zip(texts, offsets):
+        new_offset = get_unknown_words_offsets(text=text, offsets=current_offsets)
+        result.append(new_offset)
+    return result
 
 
 def get_unknown_words_offsets(text: str, offsets: list) -> list:
@@ -39,13 +53,13 @@ def clean_unknown_offsets(offsets: list) -> list:
     for (index, (start_offset, end_offset, type_name)) in enumerate(sorted_offsets):
         if type_name == unknown_type_name:
 
-            # is first?
+            # is first token?
             if index > 0:
                 previous_start_offset, previous_end_offset, previous_type_name = sorted_offsets[index - 1]
             else:
                 previous_start_offset, previous_end_offset, previous_type_name = None, None, None
 
-            # is last?
+            # is last token?
             if index < len(sorted_offsets) - 1:
                 next_start_offset, next_end_offset, next_type_name = sorted_offsets[index + 1]
             else:
@@ -78,12 +92,28 @@ def convert_bilou_with_missing_action(doc, offsets) -> list:
 
 
 def tokenize_text(model, text: str, offsets: list) -> tuple:
+    """
+    Tokenize text, convert entity offsets to list of BILOU annotations
+    and convert UNKNOWN label to Spacy missing values
+    :param model: Spacy model
+    :param text: original paragraph text
+    :param offsets: discovered offsets
+    :return: tuple of docs and BILOU annotations
+    """
     doc = model(text)
     bilou_annotations = convert_bilou_with_missing_action(doc, offsets)
     return doc, bilou_annotations
 
 
-def tokenize_texts(model, texts, offsets):
+def tokenize_texts(model, texts, offsets) -> tuple:
+    """
+    Tokenize list of texts, convert list of entity offsets to list of BILOU annotations
+    and convert UNKNOWN label to Spacy missing values
+    :param model: Spacy model
+    :param texts: original paragraph text
+    :param offsets: discovered offsets
+    :return: tuple of docs and BILOU annotations
+    """
     docs = list()
     bilou_annotations = list()
     for text, current_offsets in zip(texts, offsets):

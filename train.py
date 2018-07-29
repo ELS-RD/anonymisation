@@ -17,6 +17,7 @@ from generate_trainset.match_patterns import get_company_names, get_judge_name, 
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
+from generate_trainset.unknown_matcher import add_unknown_words_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
@@ -33,7 +34,7 @@ export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:100000]
+TRAIN_DATA = list(TRAIN_DATA)[0:10000]
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -143,17 +144,27 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     offsets=last_doc_with_extended_offsets,
                     type_name="MAGISTRAT")
 
+                last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
+                    texts=last_document_texts,
+                    offsets=last_doc_with_extended_offsets,
+                    type_name="GREFFIER")
+
+                # TODO remove de au debut du nom
+
                 last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
                                                                           offsets=last_doc_with_extended_offsets,
                                                                           threshold_span_size=4)
 
-                last_doc_offset_unwanted_words_removed = [clean_offsets_from_unwanted_words(text, off) for text, off in
-                                                          zip(last_document_texts,
+                last_doc_offset_unwanted_words_rmved = [clean_offsets_from_unwanted_words(text, off) for text, off in
+                                                        zip(last_document_texts,
                                                               last_doc_with_ext_offset_and_var)]
+
+                last_doc_with_unknown_entities = add_unknown_words_offsets(texts=last_document_texts,
+                                                                           offsets=last_doc_offset_unwanted_words_rmved)
 
                 last_doc_offsets_no_space = [remove_offset_space(text, off) for text, off in
                                              zip(last_document_texts,
-                                                 last_doc_offset_unwanted_words_removed)]
+                                                 last_doc_with_unknown_entities)]
 
                 last_doc_offsets_normalized = [normalize_offsets(off) for off in last_doc_offsets_no_space]
 
@@ -196,7 +207,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-print("Number of tags:", sum([len(i[2]['entities']) for i in doc_annotated]))
+print("Number of tags:", sum([len(offsets['entities']) for _, _, offsets in doc_annotated]))
 
 if train_dataset:
     train_model(data=doc_annotated,
@@ -210,5 +221,5 @@ if export_dataset:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Display training set
-docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000], model_dir_path)
+docs = convert_offsets_to_spacy_docs(doc_annotated[0:1000], model_dir_path)
 view_spacy_docs(docs)

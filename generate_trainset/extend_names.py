@@ -38,11 +38,11 @@ class ExtendNames:
                         "(" \
                         "(" \
                         "(?!\\b(M\.)\\b |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )" \
-                        "[A-Z\-]+\w*\s*)*" \
+                        "[A-Z\-\.]+\w*\s*)*" \
                         "\\b(" + \
                         extracted_names_pattern + \
                         ")\\b" \
-                        "(\s+[A-Z\-]+\w*)*" \
+                        "(\s+[A-Z\-\.]+\w*)*" \
                         ")"
 
         pattern_extend_right = "\\b(" + \

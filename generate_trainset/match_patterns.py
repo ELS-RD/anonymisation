@@ -4,12 +4,14 @@ from acora import AcoraBuilder
 from generate_trainset.match_acora import get_matches
 from generate_trainset.modify_strings import org_types, get_first_last_name, remove_org_type
 
-find_corp = regex.compile("(((?i)" + org_types + ")\s+"
-                                                 "("
+find_corp = regex.compile("(((?i)" + org_types + ") "
                                                  "((?i)"
                                                  "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
                                                  ")*"
-                                                 "(\()?[A-Z][[:alpha:]-'\.\)]+(\s|/|-|&)*)+"
+                                                 "((\()?[A-Z]+[\w\-'\.\)]*)"
+                                                 "( (de |le |la |les |pour |l'|et |en |des |d'|au |du |\(|& |/ ?|\- ?)*"
+                                                 "[A-Z\-]+[\w\-'\.\)]*"
+                                                 ")*"
                                                  ")", flags=regex.VERSION1)
 
 
@@ -22,10 +24,14 @@ def get_company_names(text: str) -> list:
     return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
 
 
-extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )"
-                                        "((?!Conseil|Présid|Magistrat)[A-Z]+[[:alpha:]-']+\s*|de\s+)+"
+extract_judge_pattern_1 = regex.compile("("
+                                        "(?!Madame |Monsieur |M\. |Mme\. |M |Mme |Conseil|Présid|Magistrat)"
+                                        "[A-Z]+[\w\-']*"
+                                        ")"
+                                        "( (de |d')?[A-Z]+[\w\-']*)*"
                                         "(?=, "
-                                        "((M|m)agistrat|"
+                                        "("
+                                        "(M|m)agistrat|"
                                         "conseill.{0,30}(cour|président|magistrat|chambre|.{0,5}$|"
                                         ", |application des dispositions)|"
                                         "président.+(cour|magistrat|chambre)|"
@@ -39,11 +45,13 @@ extract_judge_pattern_1 = regex.compile("(?!Madame |Monsieur |M. |Mme. |M |Mme )
 
 extract_judge_pattern_2 = regex.compile("(?<=(?i)"
                                         "^(magistrat|"
-                                        "conseill[[:alpha:]]{1,3}|"
-                                        "président[[:alpha:]]{0,3})\s+"
+                                        "conseill\w{1,3}|"
+                                        "président\w{0,3})\s+"
                                         ":.{0,20}"
                                         ")"
-                                        "((?!(?i)madame |monsieur |m. |mme. |m |mme )[A-Z]+[[:alpha:]-']*\s*)+",
+                                        "((?!(?i)madame |monsieur |m. |mme. |m |mme )"
+                                        "[A-Z]+[\w\-']*)"
+                                        "( [A-Z\-]+[\w\-']*)*",
                                         flags=regex.VERSION1)
 
 
@@ -62,7 +70,7 @@ def get_judge_name(text: str) -> list:
 extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
                                         "("
                                         "(?!Conseil|Présid|Magistrat|Mme|M |Madame|Monsieur)"
-                                        "[A-Z]+[[:alpha:]-']*\s*)+(?=.{0,20}"
+                                        "[A-Z]+[\w-']*\s*)+(?=.{0,20}"
                                         "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 
@@ -82,7 +90,9 @@ def get_clerk_name(text: str) -> list:
     return result1 + result2
 
 
-extract_lawyer = regex.compile("(?<=(Me|Me.|(M|m)a(i|î)tre)\s)([A-Z]+[[:alpha:]-']+\s*)+",
+extract_lawyer = regex.compile("(?<=(Me|Me\.|(M|m)a(i|î)tre) )"
+                               "([A-Z]+[\w-']*)"
+                               "( [A-Z\-]+[\w-']*)+",
                                flags=regex.VERSION1)
 
 
@@ -166,7 +176,7 @@ def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
     return copy_offsets
 
 
-extract_partie_pp_pattern_1 = regex.compile("([A-Z][[:alpha:]-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
+extract_partie_pp_pattern_1 = regex.compile("([A-Z][\w-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
                                             flags=regex.VERSION1)
 
 extract_partie_pp_pattern_2 = regex.compile("(?<=((?i)consorts|époux|docteur|dr(\.)?|professeur|prof(\.)?)\s+)"
@@ -200,6 +210,7 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
     """
     pp_patterns = AcoraBuilder("!@#$%%^&*")
     pm_patterns = AcoraBuilder("!@#$%%^&*")
+    #TODO add magistrat et greffier
     for current_offsets, text in zip(offsets, texts):
         for offset in current_offsets:
             start_offset, end_offset, type_name = offset
@@ -248,8 +259,8 @@ juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal
                                       "[^A-Z]{0,5}"
                                       "("
                                       "(?!\\bDU\\b\s)"
-                                      "[A-Z][A-Z[:alpha:]-']*\s*"
-                                      "((de|d'|en)\s*)?"
+                                      "[A-Z][A-Z\w-']*\s*"
+                                      "((de|d'|en|des|du)\s*)?"
                                       ")+"
                                       "(?!(?i)\\b(en|le|du)\\b)",
                                       flags=regex.VERSION1)

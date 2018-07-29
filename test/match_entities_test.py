@@ -100,7 +100,7 @@ def test_extract_judge_names():
     text21 = "Madame Françoise AYMES BELLADINA, conseiller faisant fonction de président de chambre"
     assert get_judge_name(text21) == [(7, 32, 'MAGISTRAT')]
     text22 = "outre elle même, de Daniel TROUVE, premier président, et "
-    assert get_judge_name(text22) == [(17, 33, 'MAGISTRAT')]
+    assert get_judge_name(text22) == [(20, 33, 'MAGISTRAT')]
 
 
 def test_extract_clerk_names():
@@ -251,15 +251,17 @@ def test_match_partie_pp_regex():
 
 def test_extract_company_names():
     text1 = "La Société TotoT Titi est responsable avec la SA Turl-ututu Et Consors de ce carnage."
-    assert get_company_names(text1) == [(3, 22, 'PARTIE_PM'), (46, 71, 'PARTIE_PM')]
+    assert get_company_names(text1) == [(3, 21, 'PARTIE_PM'), (46, 70, 'PARTIE_PM')]
     text2 = "Vu l'absence de l'Association pour l'Insertion et l'Accompagnement en Limousin (ASIIAL) assignée ;"
-    assert get_company_names(text2) == [(18, 88, 'PARTIE_PM')]
+    assert get_company_names(text2) == [(18, 87, 'PARTIE_PM')]
     text3 = "Condamner solidairement les Sociétés OCM et OCS aux entiers dépens."
-    assert get_company_names(text3) == [(28, 48, 'PARTIE_PM')]
+    assert get_company_names(text3) == [(28, 47, 'PARTIE_PM')]
     text4 = "La SARL ENZO & ROSSO n'est pas facile à extraire."
-    assert get_company_names(text4) == [(3, 21, 'PARTIE_PM')]
+    assert get_company_names(text4) == [(3, 20, 'PARTIE_PM')]
     text5 = "la Caisse Nationale des Caisses d'Epargne était "
-    assert get_company_names(text5) == [(3, 42, "PARTIE_PM")]
+    assert get_company_names(text5) == [(3, 41, "PARTIE_PM")]
+    text6 = "le Syndicat des Copropriétaires de la Résidence Le Jardin de la Galère, ce qui"
+    assert get_company_names(text6) == [(3, 70, "PARTIE_PM")]
 
 
 def test_extend_names():

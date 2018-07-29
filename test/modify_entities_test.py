@@ -32,4 +32,3 @@ def test_remove_key_words():
                                                                        (45, 54, 'AVOCAT')])
 
     assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)
-
