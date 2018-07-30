@@ -297,20 +297,13 @@ Condamne madame Patricia PerreiraPARTIE_PP épouse CostetPARTIE_PP aux dépens d
 
 Pb adresse
 
-demeurant 385 rue de Lyon - BPADRESSE 70004 - 13015 MARSEILLE
-demeurant Place Estrangin Pastré - BPADRESSE 108 - 13254 MARSEILLE CEDEX 6
-demeurant 9 avenue Désambrois Palais StellaADRESSE - 06000 NICEADRESSE
-demeurant 9 Avenue Desambrois - 06000 NICE FORNASEROADRESSE SAS, 20 rue De France 06000 FornaseroPARTIE_PP , en exercice domicilié en cette qualité au siège social,
-urore, demeurant 61 avenue Halley - 59866 VILLENEUVE D'ASQ CEDEX
-Réf : 35057719643, demeurant 6 rue du professeur LAVIGNOLLEPARTIE_PP - BP 189 - 33042 BORDEAUX CEDEXADRESSE 
- demeurant 26 RUE DE MULHOUSE - BPADRESSE 77837 - 21078 DIJON CEDEX
 
 
 Adresse qui commence par demeurant
 
 
 Comment est ce possible que le magistrat ne soit pas reconnu partout :
--> sol : ne mettre que les entités du matcher ?
+-> sol : ne mettre que les entités du matcher ? + sys de vote à la prédiction (exact) + retrait des variations
 Le présent arrêt a été signé par Thierry PERRIQUETMAGISTRAT, président de chambre, et par Nathalie CAILHETONGREFFIER, greffier, auquel la minute de la décision a été remise par le magistrat signataire.
 Le Greffier, Le Président,
 Nathalie CAILHETONGREFFIER, Thierry PERRIQUETPARTIE_PP

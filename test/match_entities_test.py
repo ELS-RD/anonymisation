@@ -144,8 +144,8 @@ def test_get_phrase_matcher():
 
 
 def test_get_address():
-    text1 = "avant 130-140, rue Victor HUGO    - 123456 Saint-Etienne après"
-    assert get_addresses(text1) == [(6, 57, 'ADRESSE')]
+    text1 = "avant 130-140, rue Victor HUGO - 123456 Saint-Etienne après"
+    assert get_addresses(text1) == [(6, 53, 'ADRESSE')]
     text2 = "avant 13 rue Ernest Renan après"
     assert get_addresses(text2) == [(6, len(text2) - 5, 'ADRESSE')]
     text3 = "avant 20 Avenue André Prothin après"
@@ -165,9 +165,9 @@ def test_get_address():
     text11 = "avant 35, rue Maurice Flandin après"
     assert get_addresses(text11) == [(6, len(text11) - 5, 'ADRESSE')]
     text12 = "avant 22 rue Henri Rochefort - 75017 PARIS après"
-    assert get_addresses(text12) == [(6, 43, 'ADRESSE')]
+    assert get_addresses(text12) == [(6, 42, 'ADRESSE')]
     text13 = "avant 14 Boulevard Marie et Alexandre Oyon - 72100 LE MANS après"
-    assert get_addresses(text13) == [(6, 59, 'ADRESSE')]
+    assert get_addresses(text13) == [(6, 58, 'ADRESSE')]
     text14 = "avant allée Toto après"
     assert get_addresses(text14) == [(6, len(text14) - 5, 'ADRESSE')]
     text15 = "avant 14 Boulevard Marie et Alexandre Oyon après"
@@ -185,7 +185,19 @@ def test_get_address():
     text21 = "je ne veux pas payer en lieu et place de Madame Toto !"
     assert get_addresses(text21) == []
     text22 = "avant, 130/ 140, rue Victor HUGO    - 123456 Saint-Etienne après"
-    assert get_addresses(text22) == [(7, 59, 'ADRESSE')]
+    assert get_addresses(text22) == [(7, 58, 'ADRESSE')]
+    text23 = "demeurant 385 rue de Lyon - BP 70004 - 13015 MARSEILLE après"
+    assert get_addresses(text23) == [(10, 54, 'ADRESSE')]
+    text24 = "demeurant 9 avenue Désambrois Palais Stella - 06000 NICE après"
+    assert get_addresses(text24) == [(10, 56, 'ADRESSE')]
+    text25 = "demeurant 9 Avenue Desambrois - 06000 NICE FORNASERO SAS, 20 rue De France 06000 Fornasero après"
+    assert get_addresses(text25) == [(10, 56, 'ADRESSE'), (58, 90, 'ADRESSE')]
+    text26 = "demeurant 61 avenue Halley - 59866 VILLENEUVE D'ASQ CEDEX après"
+    assert get_addresses(text26) == [(10, 57, 'ADRESSE')]
+    text27 = "Réf : 35057719643, demeurant 6 rue du Professeur LAVIGNOLLE - BP 189 - 33042 BORDEAUX CEDEX après"
+    assert get_addresses(text27) == [(29, 91, 'ADRESSE')]
+    text28 = "demeurant 26 RUE DE MULHOUSE - BP 77837 - 21078 DIJON CEDEX après"
+    assert get_addresses(text28) == [(10, 59, 'ADRESSE')]
 
 
 # def test_get_postal_code_city():

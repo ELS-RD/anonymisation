@@ -108,26 +108,20 @@ def get_lawyer_name(text: str) -> list:
 places_pattern = ("rue|boulevard|bd\.?|av(\.|e)?|avenue|allée|quai|"
                   "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
-extract_address_pattern = regex.compile("([\d][\d,/\-\s]*)?"
+extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
                                         "("
                                         "(?i)\\b(" +
                                         places_pattern +
                                         ")\\b"
-                                        "(\s(de|d'|du|des))?"
-                                        "(\s(l'))?"
+                                        "( (de |d'|du |des |l')*)?"
                                         ")"
-                                        "\s*"
-                                        "([A-ZÉÈ]+[[:alnum:]-\.']*"
-                                        "(\s*(de|le|la|les|et|d'|du))?"
-                                        "\s*)+"
-                                        "[,\-\sà]*\d*\s*"
-                                        "( BP )?"
+                                        "[A-ZÉÈ\-]+[\w\-\.']*"
+                                        "( (de |le |la |les |et |d'|du |l'|à )*[A-ZÉÈ\-]+[\w\-\.']*)*"
+                                        "[\- à\d]*"
                                         "("
-                                        "[A-Z]+[[:alnum:]-\.]*\s*-?\s*"
-                                        "((de|le|la|les|et|d'|du)\s*)?"
-                                        ")*"
-                                        "( BP )?"
-                                        "( CEDEX )?",
+                                        "\\b[A-ZÉÈ\-]+[\w\-\.']*\\b"
+                                        "( (de |le |la |les |et |d'|du |sur )*[A-ZÉÈ\-]+[\w\-\.']*)*"
+                                        ")?",
                                         flags=regex.VERSION1)
 
 
