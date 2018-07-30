@@ -131,7 +131,6 @@ All the project configuration is done through `resources/config.ini` file (mainl
 - matche unknow multiword entities with those existing (for companies). Do we need better model for companies?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
 - harmonisation des types (vote ?)
-- annotation pour améliorer les cas complexes
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -284,22 +283,10 @@ Iter 3
 Iter 4
 69360it [10:21:42,  2.04it/s]
 -------------
-Tiret dans les noms d avocats
- Me Carine Chevalier - Kasprzak ...
--------
 
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
-
-Condamne madame Patricia PerreiraPARTIE_PP épouse CostetPARTIE_PP aux dépens de la procédure d'appel avec distraction au profit de la SCP Romulus Gille.PARTIE_PM
-
-
-Pb adresse
-
-
-
-Adresse qui commence par demeurant
 
 
 Comment est ce possible que le magistrat ne soit pas reconnu partout :

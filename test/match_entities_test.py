@@ -123,8 +123,10 @@ def test_extract_clerk_names():
 
 
 def test_extract_lawyer():
-    text = "A la demande de Me Toto TOTO, avocat"
-    assert get_lawyer_name(text) == [(19, 28, 'AVOCAT')]
+    text1 = "A la demande de Me Toto TOTO, avocat"
+    assert get_lawyer_name(text1) == [(19, 28, 'AVOCAT')]
+    text2 = "Me Carine Chevalier - Kasprzak"
+    assert get_lawyer_name(text2) == [(3, 30, 'AVOCAT')]
 
 
 def test_get_first_name_dict():
