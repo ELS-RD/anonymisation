@@ -142,6 +142,8 @@ python3 display_errors.py
 ### TODO:
 
 - randomly change case of only several words in a MWE
+- group JUDGE and CLERKS in the same cat
+- switch to english type name
 - test if unknown entity match an existing one (A in B)
 - RG number
 - Court formation

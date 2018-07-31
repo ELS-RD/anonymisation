@@ -29,7 +29,7 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = False  # bool(config_training["train_data_set"])
+train_dataset = True  # bool(config_training["train_data_set"])
 export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,

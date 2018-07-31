@@ -281,6 +281,9 @@ def test_extract_company_names():
     assert get_company_names(text5) == [(3, 41, "PARTIE_PM")]
     text6 = "le Syndicat des Copropriétaires de la Résidence Le Jardin de la Galère, ce qui"
     assert get_company_names(text6) == [(3, 70, "PARTIE_PM")]
+    text7 = "SA CAISSE D'EPARGNE ET DE PREVOYANCE PROVENCE ALPES C ORSE LA CAISSE D'EPARGNE ET, " \
+            "Banque coopérative"
+    assert get_company_names(text7) == [(0, 81, "PARTIE_PM")]
 
 
 def test_extend_names():
@@ -374,4 +377,7 @@ def test_date():
 
 
 def test_bar():
-    assert get_bar(text="Le barreau de PARIS toto") == [(3, 19, 'BARREAU')]
+    text1 = "Le barreau de PARIS toto"
+    assert get_bar(text=text1) == [(3, 19, 'BARREAU')]
+    text2 = "Je travaille au barreau D'AMIENS et c'est top !"
+    assert get_bar(text=text2) == [(16, 32, 'BARREAU')]

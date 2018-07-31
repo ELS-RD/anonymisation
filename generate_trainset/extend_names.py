@@ -42,7 +42,7 @@ class ExtendNames:
                         "\\b(" + \
                         extracted_names_pattern + \
                         ")\\b" \
-                        "(\s+[A-ZÉÈ\-\.]+\w*)*" \
+                        "( [A-ZÉÈ\-\.]+\w*)*" \
                         ")"
 
         pattern_extend_right = "\\b(" + \

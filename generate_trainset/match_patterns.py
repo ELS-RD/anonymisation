@@ -8,9 +8,9 @@ find_corp = regex.compile("(((?i)" + org_types + ") "
                                                  "((?i)"
                                                  "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
                                                  ")*"
-                                                 "((\()?[A-ZÉÈ]+[\w\-'\.\)]*)"
+                                                 "((\()?[A-ZÉÈ&']+[\w\-'\.\)]*)"
                                                  "( (de |le |la |les |pour |l'|et |en |des |d'|au |du |\(|& |/ ?|\- ?)*"
-                                                 "[A-ZÉÈ\-]+[\w\-'\.\)]*"
+                                                 "[A-ZÉÈ\-&']+[\w\-'\.\)]*"
                                                  ")*"
                                                  ")", flags=regex.VERSION1)
 
@@ -90,7 +90,7 @@ def get_clerk_name(text: str) -> list:
     return result1 + result2
 
 
-extract_lawyer = regex.compile("(?<=(Me|Me\.|(M|m)a(i|î)tre) )"
+extract_lawyer = regex.compile("(?<=(Me|Me\.|(M|m)a(i|î)tre|M°) )"
                                "[A-ZÉÈ]+[\w-']*"
                                "( [A-ZÉÈ\-]+[\w-']*)*",
                                flags=regex.VERSION1)
@@ -242,7 +242,7 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
 
 # List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/
 juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal d'instance|Conseil de prud\.*hommes|"
-                                      "Tribunal de commerce|Tribunal des affaires de sécurité sociale|"
+                                      "Tribunal( mixte)? de commerce|Tribunal des affaires de sécurité sociale|"
                                       "Tribunal paritaire des baux ruraux|Cour d'assises|Tribunal correctionnel|"
                                       "Tribunal de police|Juge de proximit.|Juge des enfants|Tribunal pour enfants|"
                                       "Cour d'assises des mineurs|Cour d'appel|"
@@ -254,7 +254,7 @@ juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal
                                       "("
                                       "(?!\\bDU\\b\s)"
                                       "[A-ZÉÈ]+[\w-']*\s*"
-                                      "((de|d'|en|des|du)\s*)?"
+                                      "((de|d'|en|des|du|à)\s*)?"
                                       ")+"
                                       "(?!(?i)\\b(en|le|du)\\b)",
                                       flags=regex.VERSION1)
@@ -279,7 +279,9 @@ def get_juridictions(text: str) -> list:
     return result1 + result2
 
 
-barreau_pattern = regex.compile("barreau (de |d'|du )(\s*(en |de |et les |du )?[A-Z\-]+\w*)*",
+barreau_pattern = regex.compile("barreau ((?i)de |d'|du )"
+                                "[A-ZÉÈ'\-]+\w*"
+                                "( (en |de |et les |du )?[A-Z'\-]+\w*)*",
                                 flags=regex.VERSION1)
 
 
