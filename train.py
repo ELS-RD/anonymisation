@@ -4,11 +4,12 @@ from tqdm import tqdm
 
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, \
     get_frequent_entities_matcher, get_frequent_entities_matches
-from generate_trainset.court_matcher import CourtName
-from generate_trainset.date_matcher import get_date
+from generate_trainset.match_courts import CourtName
+from generate_trainset.match_date import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
+from generate_trainset.match_doubtful_mwe import MatchDoubfulMwe
 from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, get_judge_name, get_clerk_name, get_lawyer_name, \
     get_addresses, get_partie_pp, \
@@ -17,7 +18,6 @@ from generate_trainset.match_patterns import get_company_names, get_judge_name, 
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
-from generate_trainset.unknown_matcher import add_unknown_words_offsets
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
@@ -34,7 +34,11 @@ export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)[0:10000]
+TRAIN_DATA = list(TRAIN_DATA)
+
+if (not train_dataset) and (not export_dataset):
+    TRAIN_DATA = TRAIN_DATA[0:10000]
+
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -45,6 +49,7 @@ headers_matcher = None
 
 postal_code_city_matcher = PostalCodeCity()
 court_names_matcher = CourtName()
+doubtful_mwe_matcher = MatchDoubfulMwe()
 doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
@@ -67,9 +72,6 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                  offsets=current_case_offsets,
                                                                  type_name="PARTIE_PP")
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
-
-                    # if "ACM IARD - ASSURANCE CREDIT MUTUEL".lower() in current_paragraph.lower():
-                    #     raise Exception("STOP")
 
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
 
@@ -149,18 +151,17 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                     offsets=last_doc_with_extended_offsets,
                     type_name="GREFFIER")
 
-                # TODO remove de au debut du nom
-
                 last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
                                                                           offsets=last_doc_with_extended_offsets,
                                                                           threshold_span_size=4)
 
                 last_doc_offset_unwanted_words_rmved = [clean_offsets_from_unwanted_words(text, off) for text, off in
                                                         zip(last_document_texts,
-                                                              last_doc_with_ext_offset_and_var)]
+                                                            last_doc_with_ext_offset_and_var)]
 
-                last_doc_with_unknown_entities = add_unknown_words_offsets(texts=last_document_texts,
-                                                                           offsets=last_doc_offset_unwanted_words_rmved)
+                last_doc_with_unknown_entities = doubtful_mwe_matcher. \
+                    add_unknown_words_offsets(texts=last_document_texts,
+                                              offsets=last_doc_offset_unwanted_words_rmved)
 
                 last_doc_offsets_no_space = [remove_offset_space(text, off) for text, off in
                                              zip(last_document_texts,
@@ -186,7 +187,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                          last_doc_remove_keywords_offsets]
 
                 # , "case_id": previous_case_id
-                [doc_annotated.append((previous_case_id, txt, {'entities': off})) for txt, off in
+                [doc_annotated.append((previous_case_id, txt, off)) for txt, off in
                  zip(last_doc_txt_case_updated,
                      last_doc_remove_keywords_offsets_norm)]
 
@@ -207,7 +208,7 @@ with tqdm(total=len(case_header_content)) as progress_bar:
         current_case_paragraphs.append(xml_paragraph)
         current_case_offsets.append(xml_offset)
 
-print("Number of tags:", sum([len(offsets['entities']) for _, _, offsets in doc_annotated]))
+print("Number of tags:", sum([len(offsets) for _, _, offsets in doc_annotated]))
 
 if train_dataset:
     train_model(data=doc_annotated,
@@ -215,11 +216,10 @@ if train_dataset:
                 n_iter=n_iter,
                 batch_size=batch_size,
                 dropout_rate=dropout_rate)
-
-if export_dataset:
+elif export_dataset:
     with open(training_set_export_path, 'wb') as export_training_set_file:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
-
-# Display training set
-docs = convert_offsets_to_spacy_docs(doc_annotated[0:1000], model_dir_path)
-view_spacy_docs(docs)
+else:
+    # Display training set
+    docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000])
+    view_spacy_docs(docs)

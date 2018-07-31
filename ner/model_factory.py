@@ -1,6 +1,8 @@
 import spacy
 
 # Managed type of tokens
+from spacy.lang.fr import French
+
 token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT",
                "GREFFIER", "ADRESSE", "JURIDICTION", "DATE", "BARREAU",
                "UNKNOWN"]
@@ -19,7 +21,7 @@ def prevent_sentence_boundary_detection(doc):
     return doc
 
 
-def get_empty_model(load_labels_for_training: bool):
+def get_empty_model(load_labels_for_training: bool) -> French:
     """
     Generate an empty NER model
     :rtype: object

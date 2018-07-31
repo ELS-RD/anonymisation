@@ -8,9 +8,9 @@ find_corp = regex.compile("(((?i)" + org_types + ") "
                                                  "((?i)"
                                                  "(de |le |la |les |pour |l'|et |en |des |d'|au |du )"
                                                  ")*"
-                                                 "((\()?[A-Z]+[\w\-'\.\)]*)"
+                                                 "((\()?[A-ZÉÈ]+[\w\-'\.\)]*)"
                                                  "( (de |le |la |les |pour |l'|et |en |des |d'|au |du |\(|& |/ ?|\- ?)*"
-                                                 "[A-Z\-]+[\w\-'\.\)]*"
+                                                 "[A-ZÉÈ\-]+[\w\-'\.\)]*"
                                                  ")*"
                                                  ")", flags=regex.VERSION1)
 
@@ -25,10 +25,10 @@ def get_company_names(text: str) -> list:
 
 
 extract_judge_pattern_1 = regex.compile("("
-                                        "(?!Madame |Monsieur |M\. |Mme\. |M |Mme |Conseil|Présid|Magistrat)"
-                                        "[A-Z]+[\w\-']*"
+                                        "(?!Madame |Monsieur|M\. |Mme\.|M |Mme|Conseil|Présid|Magistrat|Chambre)"
+                                        "[A-ZÉÈ']+[\w']*"
                                         ")"
-                                        "( (de |d')?[A-Z]+[\w\-']*)*"
+                                        "( (de |d')?[A-ZÉÈ\-']+[\w\-']*)*"
                                         "(?=, "
                                         "("
                                         "(M|m)agistrat|"
@@ -49,9 +49,9 @@ extract_judge_pattern_2 = regex.compile("(?<=(?i)"
                                         "président\w{0,3})\s+"
                                         ":.{0,20}"
                                         ")"
-                                        "((?!(?i)madame |monsieur |m. |mme. |m |mme )"
-                                        "[A-Z]+[\w\-']*)"
-                                        "( [A-Z\-]+[\w\-']*)*",
+                                        "((?!(?i)madame |monsieur |m. |mme. |m |mme |chambre )"
+                                        "[A-ZÉÈ]+[\w\-']*)"
+                                        "( [A-ZÉÈ\-]+[\w\-']*)*",
                                         flags=regex.VERSION1)
 
 
@@ -70,7 +70,7 @@ def get_judge_name(text: str) -> list:
 extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
                                         "("
                                         "(?!Conseil|Présid|Magistrat|Mme|M |Madame|Monsieur)"
-                                        "[A-Z]+[\w-']*\s*)+(?=.{0,20}"
+                                        "[A-ZÉÈ]+[\w-']*\s*)+(?=.{0,20}"
                                         "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 
@@ -91,8 +91,8 @@ def get_clerk_name(text: str) -> list:
 
 
 extract_lawyer = regex.compile("(?<=(Me|Me\.|(M|m)a(i|î)tre) )"
-                               "([A-Z]+[\w-']*)"
-                               "( [A-Z\-]+[\w-']*)+",
+                               "[A-ZÉÈ]+[\w-']*"
+                               "( [A-ZÉÈ\-]+[\w-']*)*",
                                flags=regex.VERSION1)
 
 
@@ -105,7 +105,7 @@ def get_lawyer_name(text: str) -> list:
     return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
 
 
-places_pattern = ("rue|boulevard|bd\.?|av(\.|e)?|avenue|allée|quai|"
+places_pattern = ("rue|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|"
                   "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
 extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
@@ -113,7 +113,7 @@ extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
                                         "(?i)\\b(" +
                                         places_pattern +
                                         ")\\b"
-                                        "( (de |d'|du |des |l')*)?"
+                                        "( (de |d'|du |des |l'|le|la)*)?"
                                         ")"
                                         "[A-ZÉÈ\-]+[\w\-\.']*"
                                         "( (de |le |la |les |et |d'|du |l'|à )*[A-ZÉÈ\-]+[\w\-\.']*)*"
@@ -136,7 +136,7 @@ def get_addresses(text: str) -> list:
 
 
 # contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1 | regex.IGNORECASE)
-start_with_postal_code = regex.compile("^\s*\d{5} (?!Euro.* |Franc.* |Fr )[A-Z]", flags=regex.VERSION1)
+start_with_postal_code = regex.compile("^\s*\d{5} (?!Euro.* |Franc.* |Fr )[A-ZÉÈ]", flags=regex.VERSION1)
 
 
 def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
@@ -253,7 +253,7 @@ juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal
                                       "[^A-Z]{0,5}"
                                       "("
                                       "(?!\\bDU\\b\s)"
-                                      "[A-Z][A-Z\w-']*\s*"
+                                      "[A-ZÉÈ]+[\w-']*\s*"
                                       "((de|d'|en|des|du)\s*)?"
                                       ")+"
                                       "(?!(?i)\\b(en|le|du)\\b)",

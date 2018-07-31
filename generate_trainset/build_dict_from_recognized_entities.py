@@ -11,7 +11,7 @@ config_training = get_config_default()
 training_set_export_path = config_training["training_set"]
 
 
-def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dict():
+def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dict:
     """
     Analyze recognized entities and return those over a defined threshold in a dict entity -> type_name
     :param path_trainset: path to a file storing the entity
@@ -30,7 +30,7 @@ def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dic
         exhaustive_dict = dict()
 
         for case_id, text, entities in data:
-            for start_offset, end_offset, type_name in entities['entities']:
+            for start_offset, end_offset, type_name in entities:
                 entity_span = text[start_offset:end_offset].lower()
                 current_count = exhaustive_dict.get(entity_span, get_default_dict_value())
                 current_count[type_name].add(case_id)
@@ -50,7 +50,7 @@ def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dic
 
             if (max_count > threshold_occurrences) and \
                     (len(entity_span) > 3) \
-                    and (max_type_name != "PARTIE_PP"):
+                    and (max_type_name not in ["PARTIE_PP", "UNKNOWN"]):
                 final_list.append((entity_span, max_type_name))
 
         return dict(final_list)

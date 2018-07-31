@@ -1,10 +1,10 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
-from generate_trainset.court_matcher import CourtName
-from generate_trainset.date_matcher import get_date
+from generate_trainset.match_courts import CourtName
+from generate_trainset.match_date import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_header
-from generate_trainset.first_name_dictionary_matcher import FirstName
+from generate_trainset.match_first_name_dictionary import FirstName
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_patterns import get_company_names, \
@@ -101,6 +101,12 @@ def test_extract_judge_names():
     assert get_judge_name(text21) == [(7, 32, 'MAGISTRAT')]
     text22 = "outre elle même, de Daniel TROUVE, premier président, et "
     assert get_judge_name(text22) == [(20, 33, 'MAGISTRAT')]
+    text23 = "Nous, Françoise GILLY ESCOFFIER, Conseiller de la Mise en Etat de la 10e Chambre de la Cour d'Appel " \
+             "d'Aix en Provence, assistée de GENEVIÈVE JAUFFRES, Greffier"
+    assert get_judge_name(text23) == [(6, 31, 'MAGISTRAT')]
+    text24 = "Nous, Anne VIDAL, Magistrat de la Mise en Etat de la 6e Chambre D de la Cour D'appel D'aix En Provence, " \
+             "assisté de Dominique COSTE, Greffier,"
+    assert get_judge_name(text24) == [(6, 16, 'MAGISTRAT')]
 
 
 def test_extract_clerk_names():
@@ -130,19 +136,18 @@ def test_extract_lawyer():
 
 
 def test_get_first_name_dict():
-    matcher = FirstName()
-    assert len(matcher.first_name_dict) == 12467
-    # with space
-    assert "Michaël " in matcher.first_name_dict
-    # without space
-    assert "Michaël" not in matcher.first_name_dict
+    matcher = FirstName(ignore_case=False)
+    assert len(matcher.first_name_dict) == 12464
+    assert "Michaël" in matcher.first_name_dict
 
 
 def test_get_phrase_matcher():
     text = "Aujourd'hui, Michaël et Jessica écrivent des unit tests dans la joie et la bonne humeur, " \
            "mais où sont donc les enfants ?"
-    matcher = FirstName()
-    assert matcher.get_matches(text=text) == [(13, 20, 'PARTIE_PP'), (24, 31, 'PARTIE_PP')]
+    matcher = FirstName(ignore_case=False)
+    assert matcher.get_matches(text=text) == [(13, 19, 'PARTIE_PP'), (24, 27, 'PARTIE_PP'),
+                                              (24, 28, 'PARTIE_PP'), (24, 30, 'PARTIE_PP')]
+    assert matcher.contain_first_names(text=text) is True
 
 
 def test_get_address():

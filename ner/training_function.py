@@ -1,9 +1,10 @@
 import random
 from pathlib import Path
+
 from spacy import util
 from tqdm import tqdm
 
-from generate_trainset.unknown_matcher import convert_bilou_with_missing_action
+from generate_trainset.convert_to_bilou import convert_unknown_bilou_bulk
 from ner.model_factory import get_empty_model
 
 
@@ -27,11 +28,12 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
 
             for current_batch_item in batches:
                 case_id, texts, annotations = zip(*current_batch_item)
-                # tokenization here?
+                docs = [nlp.make_doc(text) for text in texts]
+                gold_with_unknown_bilou = convert_unknown_bilou_bulk(docs, annotations)
                 nlp.update(
-                    texts,  # batch of texts
-                    annotations,  # batch of annotations
-                    drop=dropout_rate,  # dropout - make it harder to memorise resources
+                    docs,  # batch of texts
+                    gold_with_unknown_bilou,  # batch of annotations
+                    drop=dropout_rate,  # dropout - make it harder to memorise rules
                     sgd=optimizer,  # callable to update weights
                     losses=losses)
                 pbar.update()

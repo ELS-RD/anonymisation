@@ -14,11 +14,11 @@ DEV_DATA = list(DEV_DATA)[0:10000]
 doc_annotated = list()
 
 nlp = get_empty_model(load_labels_for_training=True)
-nlp = nlp.from_disk(model_dir_path)
+# nlp = nlp.from_disk(model_dir_path)
 
 for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in DEV_DATA:
     spacy_matcher_offset = list()
-    doc = nlp(xml_paragraph)
+    doc = nlp.make_doc(xml_paragraph)
     for start_offset, end_offset, type_name in xml_offset:
         # https://spacy.io/usage/linguistic-features#section-named-entities
         span_doc = doc.char_span(start_offset, end_offset, label=type_name)
@@ -30,5 +30,5 @@ for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in DEV_DATA:
     doc.ents = spacy_matcher_offset
     doc_annotated.append(doc)
 
-# docs = convert_offsets_to_spacy_docs(doc_annotated, model_dir_path)
+# docs = convert_offsets_to_spacy_docs(doc_annotated)
 view_spacy_docs(doc_annotated)

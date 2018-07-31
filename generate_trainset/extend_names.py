@@ -38,17 +38,17 @@ class ExtendNames:
                         "(" \
                         "(" \
                         "(?!\\b(M\.)\\b |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )" \
-                        "[A-Z\-\.]+\w*\s*)*" \
+                        "[A-ZÉÈ\-\.]+\w*\s*)*" \
                         "\\b(" + \
                         extracted_names_pattern + \
                         ")\\b" \
-                        "(\s+[A-Z\-\.]+\w*)*" \
+                        "(\s+[A-ZÉÈ\-\.]+\w*)*" \
                         ")"
 
         pattern_extend_right = "\\b(" + \
                                extracted_names_pattern + \
                                ")\\b" \
-                               "(\s+[A-Z\-]+\w*)+"
+                               "(\s+[A-ZÉÈ\-]+\w*)+"
         self.pattern_title = regex.compile(pattern_title, flags=regex.VERSION1)
         self.pattern_extend_right = regex.compile(pattern_extend_right, flags=regex.VERSION1)
 
