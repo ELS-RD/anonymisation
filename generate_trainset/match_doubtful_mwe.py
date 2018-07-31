@@ -1,5 +1,6 @@
 import regex
 
+from generate_trainset.match_acora import get_acora_object, get_matches
 from generate_trainset.match_first_name_dictionary import FirstName
 
 
@@ -10,6 +11,9 @@ class MatchDoubfulMwe:
               "( [A-ZÉÈ\-]+\w*)*"
     upcase_words_regex = regex.compile(pattern=pattern, flags=regex.VERSION1)
     first_name_matcher = FirstName(ignore_case=False)
+    mister_matcher = get_acora_object(content=["monsieur", "madame", "Mme ",
+                                               "Monsieur", "Madame", " M.", " M ",
+                                               " mme "], ignore_case=False)
 
     def add_unknown_words_offsets(self, texts: list, offsets: list) -> list:
         """
@@ -42,7 +46,27 @@ class MatchDoubfulMwe:
         :return: offsets as a list
         """
         return [(t.start(), t.end(), self.unknown_type_name) for t in self.upcase_words_regex.finditer(text) if
-                self.first_name_matcher.contain_first_names(text=text[t.start():t.end()])]
+                self.predicate_keep_unknown_entities(text=text, start=t.start(), end=t.end())]
+
+    def predicate_keep_unknown_entities(self, text: str, start: int, end: int) -> bool:
+        """
+        Decides if an entity should be kept.
+        2 rules : contains a first name or preceded by Mister / Miss / ...
+        :param text: original text
+        :param start: offset start
+        :param end: offset end
+        :return: True if entity should be kept
+        """
+        contain_first_name = self.first_name_matcher.contain_first_names(text=text[start:end])
+
+        if start >= 2:
+            new_start = max(0, start - 9)
+            previous_token = text[new_start:start]
+            contain_mister = len(get_matches(matcher=self.mister_matcher, text=previous_token, tag="UNKNOWN")) > 0
+        else:
+            contain_mister = False
+
+        return contain_first_name or contain_mister
 
     def clean_unknown_offsets(self, offsets: list) -> list:
         """

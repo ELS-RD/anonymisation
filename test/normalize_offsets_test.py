@@ -48,21 +48,23 @@ def test_remove_unwanted_words():
 
 
 def test_generate_and_clean_unknown_label():
-    text = "Michaël et Jessica se baladent sur les bords de la Seine."
+    text1 = "Michaël et Jessica se baladent sur les bords de la Seine."
     matcher = MatchDoubfulMwe()
     expected_offset = [(0, 7, 'UNKNOWN'), (11, 18, 'UNKNOWN')]
-    assert matcher.get_all_unknown_words_offsets(text=text) == expected_offset
+    assert matcher.get_all_unknown_words_offsets(text=text1) == expected_offset
     offset1 = [(0, 7, "PARTIE_PP")]
     assert matcher.clean_unknown_offsets(expected_offset + offset1) == [(0, 7, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    assert matcher.get_unknown_words_offsets(text=text, offsets=offset1) == [(0, 7, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset1) == [(0, 7, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
     offset2 = [(11, 18, "PARTIE_PP")]
     assert matcher.clean_unknown_offsets(expected_offset + offset2) == [(0, 7, 'UNKNOWN'), (11, 18, 'PARTIE_PP')]
-    assert matcher.get_unknown_words_offsets(text=text, offsets=offset2) == [(0, 7, 'UNKNOWN'), (11, 18, 'PARTIE_PP')]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset2) == [(0, 7, 'UNKNOWN'), (11, 18, 'PARTIE_PP')]
     offset3 = [(3, 9, "PARTIE_PP")]
     assert matcher.clean_unknown_offsets(expected_offset + offset3) == [(3, 9, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    assert matcher.get_unknown_words_offsets(text=text, offsets=offset3) == [(3, 9, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset3) == [(3, 9, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
     offset4 = [(3, 12, "PARTIE_PP")]
     assert matcher.clean_unknown_offsets(expected_offset + offset4) == offset4
-    assert matcher.get_unknown_words_offsets(text=text, offsets=offset4) == offset4
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset4) == offset4
     offset4 = [(2, 5, "PARTIE_PP")]
     assert matcher.clean_unknown_offsets(expected_offset + offset4) == [(2, 5, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
+    text2 = "C'est pourquoi Madame Toto souhaite obtenir le divorce."
+    assert matcher.get_all_unknown_words_offsets(text=text2) == [(22, 26, 'UNKNOWN')]

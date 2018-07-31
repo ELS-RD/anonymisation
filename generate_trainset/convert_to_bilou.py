@@ -13,9 +13,9 @@ def convert_bilou_with_missing_action(doc, offsets: list) -> list:
     :param offsets: original offsets
     :return: list of BILOU types
     """
-    result = biluo_tags_from_offsets(doc, offsets)
+    result1 = biluo_tags_from_offsets(doc, offsets)
     return [no_action_bilou if unknown_type_name in action_bilou else action_bilou
-            for action_bilou in result]
+            for action_bilou in result1]
 
 
 def convert_unknown_bilou(doc, offsets: list) -> GoldParse:

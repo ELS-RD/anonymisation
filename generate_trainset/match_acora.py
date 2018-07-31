@@ -2,6 +2,7 @@ import acora
 from acora import AcoraBuilder
 
 
+# TODO transform in class
 def get_acora_object(content: list, ignore_case: bool) -> acora._cacora.UnicodeAcora:
     """
     Acora matcher factory

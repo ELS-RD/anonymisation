@@ -6,7 +6,6 @@ pytest.nlp = get_empty_model(load_labels_for_training=True)
 
 
 def test_bilou_conv():
-
     doc = pytest.nlp.make_doc("Ceci est un test.")
     offset1 = [(5, 8, "UNKNOWN")]
     assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', '-', 'O', 'O', 'O']
