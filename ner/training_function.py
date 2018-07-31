@@ -19,7 +19,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
     """
     nlp = get_empty_model(load_labels_for_training=True)
     optimizer = nlp.begin_training()
-    with tqdm(total=n_iter * len(data) / batch_size) as pbar:
+    with tqdm(total=n_iter * len(data) / batch_size, unit=" paragraphs", desc="Learn NER model") as pbar:
         for itn in range(n_iter):
             print("\nIter", itn + 1)
             losses = {}
@@ -36,9 +36,8 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
                     drop=dropout_rate,  # dropout - make it harder to memorise rules
                     sgd=optimizer,  # callable to update weights
                     losses=losses)
+                pbar.postfix = "loss: " + str(losses['ner'])
                 pbar.update()
-
-            print(losses)
 
     # save model to output directory
     if folder_to_save_model is not None:

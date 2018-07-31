@@ -141,12 +141,12 @@ python3 display_errors.py
 
 ### TODO:
 
-- randomly change case of only several words in a MWE
+- RG number
 - group JUDGE and CLERKS in the same cat
 - switch to english type name
-- test if unknown entity match an existing one (A in B)
-- RG number
+- randomly change case of only several words in a MWE
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
+- test if unknown entity match an existing one (A in B)
 - Court formation
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
  + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
