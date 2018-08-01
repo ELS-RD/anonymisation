@@ -54,13 +54,13 @@ class MatchValuesFromHeaders:
                 self.current_header['defendeur_hidden'] + self.current_header['demandeur_hidden']):
             if short_content is not None:
                 matcher.add(full_content)
-                first_name, last_name = get_first_last_name(full_content)
-                if len(first_name) > self.threshold_size:
-                    matcher.add(first_name)
-                if len(last_name) > self.threshold_size:
-                    matcher.add(last_name)
+                # first_name, last_name = get_first_last_name(full_content)
+                # if len(first_name) > self.threshold_size:
+                #     matcher.add(first_name)
+                # if len(last_name) > self.threshold_size:
+                #     matcher.add(last_name)
 
-        return matcher.build(ignore_case=True)
+        return matcher.build(ignore_case=False)
 
     def get_matcher_of_partie_pm_from_headers(self) -> acora._cacora.UnicodeAcora:
         """
@@ -75,7 +75,7 @@ class MatchValuesFromHeaders:
             if short_content is None:
                 matcher.add(full_content)
 
-        return matcher.build(ignore_case=True)
+        return matcher.build(ignore_case=False)
 
     def get_matcher_of_lawyers_from_headers(self) -> acora._cacora.UnicodeAcora:
         """
@@ -85,13 +85,13 @@ class MatchValuesFromHeaders:
         header_content = self.current_header['avocat']
         matcher = AcoraBuilder("@!#$%")
         matcher.update(header_content)
-        for content in header_content:
-            first_name, last_name = get_first_last_name(content)
-            if len(first_name) > self.threshold_size:
-                matcher.add(first_name)
-            if len(last_name) > self.threshold_size:
-                matcher.add(last_name)
-        return matcher.build(ignore_case=True)
+        # for content in header_content:
+        #     first_name, last_name = get_first_last_name(content)
+        #     if len(first_name) > self.threshold_size:
+        #         matcher.add(first_name)
+        #     if len(last_name) > self.threshold_size:
+        #         matcher.add(last_name)
+        return matcher.build(ignore_case=False)
 
     def get_matcher_of_president_from_headers(self) -> acora._cacora.UnicodeAcora:
         """
@@ -101,13 +101,13 @@ class MatchValuesFromHeaders:
         header_content = self.current_header['president']
         matcher = AcoraBuilder("@!#$%")
         matcher.update(header_content)
-        for content in header_content:
-            first_name, last_name = get_first_last_name(content)
-            if len(first_name) > self.threshold_size:
-                matcher.add(first_name)
-            if len(last_name) > self.threshold_size:
-                matcher.add(last_name)
-        return matcher.build(ignore_case=True)
+        # for content in header_content:
+        #     first_name, last_name = get_first_last_name(content)
+        #     if len(first_name) > self.threshold_size:
+        #         matcher.add(first_name)
+        #     if len(last_name) > self.threshold_size:
+        #         matcher.add(last_name)
+        return matcher.build(ignore_case=False)
 
     def get_matcher_of_conseiller_from_headers(self) -> acora._cacora.UnicodeAcora:
         """
@@ -117,13 +117,13 @@ class MatchValuesFromHeaders:
         header_content = self.current_header['conseiller']
         matcher = AcoraBuilder("@!#$%")
         matcher.update(header_content)
-        for content in header_content:
-            first_name, last_name = get_first_last_name(content)
-            if len(first_name) > self.threshold_size:
-                matcher.add(first_name)
-            if len(last_name) > self.threshold_size:
-                matcher.add(last_name)
-        return matcher.build(ignore_case=True)
+        # for content in header_content:
+        #     first_name, last_name = get_first_last_name(content)
+        #     if len(first_name) > self.threshold_size:
+        #         matcher.add(first_name)
+        #     if len(last_name) > self.threshold_size:
+        #         matcher.add(last_name)
+        return matcher.build(ignore_case=False)
 
     def get_matcher_of_clerks_from_headers(self) -> acora._cacora.UnicodeAcora:
         """
@@ -133,10 +133,10 @@ class MatchValuesFromHeaders:
         header_content = self.current_header['greffier']
         matcher = AcoraBuilder("@!#$%")
         matcher.update(header_content)
-        for content in header_content:
-            first_name, last_name = get_first_last_name(content)
-            if len(first_name) > self.threshold_size:
-                matcher.add(first_name)
-            if len(last_name) > self.threshold_size:
-                matcher.add(last_name)
-        return matcher.build(ignore_case=True)
+        # for content in header_content:
+        #     first_name, last_name = get_first_last_name(content)
+        #     if len(first_name) > self.threshold_size:
+        #         matcher.add(first_name)
+        #     if len(last_name) > self.threshold_size:
+        #         matcher.add(last_name)
+        return matcher.build(ignore_case=False)

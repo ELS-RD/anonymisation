@@ -105,7 +105,7 @@ def get_lawyer_name(text: str) -> list:
     return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
 
 
-places_pattern = ("rue|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|"
+places_pattern = ("rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|"
                   "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
 extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
@@ -113,7 +113,7 @@ extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
                                         "(?i)\\b(" +
                                         places_pattern +
                                         ")\\b"
-                                        "( (de |d'|du |des |l'|le|la)*)?"
+                                        "( (de |d'|du |des |l'|le |la )*)?"
                                         ")"
                                         "[A-ZÉÈ\-]+[\w\-\.']*"
                                         "( (de |le |la |les |et |d'|du |l'|à )*[A-ZÉÈ\-]+[\w\-\.']*)*"
@@ -241,7 +241,8 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
 
 
 # List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/
-juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal d'instance|Conseil de prud\.*hommes|"
+juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal d'instance|"
+                                      "Conseil de prud.*hommes(.{0,10}formation (paritaire|de départage))?|"
                                       "Tribunal( mixte)? de commerce|Tribunal des affaires de sécurité sociale|"
                                       "Tribunal paritaire des baux ruraux|Cour d'assises|Tribunal correctionnel|"
                                       "Tribunal de police|Juge de proximit.|Juge des enfants|Tribunal pour enfants|"
@@ -253,7 +254,7 @@ juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal
                                       "[^A-Z]{0,5}"
                                       "("
                                       "(?!\\bDU\\b\s)"
-                                      "[A-ZÉÈ]+[\w-']*\s*"
+                                      "[A-ZÉÈ]+[\w\-']*\s*"
                                       "((de|d'|en|des|du|à)\s*)?"
                                       ")+"
                                       "(?!(?i)\\b(en|le|du)\\b)",

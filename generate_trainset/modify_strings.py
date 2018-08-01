@@ -107,12 +107,13 @@ def get_first_last_name(text: str):
     return first_name, last_name
 
 
-key_words_matcher = get_acora_object(["Monsieur ", "Madame ", "Mme ",
-                                      "la société ", "Me ", "Maitre ", "Maître ",
-                                      "la SARL ", "la SAS ", "la SASU ", "l'EURL ",
-                                      "la SA", "la SNC ", "la SCP ", "la SELAS ",
-                                      "la SCI ", "la SELARL "],
-                                     ignore_case=True)
+key_words_matcher = get_acora_object(["Monsieur", "Madame", "Mme",
+                                      "monsieur", "madame",
+                                      "la société", "Me", "Maitre", "Maître",
+                                      "la SARL", "la SAS", "la SASU", "l'EURL",
+                                      "la SA", "la SNC", "la SCP", "la SELAS",
+                                      "la SCI", "la SELARL"],
+                                     ignore_case=False)
 
 
 def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
@@ -146,7 +147,8 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     start_selection_offset = 0
     for start_offset, end_offset, _ in words_to_delete_offsets:
         if randint(1, 99) < rate:
-            cleaned_text.append(text[start_selection_offset:start_offset])
+            # - 1 to remove also the space following the keyword to remove
+            cleaned_text.append(text[start_selection_offset:start_offset - 1])
             start_selection_offset = end_offset
         else:
             cleaned_text.append(text[start_selection_offset:end_offset])
@@ -169,4 +171,3 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
         offsets_to_return.append((start_offset, end_offset, type_name))
 
     return cleaned_text, offsets_to_return
-

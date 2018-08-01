@@ -4,8 +4,8 @@ import spacy
 from spacy.lang.fr import French
 
 token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT",
-               "GREFFIER", "ADRESSE", "JURIDICTION", "DATE", "BARREAU",
-               "UNKNOWN"]
+               "GREFFIER", "ADRESSE", "JURIDICTION", "DATE", "RG",
+               "BARREAU", "UNKNOWN"]
 
 
 def prevent_sentence_boundary_detection(doc):

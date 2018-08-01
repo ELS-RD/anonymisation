@@ -342,9 +342,13 @@ Nathalie CAILHETONGREFFIER, Thierry PERRIQUETPARTIE_PP
 ARRÊT DU qu'il indique.
 
 
-Commence a 13770
-demeurant 61 avenue de la Grande Bégude - RN 96 - 13770 VENELLES
-4 Lotissement Plein Soleil - 13860 peyrolles en provence
 
-Virer Chambre des magistrats
-14e ChambreMAGISTRAT
+pas de tag...
+Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président
+Monsieur Nicolas TRUC, Conseiller
+Madame Sylvie BLUME, Conseiller
+CA-aix-en-provence-20160114-1310730-jurica
+
+les entités du premier paragraphe ne sont pas reprises dans le second 
+Les vols de produits alimentaires que la société Stef LogistiquePARTIE_PM reproche au salarié sont formellement contestés 
+s Stef Logistique sera condamnée aux entiers dépens de première instance et d'appel.

@@ -12,7 +12,7 @@ def convert_offsets_to_spacy_docs(doc_annotated: list) -> list:
     """
     model = get_empty_model(load_labels_for_training=False)
     docs = list()
-    for case_id, text, tags in doc_annotated:
+    for (index, (case_id, text, tags)) in enumerate(doc_annotated):
         doc: Doc = model.make_doc(text)
         ents = list()
         for (start_offset, end_offset, type_name) in tags:
@@ -20,7 +20,8 @@ def convert_offsets_to_spacy_docs(doc_annotated: list) -> list:
             if span_doc is not None:
                 ents.append(span_doc)
             else:
-                print("Issue in offset", text[start_offset:end_offset], text, sep="|")
+                print("Issue in offset", "Index: " + str(index), "case: " + case_id,
+                      text[start_offset:end_offset], text, sep="|")
         doc.ents = ents
         docs.append(doc)
     return docs
@@ -31,15 +32,16 @@ def view_spacy_docs(docs: list):
     Launch a server to View entities
     :param docs: spacy doc with entities ready
     """
-    colors = {'PARTIE_PP': '#ff9933',
-              'ADRESSE': '#ff99cc',
-              'PARTIE_PM': '#00ccff',
-              'AVOCAT': '#ccffcc',
-              'MAGISTRAT': '#ccccff',
-              'GREFFIER': '#ccccff',
-              'JURIDICTION': '#ccffff',
-              'DATE': '#ffcc99',
-              'BARREAU': '#ffe699',
-              'UNKNOWN': '#ff0000'}
-    options = {'ents': None, 'colors': colors}
-    displacy.serve(docs, style='ent', minify=True, port=5000, options=options)
+    colors = {"PARTIE_PP": "#ff9933",
+              "ADRESSE": "#ff99cc",
+              "PARTIE_PM": "#00ccff",
+              "AVOCAT": "#ccffcc",
+              "MAGISTRAT": "#ccccff",
+              "GREFFIER": "#ccccff",
+              "JURIDICTION": "#ccffff",
+              "RG": "#99ff99",
+              "DATE": "#ffcc99",
+              "BARREAU": "#ffe699",
+              "UNKNOWN": "#ff0000"}
+    options = {"ents": None, "colors": colors}
+    displacy.serve(docs, style="ent", minify=True, port=5000, options=options)

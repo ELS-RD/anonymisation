@@ -35,10 +35,19 @@ class MatchRg:
         pattern = "\\b" + pattern + "\\b"
         return pattern
 
-    def get_rg_offset_from_text(self, text) -> list:
+    def get_rg_offset_from_text(self, text: str) -> list:
         """
         Extract RG number offsets from a text, if any
         :param text: original text
         :return: offsets as a list
         """
         return [(item.start(), item.end(), "RG") for item in self.pattern.finditer(text)]
+
+    def get_rg_offset_from_texts(self, texts: list, offsets: list) -> list:
+        """
+        Extract RG number offsets from a list of texts
+        :param texts: original list of texts
+        :param offsets: list of offsets
+        :return: offsets as a list of lists (including original offsets)
+        """
+        return [current_offsets + self.get_rg_offset_from_text(text) for text, current_offsets in zip(texts, offsets)]

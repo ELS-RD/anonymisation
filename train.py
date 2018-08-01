@@ -15,6 +15,7 @@ from generate_trainset.match_patterns import get_company_names, get_judge_name, 
     get_addresses, get_partie_pp, \
     get_all_name_variation, find_address_in_block_of_paragraphs, \
     get_juridictions, get_bar
+from generate_trainset.match_rg import MatchRg
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
@@ -29,7 +30,7 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = True  # bool(config_training["train_data_set"])
+train_dataset = False  # bool(config_training["train_data_set"])
 export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
@@ -37,7 +38,7 @@ TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
 TRAIN_DATA = list(TRAIN_DATA)
 
 if (not train_dataset) and (not export_dataset):
-    TRAIN_DATA = TRAIN_DATA[0:10000]
+    TRAIN_DATA = TRAIN_DATA[0:100000]
 
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
@@ -46,6 +47,7 @@ current_case_offsets = list()
 previous_case_id = None
 current_item_header = None
 headers_matcher = None
+rg_matcher = None
 
 postal_code_city_matcher = PostalCodeCity()
 court_names_matcher = CourtName()
@@ -63,14 +65,17 @@ else:
 
 frequent_entities_matcher = get_frequent_entities_matcher(content=frequent_entities_dict)
 
-with tqdm(total=len(case_header_content)) as progress_bar:
+with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Learn NER model") as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
+            # if "CA-aix-en-provence-20160112-1306214-jurica" == previous_case_id:
+            #     raise Exception("STOPPPP")
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,
                                                                  type_name="PARTIE_PP")
+                rg_matcher = MatchRg(case_id=previous_case_id)
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
 
                     match_from_headers = headers_matcher.get_matched_entities(current_paragraph)
@@ -122,8 +127,11 @@ with tqdm(total=len(case_header_content)) as progress_bar:
                                                                         offsets=last_document_offsets)
 
             if len(last_document_offsets) > 0:
+                last_doc_offset_with_rg = rg_matcher.get_rg_offset_from_texts(texts=last_document_texts,
+                                                                              offsets=last_document_offsets)
+
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
-                                                                  offsets=last_document_offsets,
+                                                                  offsets=last_doc_offset_with_rg,
                                                                   threshold_span_size=4)
 
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(

@@ -50,13 +50,11 @@ def tag_priority(previous_tag: str, current_tag: str) -> str:
     :param current_tag: tag as a string
     :return: the selected tag
     """
-    return previous_tag
-    # if previous_tag in ["MAGISTRAT", "GREFFIER"]:
-    #     return previous_tag
-    # elif current_tag in ["MAGISTRAT", "GREFFIER"]:
-    #     return current_tag
-    # else:
-    #     return previous_tag
+    # return previous_tag
+    if (previous_tag in ["JURIDICTION"]) or (current_tag in ["JURIDICTION"]):
+        return "JURIDICTION"
+    else:
+        return previous_tag
 
 
 def remove_offset_space(text: str, offsets: list):
