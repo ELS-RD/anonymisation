@@ -11,6 +11,7 @@ from generate_trainset.match_patterns import get_company_names, \
     get_judge_name, get_clerk_name, \
     get_lawyer_name, get_addresses, get_partie_pp, get_all_name_variation, \
     find_address_in_block_of_paragraphs, get_juridictions, get_bar
+from generate_trainset.match_rg import MatchRg
 from generate_trainset.modify_strings import get_last_name, \
     get_first_last_name
 from resources.config_provider import get_config_default
@@ -381,3 +382,12 @@ def test_bar():
     assert get_bar(text=text1) == [(3, 19, 'BARREAU')]
     text2 = "Je travaille au barreau D'AMIENS et c'est top !"
     assert get_bar(text=text2) == [(16, 32, 'BARREAU')]
+
+
+def test_rg():
+    text1 = "CA-aix-en-provence-20130208-1022871-jurica"
+    matcher = MatchRg(case_id=text1)
+    assert matcher.get_rg_from_case_id() == "1022871"
+    assert matcher.get_rg_offset_from_text(text=text1) == [(28, 35, 'RG')]
+    text2 = "Le numéro RG est celui-ci 102 /2871."
+    assert matcher.get_rg_offset_from_text(text=text2) == [(26, 35, 'RG')]

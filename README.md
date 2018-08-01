@@ -156,7 +156,11 @@ python3 display_errors.py
 - Add rapporteurs / experts (close to word rapport)
 - Birthday (né le ...) ?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
-- harmonisation des types durant l'inférence(vote ?)
+- harmonisation des types durant l'inférence (vote ?)
+- dedupe entities : textacy.keyterms.aggregate_term_variants
+- extract list of triplets textacy.extract.subject_verb_object_triples
+- extract key sentences: textacy.keyterms.textrank
+- extraires les acronymes et leurs defs textacy.extract.acronyms_and_definitions
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -309,7 +313,22 @@ Iter 3
 Iter 4
 69360it [10:21:42,  2.04it/s]
 -------------
+Number of tags: 2768352
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
 
+  0%|          | 0/69481.48 [00:00<?, ?it/s]Iter 1
+ 25%|██▍       | 17370/69481.48 [2:44:06<7:58:20,  1.82it/s]{'ner': 77.94199584166518}
+
+Iter 2
+ 50%|█████     | 34742/69481.48 [5:23:34<4:37:07,  2.09it/s]{'ner': 52.069788763078805}
+
+Iter 3
+ 75%|███████▌  | 52113/69481.48 [8:04:13<2:08:17,  2.26it/s]{'ner': 47.722335816293025}
+
+Iter 4
+69483it [10:48:56,  1.78it/s]{'ner': 45.65050949805317}
+69484it [10:48:56,  2.11it/s]
+---------------
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
