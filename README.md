@@ -140,8 +140,6 @@ python3 display_errors.py
 
 ### TODO:
 
-- group JUDGE and CLERKS in the same cat
-- switch to english type name
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
 - randomly change case of only several words in a MWE
 - test if unknown entity match an existing one (A in B)
