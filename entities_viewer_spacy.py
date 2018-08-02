@@ -22,17 +22,17 @@ DEV_DATA = get_paragraph_from_file(xml_dev_path,
 all_docs_to_view = list()
 last_case_spans = dict()
 last_case_docs = list()
-former_case_id = ""
+former_case_id = None
 for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
     if case_id != former_case_id:
         last_case_matcher = get_acora_object(content=list(last_case_spans.keys()),
                                              ignore_case=True)
         if len(last_case_docs) > 1:
             doc_text, empty_offsets = zip(*[(doc.text, []) for doc in last_case_docs])
-            last_document_offsets = find_address_in_block_of_paragraphs(texts=list(doc_text),
-                                                                        offsets=list(empty_offsets))
+            last_document_addresses_offsets = find_address_in_block_of_paragraphs(texts=list(doc_text),
+                                                                                  offsets=list(empty_offsets))
 
-            for last_case_doc, address_offset in zip(last_case_docs, last_document_offsets):
+            for last_case_doc, last_doc_address_offset in zip(last_case_docs, last_document_addresses_offsets):
                 matches = get_matches(matcher=last_case_matcher,
                                       text=last_case_doc.text,
                                       tag="UNKNOWN")
@@ -42,7 +42,7 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                     # print(span_text)
                     type_name = last_case_spans[span_text.lower()]
                     matcher_offsets.append((start_offset, end_offset, type_name))
-                matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + address_offset)
+                matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + last_doc_address_offset)
 
                 spacy_matcher_offset = list()
                 for start_offset, end_offset, type_name in matcher_offsets_normalized:
@@ -54,10 +54,7 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
                     else:
                         print("ERROR char offset", last_case_doc.text[start_offset:end_offset])
 
-                all_offsets = set(last_case_doc.ents)
-                if len(all_offsets) < len(spacy_matcher_offset):
-                    all_offsets.update(spacy_matcher_offset)
-                last_case_doc.ents = all_offsets
+                last_case_doc.ents = spacy_matcher_offset  # all_offsets
                 all_docs_to_view.append(last_case_doc)
 
         last_case_spans.clear()

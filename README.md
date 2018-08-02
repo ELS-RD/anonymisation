@@ -143,6 +143,8 @@ python3 display_errors.py
 
 - group JUDGE and CLERKS in the same cat
 - switch to english type name
+- harmonisation des types durant l'inférence (vote ?) -> pool d'entités et on compte chaque type puis on 
+sort le dictionnaire -> sous forme de classe
 - randomly change case of only several words in a MWE
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
 - test if unknown entity match an existing one (A in B)
@@ -155,7 +157,6 @@ python3 display_errors.py
 - Add rapporteurs / experts (close to word rapport)
 - Birthday (né le ...) ?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
-- harmonisation des types durant l'inférence (vote ?)
 - dedupe entities : textacy.keyterms.aggregate_term_variants
 - extract list of triplets textacy.extract.subject_verb_object_triples
 - extract key sentences: textacy.keyterms.textrank
@@ -346,26 +347,5 @@ Learn NER model: 100%|██████████| 69612/69612.0 [10:32:52<00
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
 
-
-Comment est ce possible que le magistrat ne soit pas reconnu partout :
--> sol : ne mettre que les entités du matcher ? + sys de vote à la prédiction (exact) + retrait des variations
-Le présent arrêt a été signé par Thierry PERRIQUETMAGISTRAT, président de chambre, et par Nathalie CAILHETONGREFFIER, greffier, auquel la minute de la décision a été remise par le magistrat signataire.
-Le Greffier, Le Président,
-Nathalie CAILHETONGREFFIER, Thierry PERRIQUETPARTIE_PP
-ARRÊT DU qu'il indique.
-
-
-
-pas de tag...
-Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président
-Monsieur Nicolas TRUC, Conseiller
-Madame Sylvie BLUME, Conseiller
-CA-aix-en-provence-20160114-1310730-jurica
-
-les entités du premier paragraphe ne sont pas reprises dans le second 
-Les vols de produits alimentaires que la société Stef LogistiquePARTIE_PM reproche au salarié sont formellement contestés 
-s Stef Logistique sera condamnée aux entiers dépens de première instance et d'appel.
-
-Dans les premières détections il y a des noms qui sont incorrectement reconnus
-Sami n est pas marqué
-Notification de la présente ordonnance a été faite par fax le 01 Février 2015DATE à Sami KHALIFAPARTIE_PP , à son avocat et au préfet
+Ajouter un pattern d addresse:
+BP 40122

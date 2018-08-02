@@ -209,6 +209,8 @@ def test_get_address():
     assert get_addresses(text28) == [(10, 59, 'ADRESSE')]
     text29 = "demeurant 61 avenue de la Grande Bégude - RN 96 - 13770 VENELLES"
     assert get_addresses(text29) == [(10, 64, 'ADRESSE')]
+    text30 = "20 place Jean Baptiste Durand"
+    assert get_addresses(text30) == [(0, 29, 'ADRESSE')]
 
 
 # def test_get_postal_code_city():
