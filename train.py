@@ -17,7 +17,7 @@ from generate_trainset.match_extension_of_entity_name import get_all_name_variat
 from generate_trainset.match_header import MatchValuesFromHeaders
 from generate_trainset.match_judge import get_judge_name
 from generate_trainset.match_lawyer import get_lawyer_name
-from generate_trainset.match_nat_persons import get_partie_pp
+from generate_trainset.match_nat_persons import get_partie_pers
 from generate_trainset.match_company_names import get_company_names
 from generate_trainset.match_rg import MatchRg
 from generate_trainset.modify_strings import random_case_change, remove_key_words
@@ -35,7 +35,7 @@ batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
 train_dataset = False  # bool(config_training["train_data_set"])
-export_dataset = False  # not bool(config_training["train_data_set"])
+export_dataset = True  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
@@ -84,7 +84,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
 
                     company_names_offset = get_company_names(current_paragraph)
                     full_name_pp = current_doc_extend_pp_name_pattern.get_extended_names(text=current_paragraph)
-                    partie_pp = get_partie_pp(current_paragraph)
+                    partie_pp = get_partie_pers(current_paragraph)
                     judge_names = get_judge_name(current_paragraph)
                     clerk_names = get_clerk_name(current_paragraph)
                     lawyer_names = get_lawyer_name(current_paragraph)

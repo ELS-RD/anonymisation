@@ -12,7 +12,7 @@ extract_partie_pp_pattern_3 = regex.compile("((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]*
                                             flags=regex.VERSION1)
 
 
-def get_partie_pp(text: str) -> list:
+def get_partie_pers(text: str) -> list:
     """
     Extract people names from text
     :param text: original paragraph text
