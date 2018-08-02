@@ -3,7 +3,7 @@ import warnings
 from generate_trainset.build_entity_dictionary import EntityTypename
 from generate_trainset.extract_node_values import get_paragraph_from_file
 from generate_trainset.match_acora import get_acora_object, get_matches
-from generate_trainset.match_patterns import find_address_in_block_of_paragraphs
+from generate_trainset.match_company_names import find_address_in_block_of_paragraphs
 from generate_trainset.normalize_offset import normalize_offsets
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default

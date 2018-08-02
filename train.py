@@ -4,17 +4,21 @@ from tqdm import tqdm
 
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, \
     get_frequent_entities_matcher, get_frequent_entities_matches
-from generate_trainset.match_courts import CourtName
+from generate_trainset.match_address import get_addresses, find_address_in_block_of_paragraphs
+from generate_trainset.match_bar import get_bar
+from generate_trainset.match_clerk import get_clerk_name
+from generate_trainset.match_courts import CourtName, get_juridictions
 from generate_trainset.match_date import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_headers
 from generate_trainset.extract_node_values import get_paragraph_from_folder
 from generate_trainset.match_doubtful_mwe import MatchDoubfulMwe
+from generate_trainset.match_extension_of_entity_name import get_all_name_variation
 from generate_trainset.match_header import MatchValuesFromHeaders
-from generate_trainset.match_patterns import get_company_names, get_judge_name, get_clerk_name, get_lawyer_name, \
-    get_addresses, get_partie_pp, \
-    get_all_name_variation, find_address_in_block_of_paragraphs, \
-    get_juridictions, get_bar
+from generate_trainset.match_judge import get_judge_name
+from generate_trainset.match_lawyer import get_lawyer_name
+from generate_trainset.match_nat_persons import get_partie_pp
+from generate_trainset.match_company_names import get_company_names
 from generate_trainset.match_rg import MatchRg
 from generate_trainset.modify_strings import random_case_change, remove_key_words
 from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
@@ -69,8 +73,6 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
-            # if "CA-aix-en-provence-20160112-1306214-jurica" == previous_case_id:
-            #     raise Exception("STOPPPP")
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,

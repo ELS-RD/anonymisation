@@ -1,16 +1,20 @@
 from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities_matcher, \
     get_frequent_entities_matches
-from generate_trainset.match_courts import CourtName
+from generate_trainset.match_address import get_addresses, find_address_in_block_of_paragraphs
+from generate_trainset.match_bar import get_bar
+from generate_trainset.match_clerk import get_clerk_name
+from generate_trainset.match_courts import CourtName, get_juridictions
 from generate_trainset.match_date import get_date
 from generate_trainset.extend_names import ExtendNames
 from generate_trainset.extract_header_values import parse_xml_header
+from generate_trainset.match_extension_of_entity_name import get_all_name_variation
 from generate_trainset.match_first_name_dictionary import FirstName
 from generate_trainset.match_acora import get_matches
 from generate_trainset.match_header import MatchValuesFromHeaders
-from generate_trainset.match_patterns import get_company_names, \
-    get_judge_name, get_clerk_name, \
-    get_lawyer_name, get_addresses, get_partie_pp, get_all_name_variation, \
-    find_address_in_block_of_paragraphs, get_juridictions, get_bar
+from generate_trainset.match_judge import get_judge_name
+from generate_trainset.match_lawyer import get_lawyer_name
+from generate_trainset.match_nat_persons import get_partie_pp
+from generate_trainset.match_company_names import get_company_names
 from generate_trainset.match_rg import MatchRg
 from generate_trainset.modify_strings import get_last_name, \
     get_first_last_name

@@ -145,8 +145,6 @@ python3 display_errors.py
 - group JUDGE and CLERKS in the same cat
 - switch to english type name
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
-- harmonisation des types durant l'inférence (vote ?) -> pool d'entités et on compte chaque type puis on 
-sort le dictionnaire -> sous forme de classe
 - randomly change case of only several words in a MWE
 - test if unknown entity match an existing one (A in B)
 - Court formation
