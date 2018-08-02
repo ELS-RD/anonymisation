@@ -1,5 +1,6 @@
 import warnings
 
+from generate_trainset.build_entity_dictionary import EntityTypename
 from generate_trainset.extract_node_values import get_paragraph_from_file
 from generate_trainset.match_acora import get_acora_object, get_matches
 from generate_trainset.match_patterns import find_address_in_block_of_paragraphs
@@ -20,11 +21,13 @@ DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
 
 all_docs_to_view = list()
-last_case_spans = dict()
+# last_case_spans = dict()
 last_case_docs = list()
 former_case_id = None
+entity_typename_builder = EntityTypename()
 for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
     if case_id != former_case_id:
+        last_case_spans = entity_typename_builder.get_dict()
         last_case_matcher = get_acora_object(content=list(last_case_spans.keys()),
                                              ignore_case=True)
         if len(last_case_docs) > 1:
@@ -59,12 +62,14 @@ for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
 
         last_case_spans.clear()
         last_case_docs.clear()
+        entity_typename_builder.clear()
         former_case_id = case_id
     spacy_doc = nlp(original_text)
     # doc.user_data['title'] = case_id
     last_case_docs.append(spacy_doc)
-    entities_span = [(ent.text.lower(), ent.label_) for ent in spacy_doc.ents]
-    last_case_spans.update(entities_span)
+    # entities_span = [(ent.text.lower(), ent.label_) for ent in spacy_doc.ents]
+    # last_case_spans.update(entities_span)
+    entity_typename_builder.add_spacy_entities(spacy_doc=spacy_doc)
 
 
 view_spacy_docs(all_docs_to_view)
