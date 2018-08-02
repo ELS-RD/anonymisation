@@ -51,8 +51,8 @@ def tag_priority(previous_tag: str, current_tag: str) -> str:
     :return: the selected tag
     """
     # return previous_tag
-    if (previous_tag in ["JURIDICTION"]) or (current_tag in ["JURIDICTION"]):
-        return "JURIDICTION"
+    if (previous_tag in ["COURT"]) or (current_tag in ["COURT"]):
+        return "COURT"
     else:
         return previous_tag
 

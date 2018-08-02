@@ -3,28 +3,28 @@ from generate_trainset.normalize_offset import normalize_offsets, remove_offset_
 
 
 def test_normalize_offsets():
-    data1 = [(5, 10, 'AVOCAT'), (18, 24, 'PARTIE_PM'), (22, 24, 'PARTIE_PM'), (120, 133, 'AVOCAT')]
-    assert normalize_offsets(data1) == [(5, 10, 'AVOCAT'), (18, 24, 'PARTIE_PM'), (120, 133, 'AVOCAT')]
-    data2 = [(71, 75, 'PARTIE_PP'), (77, 85, 'PARTIE_PP')]
-    assert normalize_offsets(data2) == [(71, 85, 'PARTIE_PP')]
-    data3 = [(5, 10, 'AVOCAT'), (71, 75, 'PARTIE_PP'), (77, 85, 'PARTIE_PP'), (120, 133, 'AVOCAT')]
-    assert normalize_offsets(data3) == [(5, 10, 'AVOCAT'), (71, 85, 'PARTIE_PP'), (120, 133, 'AVOCAT')]
-    data4 = [(5, 10, 'AVOCAT'), (77, 85, 'PARTIE_PP'), (77, 85, 'PARTIE_PP'), (120, 133, 'AVOCAT')]
-    assert normalize_offsets(data4) == [(5, 10, 'AVOCAT'), (77, 85, 'PARTIE_PP'), (120, 133, 'AVOCAT')]
-    data5 = [(16, 20, 'PARTIE_PP'), (22, 30, 'PARTIE_PP')]
-    assert normalize_offsets(data5) == [(16, 30, 'PARTIE_PP')]
-    data6 = [(10, 21, 'PARTIE_PP'), (22, 30, 'PARTIE_PP')]
-    assert normalize_offsets(data6) == [(10, 30, 'PARTIE_PP')]
+    data1 = [(5, 10, "LAWYER"), (18, 24, "ORGANIZATION"), (22, 24, "ORGANIZATION"), (120, 133, "LAWYER")]
+    assert normalize_offsets(data1) == [(5, 10, "LAWYER"), (18, 24, "ORGANIZATION"), (120, 133, "LAWYER")]
+    data2 = [(71, 75, "PERS"), (77, 85, "PERS")]
+    assert normalize_offsets(data2) == [(71, 85, "PERS")]
+    data3 = [(5, 10, "LAWYER"), (71, 75, "PERS"), (77, 85, "PERS"), (120, 133, "LAWYER")]
+    assert normalize_offsets(data3) == [(5, 10, "LAWYER"), (71, 85, "PERS"), (120, 133, "LAWYER")]
+    data4 = [(5, 10, "LAWYER"), (77, 85, "PERS"), (77, 85, "PERS"), (120, 133, "LAWYER")]
+    assert normalize_offsets(data4) == [(5, 10, "LAWYER"), (77, 85, "PERS"), (120, 133, "LAWYER")]
+    data5 = [(16, 20, "PERS"), (22, 30, "PERS")]
+    assert normalize_offsets(data5) == [(16, 30, "PERS")]
+    data6 = [(10, 21, "PERS"), (22, 30, "PERS")]
+    assert normalize_offsets(data6) == [(10, 30, "PERS")]
     data7 = []
     assert normalize_offsets(data7) == []
-    data8 = [(1, 1, "PARTIE_PP")]
+    data8 = [(1, 1, "PERS")]
     assert normalize_offsets(data8) == []
-    data9 = [(1, 3, "PARTIE_PP")]
+    data9 = [(1, 3, "PERS")]
     assert normalize_offsets(data9) == []
-    data10 = [(1, 10, "PARTIE_PP"), (1, 10, "PARTIE_PP"), (3, 10, "PARTIE_PP")]
-    assert normalize_offsets(data10) == [(1, 10, "PARTIE_PP")]
-    data11 = [(0, 34, 'PARTIE_PM'), (0, 8, 'PARTIE_PM')]
-    assert normalize_offsets(data11) == [(0, 34, 'PARTIE_PM')]
+    data10 = [(1, 10, "PERS"), (1, 10, "PERS"), (3, 10, "PERS")]
+    assert normalize_offsets(data10) == [(1, 10, "PERS")]
+    data11 = [(0, 34, "ORGANIZATION"), (0, 8, "ORGANIZATION")]
+    assert normalize_offsets(data11) == [(0, 34, "ORGANIZATION")]
 
 
 def test_remove_spaces():
@@ -39,12 +39,12 @@ def test_remove_spaces():
 
 def test_remove_unwanted_words():
     text1 = "Monsieur toto"
-    offset1 = [(0, len("Monsieur toto"), "PARTIE_PP")]
-    assert clean_offsets_from_unwanted_words(text=text1, offsets=offset1) == [(9, 13, "PARTIE_PP")]
+    offset1 = [(0, len("Monsieur toto"), "PERS")]
+    assert clean_offsets_from_unwanted_words(text=text1, offsets=offset1) == [(9, 13, "PERS")]
     text2 = "Succombant même partiellement, Madame GUERIN supportera la charge "
-    offset2 = [(31, 37, "PARTIE_PP"), (31, 44, "PARTIE_PP")]
-    assert clean_offsets_from_unwanted_words(text=text2, offsets=offset2) == [(37, 37, "PARTIE_PP"),
-                                                                              (38, 44, "PARTIE_PP")]
+    offset2 = [(31, 37, "PERS"), (31, 44, "PERS")]
+    assert clean_offsets_from_unwanted_words(text=text2, offsets=offset2) == [(37, 37, "PERS"),
+                                                                              (38, 44, "PERS")]
 
 
 def test_generate_and_clean_unknown_label():
@@ -52,19 +52,19 @@ def test_generate_and_clean_unknown_label():
     matcher = MatchDoubfulMwe()
     expected_offset = [(0, 7, 'UNKNOWN'), (11, 18, 'UNKNOWN')]
     assert matcher.get_all_unknown_words_offsets(text=text1) == expected_offset
-    offset1 = [(0, 7, "PARTIE_PP")]
-    assert matcher.clean_unknown_offsets(expected_offset + offset1) == [(0, 7, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset1) == [(0, 7, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    offset2 = [(11, 18, "PARTIE_PP")]
-    assert matcher.clean_unknown_offsets(expected_offset + offset2) == [(0, 7, 'UNKNOWN'), (11, 18, 'PARTIE_PP')]
-    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset2) == [(0, 7, 'UNKNOWN'), (11, 18, 'PARTIE_PP')]
-    offset3 = [(3, 9, "PARTIE_PP")]
-    assert matcher.clean_unknown_offsets(expected_offset + offset3) == [(3, 9, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset3) == [(3, 9, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
-    offset4 = [(3, 12, "PARTIE_PP")]
+    offset1 = [(0, 7, "PERS")]
+    assert matcher.clean_unknown_offsets(expected_offset + offset1) == [(0, 7, "PERS"), (11, 18, 'UNKNOWN')]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset1) == [(0, 7, "PERS"), (11, 18, 'UNKNOWN')]
+    offset2 = [(11, 18, "PERS")]
+    assert matcher.clean_unknown_offsets(expected_offset + offset2) == [(0, 7, 'UNKNOWN'), (11, 18, "PERS")]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset2) == [(0, 7, 'UNKNOWN'), (11, 18, "PERS")]
+    offset3 = [(3, 9, "PERS")]
+    assert matcher.clean_unknown_offsets(expected_offset + offset3) == [(3, 9, "PERS"), (11, 18, 'UNKNOWN')]
+    assert matcher.get_unknown_words_offsets(text=text1, offsets=offset3) == [(3, 9, "PERS"), (11, 18, 'UNKNOWN')]
+    offset4 = [(3, 12, "PERS")]
     assert matcher.clean_unknown_offsets(expected_offset + offset4) == offset4
     assert matcher.get_unknown_words_offsets(text=text1, offsets=offset4) == offset4
-    offset4 = [(2, 5, "PARTIE_PP")]
-    assert matcher.clean_unknown_offsets(expected_offset + offset4) == [(2, 5, 'PARTIE_PP'), (11, 18, 'UNKNOWN')]
+    offset4 = [(2, 5, "PERS")]
+    assert matcher.clean_unknown_offsets(expected_offset + offset4) == [(2, 5, "PERS"), (11, 18, 'UNKNOWN')]
     text2 = "C'est pourquoi Madame Toto souhaite obtenir le divorce."
     assert matcher.get_all_unknown_words_offsets(text=text2) == [(22, 26, 'UNKNOWN')]

@@ -32,7 +32,7 @@ class CourtName:
         :param text: original text
         :return: list of offsets
         """
-        return get_matches(self.matcher, text, "JURIDICTION")
+        return get_matches(self.matcher, text, "COURT")
 
 
 # List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/
@@ -70,6 +70,6 @@ def get_juridictions(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "JURIDICTION") for t in juridiction_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "JURIDICTION") for t in juridiction_pattern_2.finditer(text)]
+    result1 = [(t.start(), t.end(), "COURT") for t in juridiction_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "COURT") for t in juridiction_pattern_2.finditer(text)]
     return result1 + result2

@@ -20,7 +20,7 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
             start_offset, end_offset, type_name = offset
             text_span = text[start_offset:end_offset].strip()
             if len(text_span) > 0:
-                if type_name == "PARTIE_PP":
+                if type_name == "PERS":
                     pp_patterns.add(text_span)
                     first_name, last_name = get_first_last_name(text_span)
                     first_name = first_name.strip()
@@ -31,7 +31,7 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
                     if len(last_name) > threshold_span_size:
                         pp_patterns.add(last_name)
 
-                if type_name == "PARTIE_PM":
+                if type_name == "ORGANIZATION":
                     pm_patterns.add(text_span)
                     short_org_name = remove_org_type(text_span).strip()
                     if (len(short_org_name) > 0) and (short_org_name != text_span):
@@ -43,8 +43,8 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
     results = list()
 
     for text, offset in zip(texts, offsets):
-        results.append(get_matches(pp_matcher, text, "PARTIE_PP") +
-                       get_matches(pm_matcher, text, "PARTIE_PM") +
+        results.append(get_matches(pp_matcher, text, "PERS") +
+                       get_matches(pm_matcher, text, "ORGANIZATION") +
                        offset)
 
     return results

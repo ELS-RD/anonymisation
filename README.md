@@ -51,23 +51,22 @@ The main focus of this work is to generate a **large high quality training set**
 ## Type of tokens recognized
 
 - Persons:
-    - `PARTIE_PP`: natural person *(include first name unlike `Temis`)*
-    - `PARTIE_PM`: organization *(not done by `Temis`)*
+    - `PERS`: natural person *(include first name unlike `Temis`)*
+    - `ORGANIZATION`: organization *(not done by `Temis`)*
 - Lawyers:
-    - `AVOCAT`: lawyers *(not done by `Temis`)*
-    - `BARREAU`: bar where lawyers are registered *(not done by `Temis`)* 
+    - `LAWYER`: lawyers *(not done by `Temis`)*
+    - `BAR`: bar where lawyers are registered *(not done by `Temis`)* 
 - Courts:
-    - `JURIDICTION`: names of French courts *(not done by `Temis`)*
-    - `MAGISTRAT`: judges *(not done by `Temis`)*
-    - `GREFFIER`: court clerks *(not done by `Temis`)*
+    - `COURT`: names of French courts *(not done by `Temis`)*
+    - `JUDGE_CLERKS`: judges and court clerks *(not done by `Temis`)*
 - Miscellaneous:
-    - `ADRESSE`: addresses *(**very** badly done by `Temis`)*
+    - `ADDRESS`: addresses *(**very** badly done by `Temis`)*
     - `DATE`: any date, in numbers or letters *(not done by `Temis`)*
 
-> Only taking care of `PARTIE_PP` has been tried at first.  
+> Only taking care of `PERS` has been tried at first.  
 It appeared that there was some issues with other entity types.  
-Therefore, they have been added, greatly improving the quality of `PARTIE_PP` recognition.
-`BARREAU` and `DATE` where very easy to add and are useful for specific purpose.  
+Therefore, they have been added, greatly improving the quality of `PERS` recognition.
+`BAR` and `DATE` where very easy to add and are useful for specific purpose.  
 
 Type of entities to add in the future:
 
@@ -141,7 +140,6 @@ python3 display_errors.py
 
 ### TODO:
 
-- refactor matchers in different files per topic
 - group JUDGE and CLERKS in the same cat
 - switch to english type name
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests

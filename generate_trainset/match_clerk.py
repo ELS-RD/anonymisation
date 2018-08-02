@@ -18,7 +18,7 @@ def get_clerk_name(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "GREFFIER") for t in extract_clerk_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "GREFFIER") for t in extract_clerk_pattern_2.finditer(text)]
+    result1 = [(t.start(), t.end(), "JUDGE_CLERK") for t in extract_clerk_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "JUDGE_CLERK") for t in extract_clerk_pattern_2.finditer(text)]
     return result1 + result2
 

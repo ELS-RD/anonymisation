@@ -49,7 +49,7 @@ class FirstName:
         :param text: original text
         :return: list of offsets
         """
-        offsets = get_matches(self.matcher, text, "PARTIE_PP")
+        offsets = get_matches(self.matcher, text, "PERS")
         # names include a space so we fix the point by removing 1 to the offset
         results = [(start, end - 1, type_name) for start, end, type_name in offsets]
         return results

@@ -19,4 +19,4 @@ def get_company_names(text: str) -> list:
     :param text: original text
     :return: a list of offsets
     """
-    return [(t.start(), t.end(), "PARTIE_PM") for t in find_corp.finditer(text)]
+    return [(t.start(), t.end(), "ORGANIZATION") for t in find_corp.finditer(text)]

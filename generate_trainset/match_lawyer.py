@@ -12,5 +12,5 @@ def get_lawyer_name(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    return [(t.start(), t.end(), "AVOCAT") for t in extract_lawyer.finditer(text)]
+    return [(t.start(), t.end(), "LAWYER") for t in extract_lawyer.finditer(text)]
 

@@ -18,8 +18,8 @@ def get_partie_pp(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_2.finditer(text)]
-    result3 = [(t.start(), t.end(), "PARTIE_PP") for t in extract_partie_pp_pattern_3.finditer(text)]
+    result1 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_2.finditer(text)]
+    result3 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_3.finditer(text)]
     return result1 + result2 + result3
 

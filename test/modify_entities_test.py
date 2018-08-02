@@ -12,7 +12,7 @@ def test_title_case():
 
 def test_random_case_change():
     text = "La Banque est fermée"
-    offsets = [(3, 9, "PARTIE_PP")]
+    offsets = [(3, 9, "PERS")]
 
     results = [random_case_change(text, offsets, 100) for _ in range(1, 100)]
 
@@ -24,11 +24,11 @@ def test_random_case_change():
 def test_remove_key_words():
     text = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
            "avocat au barreau de PARIS, toque: B1132"
-    offsets = [(22, 44, "AVOCAT"), (51, 60, "AVOCAT")]
+    offsets = [(22, 44, "LAWYER"), (51, 60, "LAWYER")]
     assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
                                                                       'et Toto TITI, avocat au barreau de PARIS, '
                                                                       'toque: B1132',
-                                                                      [(19, 41, 'AVOCAT'),
-                                                                       (45, 54, 'AVOCAT')])
+                                                                      [(19, 41, "LAWYER"),
+                                                                       (45, 54, "LAWYER")])
 
     assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)

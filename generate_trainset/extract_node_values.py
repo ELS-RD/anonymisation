@@ -28,14 +28,14 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
     for node in parent_node.iter():
         if node.tag == "Personne":
             name, after = get_person_name(node)
-            contents.append((name, "PARTIE_PP"))
+            contents.append((name, "PERS"))
             contents.append((after, "after"))
         elif node.tag == "P":
             text = replace_none(node.text)
             contents.append((text, node.tag))
         elif node.tag == "Adresse":
             text = replace_none(node.text)
-            contents.append((text, "ADRESSE"))
+            contents.append((text, "ADDRESS"))
         elif node.tag in ["Texte", "TexteAnonymise"]:
             pass
         else:
@@ -50,7 +50,7 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
         current_item_text_size = len(current_text_item)
 
         clean_content.append(current_text_item)
-        if current_tag_item in ["PARTIE_PP", "ADRESSE"]:
+        if current_tag_item in ["PERS", "ADDRESS"]:
             offset.append((text_current_size,
                            text_current_size + current_item_text_size,
                            current_tag_item))

@@ -14,7 +14,7 @@ DEV_DATA = get_paragraph_from_file(xml_dev_path,
 for case_id, texts, xml_extracted_text, annotations in DEV_DATA:
     doc = nlp(texts)
 
-    spacy_extracted_text_ad_pp = [ent.text for ent in doc.ents if ent.label_ in ["ADRESSE", "PARTIE_PP"]]
+    spacy_extracted_text_ad_pp = [ent.text for ent in doc.ents if ent.label_ in ["ADDRESS", "PERS"]]
 
     spacy_extracted_text = [ent.text for ent in doc.ents]
     str_rep_spacy = ' '.join(spacy_extracted_text)

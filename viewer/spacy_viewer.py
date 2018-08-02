@@ -32,16 +32,15 @@ def view_spacy_docs(docs: list):
     Launch a server to View entities
     :param docs: spacy doc with entities ready
     """
-    colors = {"PARTIE_PP": "#ff9933",
-              "ADRESSE": "#ff99cc",
-              "PARTIE_PM": "#00ccff",
-              "AVOCAT": "#ccffcc",
-              "MAGISTRAT": "#ccccff",
-              "GREFFIER": "#ccccff",
-              "JURIDICTION": "#ccffff",
+    colors = {"PERS": "#ff9933",
+              "ADDRESS": "#ff99cc",
+              "ORGANIZATION": "#00ccff",
+              "LAWYER": "#ccffcc",
+              "JUDGE_CLERK": "#ccccff",
+              "COURT": "#ccffff",
               "RG": "#99ff99",
               "DATE": "#ffcc99",
-              "BARREAU": "#ffe699",
+              "BAR": "#ffe699",
               "UNKNOWN": "#ff0000"}
     options = {"ents": None, "colors": colors}
     displacy.serve(docs, style="ent", minify=True, port=5000, options=options)

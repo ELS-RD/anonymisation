@@ -13,8 +13,8 @@ def test_bilou_conv():
     offset1 = [(5, 8, "UNKNOWN")]
     assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', '-', 'O', 'O', 'O']
     assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ['O', '-', 'O', 'O', 'O']
-    offset2 = [(5, 8, "PARTIE_PP")]
-    assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PARTIE_PP', 'O', 'O', 'O']
+    offset2 = [(5, 8, "PERS")]
+    assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PERS', 'O', 'O', 'O']
 
 
 def test_build_entity_dict():

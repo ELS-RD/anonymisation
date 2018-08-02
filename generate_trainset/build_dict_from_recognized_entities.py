@@ -50,7 +50,7 @@ def get_frequent_entities(path_trainset: str, threshold_occurrences: int) -> dic
 
             if (max_count > threshold_occurrences) and \
                     (len(entity_span) > 3) \
-                    and (max_type_name not in ["PARTIE_PP", "UNKNOWN"]):
+                    and (max_type_name not in ["PERS", "UNKNOWN"]):
                 final_list.append((entity_span, max_type_name))
 
         return dict(final_list)

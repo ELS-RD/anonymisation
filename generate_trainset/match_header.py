@@ -32,11 +32,11 @@ class MatchValuesFromHeaders:
         self.matcher_clerks = self.get_matcher_of_clerks_from_headers()
 
     def get_matched_entities(self, current_paragraph: str) -> list:
-        current_doc_offsets = get_matches(self.matcher_partie_pp, current_paragraph, "PARTIE_PP")
-        current_doc_offsets += get_matches(self.matcher_partie_pm, current_paragraph, "PARTIE_PM")
-        current_doc_offsets += get_matches(self.matcher_lawyers, current_paragraph, "AVOCAT")
-        current_doc_offsets += get_matches(self.matcher_president, current_paragraph, "MAGISTRAT")
-        current_doc_offsets += get_matches(self.matcher_clerks, current_paragraph, "GREFFIER")
+        current_doc_offsets = get_matches(self.matcher_partie_pp, current_paragraph, "PERS")
+        current_doc_offsets += get_matches(self.matcher_partie_pm, current_paragraph, "ORGANIZATION")
+        current_doc_offsets += get_matches(self.matcher_lawyers, current_paragraph, "LAWYER")
+        current_doc_offsets += get_matches(self.matcher_president, current_paragraph, "JUDGE_CLERK")
+        current_doc_offsets += get_matches(self.matcher_clerks, current_paragraph, "JUDGE_CLERK")
 
         return current_doc_offsets
 

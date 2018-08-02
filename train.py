@@ -76,7 +76,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,
-                                                                 type_name="PARTIE_PP")
+                                                                 type_name="PERS")
                 rg_matcher = MatchRg(case_id=previous_case_id)
                 for current_paragraph, current_xml_offset in zip(current_case_paragraphs, current_case_offsets):
 
@@ -139,27 +139,27 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_offset_with_var,
-                    type_name="PARTIE_PP")
+                    type_name="PERS")
 
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_with_extended_offsets,
-                    type_name="PARTIE_PM")
+                    type_name="ORGANIZATION")
 
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_with_extended_offsets,
-                    type_name="AVOCAT")
+                    type_name="LAWYER")
 
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_with_extended_offsets,
-                    type_name="MAGISTRAT")
+                    type_name="JUDGE_CLERK")
 
                 last_doc_with_extended_offsets = ExtendNames.get_extended_extracted_name_multiple_texts(
                     texts=last_document_texts,
                     offsets=last_doc_with_extended_offsets,
-                    type_name="GREFFIER")
+                    type_name="JUDGE_CLERK")
 
                 last_doc_with_ext_offset_and_var = get_all_name_variation(texts=last_document_texts,
                                                                           offsets=last_doc_with_extended_offsets,

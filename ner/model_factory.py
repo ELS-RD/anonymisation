@@ -3,9 +3,9 @@ import spacy
 # Managed type of tokens
 from spacy.lang.fr import French
 
-token_types = ["PARTIE_PP", "PARTIE_PM", "AVOCAT", "MAGISTRAT",
-               "GREFFIER", "ADRESSE", "JURIDICTION", "DATE", "RG",
-               "BARREAU", "UNKNOWN"]
+token_types = ["PERS", "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
+               "ADDRESS", "COURT", "DATE", "RG",
+               "BAR", "UNKNOWN"]
 
 
 def prevent_sentence_boundary_detection(doc):

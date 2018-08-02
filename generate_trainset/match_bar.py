@@ -13,4 +13,4 @@ def get_bar(text: str) -> list:
     :param text: original text
     :return: offset as a list
     """
-    return [(t.start(), t.end(), "BARREAU") for t in barreau_pattern.finditer(text)]
+    return [(t.start(), t.end(), "BAR") for t in barreau_pattern.finditer(text)]

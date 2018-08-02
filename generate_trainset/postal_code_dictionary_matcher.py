@@ -32,4 +32,4 @@ class PostalCodeCity:
         :param text: original text
         :return: list of offsets
         """
-        return get_matches(self.matcher, text, "ADRESSE")
+        return get_matches(self.matcher, text, "ADDRESS")
