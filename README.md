@@ -141,7 +141,6 @@ python3 display_errors.py
 
 ### TODO:
 
-- RG number
 - group JUDGE and CLERKS in the same cat
 - switch to english type name
 - randomly change case of only several words in a MWE
@@ -329,6 +328,20 @@ Iter 4
 69483it [10:48:56,  1.78it/s]{'ner': 45.65050949805317}
 69484it [10:48:56,  2.11it/s]
 ---------------
+Learn NER model: 100%|██████████| 28635/28635 [41:59<00:00,  7.34 paragraphs/s]
+Number of tags: 2849201
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+
+Iter 1
+Learn NER model:  25%|██▍       | 17402/69612.0 [2:33:45<8:00:32,  1.81 paragraphs/s, loss: 79.66364140904534]
+Iter 2
+Learn NER model:  50%|█████     | 34806/69612.0 [5:10:56<5:33:31,  1.74 paragraphs/s, loss: 53.21245321840115] 
+Iter 3
+Learn NER model:  75%|███████▌  | 52209/69612.0 [7:49:55<2:35:10,  1.87 paragraphs/s, loss: 48.89310116812737] 
+Iter 4
+Learn NER model: 100%|██████████| 69612/69612.0 [10:32:52<00:00,  1.74 paragraphs/s, loss: 46.81073942351145]
+---------------
+
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 
@@ -352,3 +365,7 @@ CA-aix-en-provence-20160114-1310730-jurica
 les entités du premier paragraphe ne sont pas reprises dans le second 
 Les vols de produits alimentaires que la société Stef LogistiquePARTIE_PM reproche au salarié sont formellement contestés 
 s Stef Logistique sera condamnée aux entiers dépens de première instance et d'appel.
+
+Dans les premières détections il y a des noms qui sont incorrectement reconnus
+Sami n est pas marqué
+Notification de la présente ordonnance a été faite par fax le 01 Février 2015DATE à Sami KHALIFAPARTIE_PP , à son avocat et au préfet

@@ -65,7 +65,7 @@ else:
 
 frequent_entities_matcher = get_frequent_entities_matcher(content=frequent_entities_dict)
 
-with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Learn NER model") as progress_bar:
+with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER dataset") as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
