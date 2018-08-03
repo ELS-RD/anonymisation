@@ -14,7 +14,6 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
     """
     pp_patterns = AcoraBuilder("!@#$%%^&*")
     pm_patterns = AcoraBuilder("!@#$%%^&*")
-    #TODO add magistrat et greffier
     for current_offsets, text in zip(offsets, texts):
         for offset in current_offsets:
             start_offset, end_offset, type_name = offset

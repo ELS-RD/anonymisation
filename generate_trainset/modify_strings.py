@@ -27,7 +27,8 @@ org_types = "société(s)?|" \
             "(e|é)tablissement|" \
             "mutuelle|" \
             "caisse|" \
-            "hôpital|" \
+            "h.pital|" \
+            "clinique|" \
             "banque|" \
             "compagnie( d'assurance)?|" \
             "cabinet"

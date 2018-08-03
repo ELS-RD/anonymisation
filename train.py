@@ -2,8 +2,7 @@ import pickle
 
 from tqdm import tqdm
 
-from generate_trainset.build_dict_from_recognized_entities import get_frequent_entities, \
-    get_frequent_entities_matcher, get_frequent_entities_matches
+from generate_trainset.build_dict_from_recognized_entities import FrequentEntities
 from generate_trainset.match_address import get_addresses, find_address_in_block_of_paragraphs
 from generate_trainset.match_bar import get_bar
 from generate_trainset.match_clerk import get_clerk_name
@@ -35,7 +34,7 @@ batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
 train_dataset = False  # bool(config_training["train_data_set"])
-export_dataset = True  # not bool(config_training["train_data_set"])
+export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
@@ -60,14 +59,10 @@ doc_annotated = list()
 last_document_offsets = list()
 last_document_texts = list()
 
-if export_dataset:
-    frequent_entities_dict = dict()
-else:
-    # Disable this part to generate a new set of entities
-    frequent_entities_dict = get_frequent_entities(path_trainset=training_set_export_path,
-                                                   threshold_occurrences=100)
-
-frequent_entities_matcher = get_frequent_entities_matcher(content=frequent_entities_dict)
+frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
+                                             threshold_occurrences=100,
+                                             load_data= not export_dataset,
+                                             type_name_to_not_load=["PERS", "UNKNOWN"])
 
 with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER dataset") as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
@@ -94,9 +89,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     bar = get_bar(current_paragraph)
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
-                    frequent_entities = get_frequent_entities_matches(matcher=frequent_entities_matcher,
-                                                                      frequent_entities_dict=frequent_entities_dict,
-                                                                      text=current_paragraph)
+                    frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
 
                     all_matches = (match_from_headers +
                                    current_xml_offset +

@@ -112,27 +112,46 @@ Both are not strategic to the success of the learning but provide a little help.
 
 ## Commands to use the code
 
-* To learn the model
+This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies.  
+To setup an environment on your machine, install `virtualenv` and install the project dependencies (from the `requirements.txt` file).  
 
-```python
+> These steps can be managed by your IDE.  
+Following commands are tested on Ubuntu only.
+
+```bash
+# first time
+pip3 install virtualenv
+cd /ANY_PATH/anonymisation
+virtualenv venv
+pip install -r requirements.txt
+
+# Use virtual env (each reboot)
+source venv/bin/activate
+```
+
+... then you can use the project by running one of the following action:
+
+* learn the model
+
+```bash
 python3 train.py
 ```
 
-* To view `Spacy` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
+* view `Spacy` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
-```python
+```bash
 python3 entities_viewer_spacy.py
 ```
 
-* To view `Temis` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
+* view `Temis` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
-```python
+```bash
 python3 entity_viewer_temis.py
 ```
 
-* To view differences with `Temis` (only for shared entity types)
+* view differences with `Temis` (only for shared entity types)
 
-```python
+```bash
 python3 display_errors.py
 ```
 
@@ -140,8 +159,10 @@ python3 display_errors.py
 
 ### TODO:
 
-- create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
+- vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
 - randomly change case of only several words in a MWE
+- create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
+- add RG pattern
 - test if unknown entity match an existing one (A in B)
 - Court formation
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
@@ -153,9 +174,6 @@ python3 display_errors.py
 - Add rapporteurs / experts (close to word rapport)
 - Birthday (né le ...) ?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
-- dedupe entities : textacy.keyterms.aggregate_term_variants
-- extract list of triplets textacy.extract.subject_verb_object_triples
-- extract key sentences: textacy.keyterms.textrank
 - extraires les acronymes et leurs defs textacy.extract.acronyms_and_definitions
 
 Number of tags: 1773909
@@ -338,7 +356,19 @@ Learn NER model:  75%|███████▌  | 52209/69612.0 [7:49:55<2:35:10
 Iter 4
 Learn NER model: 100%|██████████| 69612/69612.0 [10:32:52<00:00,  1.74 paragraphs/s, loss: 46.81073942351145]
 ---------------
-
+Generate NER dataset: 100%|██████████| 28635/28635 [43:19<00:00,  6.58 paragraphs/s]
+Number of tags: 2844758
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+Learn NER model:   0%|          | 0/69565.08 [00:00<?, ? paragraphs/s]
+Iter 1
+Learn NER model:  25%|██▌       | 17392/69565.08 [2:38:34<6:26:07,  2.25 paragraphs/s, loss: 78.71839616297939]
+Iter 2
+Learn NER model:  50%|█████     | 34783/69565.08 [5:17:17<5:45:50,  1.68 paragraphs/s, loss: 53.019130392607394]
+Iter 3
+Learn NER model:  75%|███████▌  | 52175/69565.08 [7:58:11<2:57:37,  1.63 paragraphs/s, loss: 48.63673049783756]
+Iter 4
+Learn NER model: 69568 paragraphs [10:43:07,  2.11 paragraphs/s, loss: 46.45809067338905] 
+----------------
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 

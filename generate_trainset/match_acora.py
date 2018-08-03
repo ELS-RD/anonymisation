@@ -43,3 +43,13 @@ def filter_fake_match(start: int, end: int, text: str) -> bool:
     else:
         next_token_ok = not text[end].isalnum()
     return previous_token_ok and next_token_ok
+
+
+class AcoraMatcher:
+    matcher = None
+
+    def __init__(self, content: list, ignore_case: bool):
+        self.matcher = get_acora_object(content, ignore_case)
+
+    def get_matches(self, text: str, tag: str):
+        return get_matches(matcher=self.matcher, text=text, tag=tag)
