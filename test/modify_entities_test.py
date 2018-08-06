@@ -1,4 +1,5 @@
-from modify_text.modify_strings import get_title_case, random_case_change, remove_org_type, remove_key_words
+from modify_text.change_case import get_title_case, random_case_change
+from modify_text.modify_strings import remove_org_type, remove_key_words
 
 
 def test_remove_corp_name():

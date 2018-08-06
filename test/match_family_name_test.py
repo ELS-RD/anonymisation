@@ -1,4 +1,4 @@
-from modify_text.modify_strings import get_last_name, get_first_last_name
+from misc.extract_first_last_name import get_last_name, get_first_last_name
 
 
 def test_match_family_name():

@@ -1,7 +1,8 @@
 from acora import AcoraBuilder
 
 from match_text_unsafe.match_acora import get_matches
-from modify_text.modify_strings import remove_org_type, get_first_last_name
+from misc.extract_first_last_name import get_first_last_name
+from modify_text.modify_strings import remove_org_type
 
 
 def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int) -> list:

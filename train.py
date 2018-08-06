@@ -10,6 +10,7 @@ from match_text.match_clerk import get_clerk_name
 from match_text.match_courts import CourtName, get_juridictions
 from match_text.match_date import get_date
 from match_text_unsafe.extend_names import ExtendNames
+from modify_text.change_case import random_case_change
 
 from xml_extractions.extract_node_values import get_paragraph_from_folder
 from match_text.match_doubtful_mwe import MatchDoubfulMwe
@@ -20,7 +21,7 @@ from match_text.match_lawyer import get_lawyer_name
 from match_text.match_natural_persons import get_partie_pers
 from match_text.match_company_names import get_company_names
 from match_text.match_rg import MatchRg
-from modify_text.modify_strings import random_case_change, remove_key_words
+from modify_text.modify_strings import remove_key_words
 from misc.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
