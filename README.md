@@ -164,7 +164,6 @@ python3 display_errors.py
 ### TODO:
 
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
-- randomly change case of only several words in a MWE
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
 - add RG pattern
 - test if unknown entity match an existing one (A in B)
