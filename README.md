@@ -36,6 +36,9 @@ The main focus of this work is to generate a **large high quality training set**
 - create some variation of the discovered entities and search for them (remove first or last name, change the case, etc.)
     - make the model more robust to error in the text
     - these variation can not be discovered easily with patterns
+- apply some priority rules depending of the source of the entity
+    - some candidate generators are more safe than others 
+    - a `_1` is added to the end of the tag label when it is safe and it is removed during the offset normalization step
 - extending any discovered to the neighbor words if it makes sense
     - should be done carefully otherwise there is a risk of lowering the quality of the training set 
 - look for doubtful MWE candidates and declare them as doubtful
@@ -61,12 +64,13 @@ The main focus of this work is to generate a **large high quality training set**
     - `JUDGE_CLERKS`: judges and court clerks *(not done by `Temis`)*
 - Miscellaneous:
     - `ADDRESS`: addresses *(**very** badly done by `Temis`)*
+        - there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed
     - `DATE`: any date, in numbers or letters *(not done by `Temis`)*
 
 > Only taking care of `PERS` has been tried at first.  
 It appeared that there was some issues with other entity types.  
 Therefore, they have been added, greatly improving the quality of `PERS` recognition.
-`BAR` and `DATE` where very easy to add and are useful for specific purpose.  
+`BAR` and `DATE` where very easy to add and are useful for some specific purposes.  
 
 Type of entities to add in the future:
 
