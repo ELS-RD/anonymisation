@@ -38,7 +38,7 @@ def get_judge_name(text: str) -> list:
     :return: offsets as a list
     """
 
-    r1 = [(t.start(), t.end(), "JUDGE_CLERK") for t in extract_judge_pattern_1.finditer(text)]
-    r2 = [(t.start(), t.end(), "JUDGE_CLERK") for t in extract_judge_pattern_2.finditer(text)]
+    r1 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_judge_pattern_1.finditer(text)]
+    r2 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_judge_pattern_2.finditer(text)]
     return r1 + r2
 

@@ -40,7 +40,7 @@ def get_date(text: str) -> list:
     :param text: original text
     :return: offsets as a list
     """
-    r1 = [(t.start(), t.end(), "DATE") for t in date_pattern_in_letters_regex.finditer(text)]
-    r2 = [(t.start(), t.end(), "DATE") for t in date_pattern_in_numbers_regex_1.finditer(text)]
-    r3 = [(t.start(), t.end(), "DATE") for t in date_pattern_in_numbers_regex_2.finditer(text)]
+    r1 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_letters_regex.finditer(text)]
+    r2 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_1.finditer(text)]
+    r3 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_2.finditer(text)]
     return r1 + r2 + r3

@@ -70,6 +70,6 @@ def get_juridictions(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "COURT") for t in juridiction_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "COURT") for t in juridiction_pattern_2.finditer(text)]
+    result1 = [(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_2.finditer(text)]
     return result1 + result2

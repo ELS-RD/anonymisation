@@ -26,7 +26,7 @@ def get_addresses(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result = [(t.start(), t.end(), "ADDRESS") for t in extract_address_pattern.finditer(text)]
+    result = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern.finditer(text)]
     return result
 
 

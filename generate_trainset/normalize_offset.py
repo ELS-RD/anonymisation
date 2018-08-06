@@ -21,7 +21,8 @@ def normalize_offsets(offsets: list) -> list:
                                                                                          current_type_tag)
 
         if (previous_end_offset is not None) and (previous_end_offset < current_end_offset):
-            offset_to_keep.append((previous_start_offset, previous_end_offset, previous_type_tag))
+            offset_to_keep.append((previous_start_offset, previous_end_offset,
+                                   remove_tag_priority_info(previous_type_tag)))
 
         # keep longest tags when they are one on the other
         if (previous_end_offset is not None) and (previous_end_offset >= current_end_offset):
@@ -39,22 +40,38 @@ def normalize_offsets(offsets: list) -> list:
                                                                          current_end_offset,
                                                                          current_type_tag)
     if previous_start_offset is not None:
-        offset_to_keep.append((previous_start_offset, previous_end_offset, previous_type_tag))
+        offset_to_keep.append((previous_start_offset, previous_end_offset,
+                               remove_tag_priority_info(previous_type_tag)))
     return offset_to_keep
 
 
 def tag_priority(previous_tag: str, current_tag: str) -> str:
     """
     Apply some rules to decide which tag to keep when merging 2 offsets
+    In particular manage tag priority indicated by _1 in tag label
     :param previous_tag: tag as a string starting the earliest (start character of the offset)
     :param current_tag: tag as a string
     :return: the selected tag
     """
-    # return previous_tag
-    if (previous_tag in ["COURT"]) or (current_tag in ["COURT"]):
-        return "COURT"
+
+    if previous_tag[-2:] == "_1":
+        return remove_tag_priority_info(previous_tag)
+    elif current_tag[-2:] == "_1":
+        return remove_tag_priority_info(current_tag)
     else:
+        # return the first seen tag otherwise
         return previous_tag
+
+
+def remove_tag_priority_info(tag: str) -> str:
+    """
+    Remove the tag priority information
+    :param tag: original tag label
+    :return: tag without priority information
+    """
+    if tag[-2:] == "_1":
+        return tag[:-2]
+    return tag
 
 
 def remove_offset_space(text: str, offsets: list):
