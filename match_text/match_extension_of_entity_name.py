@@ -1,6 +1,6 @@
 from acora import AcoraBuilder
 
-from match_text.match_acora import get_matches
+from match_text_unsafe.match_acora import get_matches
 from modify_text.modify_strings import remove_org_type, get_first_last_name
 
 

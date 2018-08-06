@@ -1,4 +1,4 @@
-from unsafe_match_text.build_dict_from_recognized_entities import FrequentEntities
+from match_text_unsafe.build_dict_from_recognized_entities import FrequentEntities
 
 
 def test_frequent_entities():

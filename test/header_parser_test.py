@@ -1,4 +1,4 @@
-from unsafe_match_text.find_header_values import parse_xml_header
+from match_text_unsafe.find_header_values import parse_xml_header
 from resources.config_provider import get_config_default
 
 

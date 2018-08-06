@@ -1,8 +1,8 @@
 import warnings
 
-from unsafe_match_text.build_entity_dictionary import EntityTypename
+from match_text_unsafe.build_entity_dictionary import EntityTypename
 from xml_extractions.extract_node_values import get_paragraph_from_file
-from match_text.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import get_acora_object, get_matches
 from match_text.match_address import find_address_in_block_of_paragraphs
 from misc.normalize_offset import normalize_offsets
 from ner.model_factory import get_empty_model

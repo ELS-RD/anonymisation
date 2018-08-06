@@ -1,4 +1,4 @@
-from match_text.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import get_acora_object, get_matches
 from resources.config_provider import get_config_default
 
 

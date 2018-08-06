@@ -1,6 +1,6 @@
 from random import randint
 import regex
-from match_text.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import get_acora_object, get_matches
 
 # some organization prefix patterns
 org_types = "société(s)?|" \

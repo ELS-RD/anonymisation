@@ -1,4 +1,4 @@
-from unsafe_match_text.extend_names import ExtendNames
+from match_text_unsafe.extend_names import ExtendNames
 
 
 def test_extend_names():

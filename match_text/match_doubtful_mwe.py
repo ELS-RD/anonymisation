@@ -1,6 +1,6 @@
 import regex
 
-from match_text.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import get_acora_object, get_matches
 from match_text.match_first_name_dictionary import FirstName
 
 

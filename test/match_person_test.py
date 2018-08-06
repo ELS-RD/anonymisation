@@ -1,4 +1,4 @@
-from match_text.match_nat_persons import get_partie_pers
+from match_text.match_natural_persons import get_partie_pers
 
 
 def test_match_person():

@@ -1,7 +1,7 @@
 import acora
 from acora import AcoraBuilder
 
-from match_text.match_acora import get_matches
+from match_text_unsafe.match_acora import get_matches
 
 
 class MatchValuesFromHeaders:
