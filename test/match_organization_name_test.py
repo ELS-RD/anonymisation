@@ -1,4 +1,4 @@
-from generate_trainset.match_company_names import get_company_names
+from match_text.match_company_names import get_company_names
 
 
 def test_match_company_names():

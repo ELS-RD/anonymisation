@@ -1,4 +1,4 @@
-from generate_trainset.match_bar import get_bar
+from match_text.match_bar import get_bar
 
 
 def test_bar():

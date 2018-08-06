@@ -4,7 +4,7 @@ from pathlib import Path
 from spacy import util
 from tqdm import tqdm
 
-from generate_trainset.convert_to_bilou import convert_unknown_bilou_bulk
+from misc.convert_to_bilou import convert_unknown_bilou_bulk
 from ner.model_factory import get_empty_model
 
 

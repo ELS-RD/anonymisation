@@ -1,7 +1,7 @@
 from acora import AcoraBuilder
 
-from generate_trainset.match_acora import get_matches
-from generate_trainset.modify_strings import remove_org_type, get_first_last_name
+from match_text.match_acora import get_matches
+from modify_text.modify_strings import remove_org_type, get_first_last_name
 
 
 def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int) -> list:

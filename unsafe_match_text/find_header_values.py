@@ -1,6 +1,6 @@
 import os
 
-from generate_trainset.common_xml_parser_function import read_xml
+from xml_extractions.common_xml_parser_function import read_xml
 
 
 def parse_xml_header(path: str):

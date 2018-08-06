@@ -1,4 +1,4 @@
-from generate_trainset.extend_names import ExtendNames
+from unsafe_match_text.extend_names import ExtendNames
 
 
 def test_extend_names():

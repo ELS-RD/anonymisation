@@ -1,5 +1,5 @@
-from generate_trainset.match_extension_of_entity_name import get_all_name_variation
-from generate_trainset.match_first_name_dictionary import FirstName
+from match_text.match_extension_of_entity_name import get_all_name_variation
+from match_text.match_first_name_dictionary import FirstName
 
 
 def test_match_sub_pattern():

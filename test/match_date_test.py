@@ -1,4 +1,4 @@
-from generate_trainset.match_date import get_date
+from match_text.match_date import get_date
 
 
 def test_date():

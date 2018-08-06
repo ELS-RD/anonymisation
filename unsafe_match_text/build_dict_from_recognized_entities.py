@@ -1,7 +1,7 @@
 import pickle
 import warnings
 
-from generate_trainset.match_acora import get_acora_object
+from match_text.match_acora import get_acora_object
 from ner.model_factory import token_types
 from resources.config_provider import get_config_default
 

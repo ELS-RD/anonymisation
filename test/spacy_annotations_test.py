@@ -1,7 +1,7 @@
 from spacy.tokens.doc import Doc
 
-from generate_trainset.build_entity_dictionary import EntityTypename
-from generate_trainset.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk
+from unsafe_match_text.build_entity_dictionary import EntityTypename
+from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk
 from ner.model_factory import get_empty_model
 import pytest
 

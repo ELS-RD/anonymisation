@@ -1,4 +1,4 @@
-from generate_trainset.match_address import get_addresses, find_address_in_block_of_paragraphs
+from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs
 
 
 def test_get_address():

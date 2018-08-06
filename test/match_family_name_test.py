@@ -1,4 +1,4 @@
-from generate_trainset.modify_strings import get_last_name, get_first_last_name
+from modify_text.modify_strings import get_last_name, get_first_last_name
 
 
 def test_match_family_name():

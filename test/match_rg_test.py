@@ -1,4 +1,4 @@
-from generate_trainset.match_rg import MatchRg
+from match_text.match_rg import MatchRg
 
 
 def test_rg():

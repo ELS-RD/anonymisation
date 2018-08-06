@@ -1,4 +1,4 @@
-from generate_trainset.match_courts import CourtName, get_juridictions
+from match_text.match_courts import CourtName, get_juridictions
 
 
 def test_extract_court_name():

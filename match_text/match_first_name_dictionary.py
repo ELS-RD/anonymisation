@@ -1,5 +1,5 @@
-from generate_trainset.match_acora import get_acora_object, get_matches
-from generate_trainset.modify_strings import get_title_case
+from match_text.match_acora import get_acora_object, get_matches
+from modify_text.modify_strings import get_title_case
 from resources.config_provider import get_config_default
 
 

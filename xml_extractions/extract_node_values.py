@@ -3,7 +3,7 @@ import os
 import lxml
 from lxml import etree
 
-from generate_trainset.common_xml_parser_function import replace_none, read_xml
+from xml_extractions.common_xml_parser_function import replace_none, read_xml
 
 
 def get_person_name(node: lxml.etree._Element) -> tuple:

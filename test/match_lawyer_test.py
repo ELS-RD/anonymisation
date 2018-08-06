@@ -1,4 +1,4 @@
-from generate_trainset.match_lawyer import get_lawyer_name
+from match_text.match_lawyer import get_lawyer_name
 
 
 def test_extract_lawyer():

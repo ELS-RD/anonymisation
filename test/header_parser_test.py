@@ -1,4 +1,4 @@
-from generate_trainset.extract_header_values import parse_xml_header
+from unsafe_match_text.find_header_values import parse_xml_header
 from resources.config_provider import get_config_default
 
 

@@ -1,8 +1,7 @@
 import acora
 from acora import AcoraBuilder
 
-from generate_trainset.match_acora import get_matches
-from generate_trainset.modify_strings import get_first_last_name
+from match_text.match_acora import get_matches
 
 
 class MatchValuesFromHeaders:

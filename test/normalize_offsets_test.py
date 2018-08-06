@@ -1,5 +1,5 @@
-from generate_trainset.match_doubtful_mwe import MatchDoubfulMwe
-from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
+from match_text.match_doubtful_mwe import MatchDoubfulMwe
+from misc.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
 
 
 def test_normalize_offsets():

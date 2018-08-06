@@ -2,26 +2,27 @@ import pickle
 
 from tqdm import tqdm
 
-from generate_trainset.build_dict_from_recognized_entities import FrequentEntities
-from generate_trainset.match_address import get_addresses, find_address_in_block_of_paragraphs
-from generate_trainset.match_bar import get_bar
-from generate_trainset.match_clerk import get_clerk_name
-from generate_trainset.match_courts import CourtName, get_juridictions
-from generate_trainset.match_date import get_date
-from generate_trainset.extend_names import ExtendNames
-from generate_trainset.extract_header_values import parse_xml_headers
-from generate_trainset.extract_node_values import get_paragraph_from_folder
-from generate_trainset.match_doubtful_mwe import MatchDoubfulMwe
-from generate_trainset.match_extension_of_entity_name import get_all_name_variation
-from generate_trainset.match_header import MatchValuesFromHeaders
-from generate_trainset.match_judge import get_judge_name
-from generate_trainset.match_lawyer import get_lawyer_name
-from generate_trainset.match_nat_persons import get_partie_pers
-from generate_trainset.match_company_names import get_company_names
-from generate_trainset.match_rg import MatchRg
-from generate_trainset.modify_strings import random_case_change, remove_key_words
-from generate_trainset.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
-from generate_trainset.postal_code_dictionary_matcher import PostalCodeCity
+from unsafe_match_text.build_dict_from_recognized_entities import FrequentEntities
+from unsafe_match_text.find_header_values import parse_xml_headers
+from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs
+from match_text.match_bar import get_bar
+from match_text.match_clerk import get_clerk_name
+from match_text.match_courts import CourtName, get_juridictions
+from match_text.match_date import get_date
+from unsafe_match_text.extend_names import ExtendNames
+
+from xml_extractions.extract_node_values import get_paragraph_from_folder
+from match_text.match_doubtful_mwe import MatchDoubfulMwe
+from match_text.match_extension_of_entity_name import get_all_name_variation
+from match_text.match_header import MatchValuesFromHeaders
+from match_text.match_judge import get_judge_name
+from match_text.match_lawyer import get_lawyer_name
+from match_text.match_nat_persons import get_partie_pers
+from match_text.match_company_names import get_company_names
+from match_text.match_rg import MatchRg
+from modify_text.modify_strings import random_case_change, remove_key_words
+from misc.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
+from unsafe_match_text.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs

@@ -1,7 +1,7 @@
 import regex
 
-from generate_trainset.match_acora import get_acora_object, get_matches
-from generate_trainset.match_first_name_dictionary import FirstName
+from match_text.match_acora import get_acora_object, get_matches
+from match_text.match_first_name_dictionary import FirstName
 
 
 class MatchDoubfulMwe:

@@ -1,5 +1,5 @@
-from generate_trainset.match_clerk import get_clerk_name
-from generate_trainset.match_judge import get_judge_name
+from match_text.match_clerk import get_clerk_name
+from match_text.match_judge import get_judge_name
 
 
 def test_extract_judge_names():

@@ -1,6 +1,6 @@
 import regex
 
-from generate_trainset.modify_strings import org_types
+from modify_text.modify_strings import org_types
 
 find_corp = regex.compile("(((?i)" + org_types + ") "
                                                  "((?i)"
