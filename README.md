@@ -163,16 +163,18 @@ python3 display_errors.py
 
 ### TODO:
 
+- replace Acora
+- create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
 - create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
-- add RG pattern
-- test if unknown entity match an existing one (A in B)
-- Court formation
-- social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
- + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
 - credit card: (?:\d{4}-?){3}\d{4}
+- add RG pattern
 - search for phone number, etc.
 - plaque immatriculation
+- Court formation
+- social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
+- test if unknown entity match an existing one (A in B)
+ + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
 - implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
 - Add rapporteurs / experts (close to word rapport)
 - Birthday (né le ...) ?

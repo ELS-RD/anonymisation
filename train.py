@@ -35,8 +35,11 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = True  # bool(config_training["train_data_set"])
-export_dataset = False  # not bool(config_training["train_data_set"])
+change_case_rate = int(config_training["change_case_rate"])
+remove_keyword_rate = int(config_training["remove_keyword_rate"])
+
+train_dataset = bool(config_training["train_data_set"])
+export_dataset = bool(config_training["export_dataset"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
@@ -176,7 +179,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
 
                 last_doc_remove_keywords = [remove_key_words(text=text,
                                                              offsets=off,
-                                                             rate=20) for text, off in
+                                                             rate=remove_keyword_rate) for text, off in
                                             zip(last_document_texts,
                                                 last_doc_offsets_normalized)]
 
@@ -184,7 +187,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
 
                 last_doc_txt_case_updated = [random_case_change(text=text,
                                                                 offsets=off,
-                                                                rate=20) for text, off in
+                                                                rate=change_case_rate) for text, off in
                                              zip(last_doc_remove_keywords_text,
                                                  last_doc_remove_keywords_offsets)]
 
