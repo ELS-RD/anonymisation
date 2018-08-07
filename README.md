@@ -374,6 +374,19 @@ Learn NER model:  75%|███████▌  | 52175/69565.08 [7:58:11<2:57:3
 Iter 4
 Learn NER model: 69568 paragraphs [10:43:07,  2.11 paragraphs/s, loss: 46.45809067338905] 
 ----------------
+Generate NER dataset: 100%|██████████| 28635/28635 [43:32<00:00,  7.10 paragraphs/s]
+Number of tags: 2845332
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+Learn NER model:   0%|          | 0/69572.76 [00:00<?, ? paragraphs/s]
+Iter 1
+Learn NER model:  25%|██▍       | 17393/69572.76 [2:39:13<8:14:59,  1.76 paragraphs/s, loss: 78.96393741577049]
+Iter 2
+Learn NER model:  50%|█████     | 34788/69572.76 [5:20:27<4:21:54,  2.21 paragraphs/s, loss: 53.76299955105512]
+Iter 3
+Learn NER model:  75%|███████▌  | 52181/69572.76 [8:03:34<2:40:13,  1.81 paragraphs/s, loss: 49.494463511491176]
+Iter 4
+Learn NER model: 69576 paragraphs [10:53:42,  2.22 paragraphs/s, loss: 47.33417880529146]
+---------------
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
 

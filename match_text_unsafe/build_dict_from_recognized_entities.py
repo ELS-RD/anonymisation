@@ -1,7 +1,7 @@
 import pickle
 import warnings
 
-from match_text_unsafe.match_acora import get_acora_object
+from match_text_unsafe.match_acora import AcoraMatcher
 from ner.model_factory import token_types
 from resources.config_provider import get_config_default
 
@@ -26,11 +26,11 @@ class FrequentEntities(object):
             self.frequent_entities_dict = self.__read_frequent_entities(path_trainset=path_trainset,
                                                                         threshold_occurrences=threshold_occurrences,
                                                                         type_name_to_not_load=type_name_to_not_load)
-            self.matcher = get_acora_object(content=list(self.frequent_entities_dict.keys()),
-                                            ignore_case=True)
+            self.matcher = AcoraMatcher(content=list(self.frequent_entities_dict.keys()),
+                                        ignore_case=True)
         else:
-            self.matcher = get_acora_object(content=["!@#$%^&*()"],
-                                            ignore_case=True)
+            self.matcher = AcoraMatcher(content=["!@#$%^&*()"],
+                                        ignore_case=True)
 
     @classmethod
     def test_builder(cls, content: dict):
@@ -45,8 +45,8 @@ class FrequentEntities(object):
                                     load_data=False,
                                     type_name_to_not_load=[])
         instance.frequent_entities_dict = content
-        instance.matcher = get_acora_object(content=list(content.keys()),
-                                            ignore_case=True)
+        instance.matcher = AcoraMatcher(content=list(content.keys()),
+                                        ignore_case=True)
         return instance
 
     @staticmethod
@@ -115,7 +115,7 @@ class FrequentEntities(object):
                             (text[start_offset].isupper() or text[start_offset].isdecimal())
 
             if first_char_ok and last_char_ok:
-                type_name = self. frequent_entities_dict[entity_span.lower()]
+                type_name = self.frequent_entities_dict[entity_span.lower()]
                 entities.append((start_offset, end_offset, type_name))
 
         return entities

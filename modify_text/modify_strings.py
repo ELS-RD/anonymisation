@@ -1,6 +1,8 @@
 from random import randint
+
 import regex
-from match_text_unsafe.match_acora import get_acora_object, get_matches
+
+from match_text_unsafe.match_acora import AcoraMatcher
 
 # some organization prefix patterns
 org_types = "société(s)?|" \
@@ -33,7 +35,6 @@ org_types = "société(s)?|" \
             "compagnie( d'assurance)?|" \
             "cabinet"
 
-
 remove_org_type_pattern = regex.compile("\\b(" + org_types + ")\\b\s+",
                                         flags=regex.VERSION1 | regex.IGNORECASE)
 
@@ -47,13 +48,13 @@ def remove_org_type(original_text: str) -> str:
     return remove_org_type_pattern.sub(repl="", string=original_text).strip()
 
 
-key_words_matcher = get_acora_object(["Monsieur", "Madame", "Mme",
-                                      "monsieur", "madame",
-                                      "la société", "Me", "Maitre", "Maître",
-                                      "la SARL", "la SAS", "la SASU", "l'EURL",
-                                      "la SA", "la SNC", "la SCP", "la SELAS",
-                                      "la SCI", "la SELARL"],
-                                     ignore_case=False)
+key_words_matcher = AcoraMatcher(content=["Monsieur", "Madame", "Mme",
+                                          "monsieur", "madame",
+                                          "la société", "Me", "Maitre", "Maître",
+                                          "la SARL", "la SAS", "la SASU", "l'EURL",
+                                          "la SA", "la SNC", "la SCP", "la SELAS",
+                                          "la SCI", "la SELARL"],
+                                 ignore_case=False)
 
 
 def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
@@ -64,9 +65,8 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     :param rate: chance as an integer between 1 and 100 that a key word is removed
     :return: a tuple (new_text, offsets)
     """
-    words_to_delete_offsets: list = get_matches(matcher=key_words_matcher,
-                                                text=text,
-                                                tag="TO_DELETE")
+    words_to_delete_offsets: list = key_words_matcher.get_matches(text=text,
+                                                                  tag="TO_DELETE")
 
     if (len(words_to_delete_offsets) == 0) or (len(offsets) == 0):
         return text, offsets
@@ -80,8 +80,8 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     if len(detected_spans) == 0:
         return text, offsets
 
-    original_content_offsets_matcher = get_acora_object(content=list(detected_spans.keys()),
-                                                        ignore_case=False)
+    original_content_offsets_matcher = AcoraMatcher(content=list(detected_spans.keys()),
+                                                    ignore_case=False)
 
     cleaned_text = list()
     start_selection_offset = 0
@@ -98,9 +98,8 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
 
     cleaned_text = ''.join(cleaned_text)
 
-    updated_offsets = get_matches(matcher=original_content_offsets_matcher,
-                                  text=cleaned_text,
-                                  tag="UNKNOWN")
+    updated_offsets = original_content_offsets_matcher.get_matches(text=cleaned_text,
+                                                                   tag="UNKNOWN")
 
     offsets_to_return = list()
 

@@ -1,6 +1,5 @@
-from match_text_unsafe.find_header_values import parse_xml_header
-from match_text_unsafe.match_acora import get_matches
 from match_text.match_header import MatchValuesFromHeaders
+from match_text_unsafe.find_header_values import parse_xml_header
 from resources.config_provider import get_config_default
 
 
@@ -15,7 +14,7 @@ def test_match_headers_content():
 
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
 
-    assert get_matches(matcher_partie_pp, text1, "PERS") == [(6, 22, "PERS")]
+    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 22, "PERS")]
 
     text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
     # TODO review tests (code is now very strict, does these tests make sense?)

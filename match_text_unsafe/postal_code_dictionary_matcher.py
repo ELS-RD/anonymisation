@@ -1,4 +1,4 @@
-from match_text_unsafe.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import AcoraMatcher
 from resources.config_provider import get_config_default
 
 
@@ -23,8 +23,8 @@ class PostalCodeCity:
                     postal_code_city_list.append(city + " (" + postal_code + ")")
         assert len(postal_code_city_list) > 1000
         postal_code_city_list.pop(0)
-        self.matcher = get_acora_object(list(postal_code_city_list),
-                                        ignore_case=True)
+        self.matcher = AcoraMatcher(list(postal_code_city_list),
+                                    ignore_case=True)
 
     def get_matches(self, text: str) -> list:
         """
@@ -32,4 +32,4 @@ class PostalCodeCity:
         :param text: original text
         :return: list of offsets
         """
-        return get_matches(self.matcher, text, "ADDRESS")
+        return self.matcher.get_matches(text=text, tag="ADDRESS")

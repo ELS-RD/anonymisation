@@ -1,6 +1,6 @@
 import regex
 
-from match_text_unsafe.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import AcoraMatcher
 from match_text.match_first_name_dictionary import FirstName
 
 
@@ -11,9 +11,10 @@ class MatchDoubfulMwe:
               "( [A-ZÉÈ\-]+\w*)*"
     upcase_words_regex = regex.compile(pattern=pattern, flags=regex.VERSION1)
     first_name_matcher = FirstName(ignore_case=False)
-    mister_matcher = get_acora_object(content=["monsieur", "madame", "Mme ",
-                                               "Monsieur", "Madame", " M.", " M ",
-                                               " mme "], ignore_case=False)
+    mister_matcher = AcoraMatcher(content=["monsieur", "madame", "Mme ",
+                                           "Monsieur", "Madame", " M.", " M ",
+                                           " mme "],
+                                  ignore_case=False)
 
     def add_unknown_words_offsets(self, texts: list, offsets: list) -> list:
         """
@@ -62,7 +63,7 @@ class MatchDoubfulMwe:
         if start >= 2:
             new_start = max(0, start - 9)
             previous_token = text[new_start:start]
-            contain_mister = len(get_matches(matcher=self.mister_matcher, text=previous_token, tag="UNKNOWN")) > 0
+            contain_mister = len(self.mister_matcher.get_matches(text=previous_token, tag="UNKNOWN")) > 0
         else:
             contain_mister = False
 

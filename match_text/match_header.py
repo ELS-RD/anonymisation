@@ -1,7 +1,4 @@
-import acora
-from acora import AcoraBuilder
-
-from match_text_unsafe.match_acora import get_matches
+from match_text_unsafe.match_acora import AcoraMatcher
 
 
 class MatchValuesFromHeaders:
@@ -31,111 +28,109 @@ class MatchValuesFromHeaders:
         self.matcher_clerks = self.get_matcher_of_clerks_from_headers()
 
     def get_matched_entities(self, current_paragraph: str) -> list:
-        current_doc_offsets = get_matches(self.matcher_partie_pp, current_paragraph, "PERS")
-        current_doc_offsets += get_matches(self.matcher_partie_pm, current_paragraph, "ORGANIZATION")
-        current_doc_offsets += get_matches(self.matcher_lawyers, current_paragraph, "LAWYER")
-        current_doc_offsets += get_matches(self.matcher_president, current_paragraph, "JUDGE_CLERK")
-        current_doc_offsets += get_matches(self.matcher_clerks, current_paragraph, "JUDGE_CLERK")
+        current_doc_offsets = self.matcher_partie_pp.get_matches(text=current_paragraph, tag="PERS")
+        current_doc_offsets += self.matcher_partie_pm.get_matches(text=current_paragraph, tag="ORGANIZATION")
+        current_doc_offsets += self.matcher_lawyers.get_matches(text=current_paragraph, tag="LAWYER")
+        current_doc_offsets += self.matcher_president.get_matches(text=current_paragraph, tag="JUDGE_CLERK")
+        current_doc_offsets += self.matcher_clerks.get_matches(text=current_paragraph, tag="JUDGE_CLERK")
 
         return current_doc_offsets
 
-    def get_matcher_of_partie_pp_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_partie_pp_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
         # this way of init assure that the matcher doesn't expect binary data
         # this may happen if we load empty arrays through update function for instance
-        matcher = AcoraBuilder("@!#$%")
-
+        span_text = list()
         for full_content, short_content in zip(
                 self.current_header['defendeur_fullname'] + self.current_header['demandeur_fullname'],
                 self.current_header['defendeur_hidden'] + self.current_header['demandeur_hidden']):
             if short_content is not None:
-                matcher.add(full_content)
+                span_text.append(full_content)
                 # first_name, last_name = get_first_last_name(full_content)
                 # if len(first_name) > self.threshold_size:
                 #     matcher.add(first_name)
                 # if len(last_name) > self.threshold_size:
                 #     matcher.add(last_name)
 
-        return matcher.build(ignore_case=False)
+        matcher = AcoraMatcher(content=span_text, ignore_case=False)
+        return matcher
 
-    def get_matcher_of_partie_pm_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_partie_pm_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
-        matcher = AcoraBuilder("@!#$%")
+        span_text = list()
 
         for full_content, short_content in zip(
                 self.current_header['defendeur_fullname'] + self.current_header['demandeur_fullname'],
                 self.current_header['defendeur_hidden'] + self.current_header['demandeur_hidden']):
             if short_content is None:
-                matcher.add(full_content)
+                span_text.append(full_content)
 
-        return matcher.build(ignore_case=False)
+        matcher = AcoraMatcher(content=span_text, ignore_case=False)
+        return matcher
 
-    def get_matcher_of_lawyers_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_lawyers_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
         header_content = self.current_header['avocat']
-        matcher = AcoraBuilder("@!#$%")
-        matcher.update(header_content)
+        matcher = AcoraMatcher(content=header_content, ignore_case=False)
+
         # for content in header_content:
         #     first_name, last_name = get_first_last_name(content)
         #     if len(first_name) > self.threshold_size:
         #         matcher.add(first_name)
         #     if len(last_name) > self.threshold_size:
         #         matcher.add(last_name)
-        return matcher.build(ignore_case=False)
+        return matcher
 
-    def get_matcher_of_president_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_president_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
         header_content = self.current_header['president']
-        matcher = AcoraBuilder("@!#$%")
-        matcher.update(header_content)
+        matcher = AcoraMatcher(content=header_content, ignore_case=False)
         # for content in header_content:
         #     first_name, last_name = get_first_last_name(content)
         #     if len(first_name) > self.threshold_size:
         #         matcher.add(first_name)
         #     if len(last_name) > self.threshold_size:
         #         matcher.add(last_name)
-        return matcher.build(ignore_case=False)
+        return matcher
 
-    def get_matcher_of_conseiller_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_conseiller_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
         header_content = self.current_header['conseiller']
-        matcher = AcoraBuilder("@!#$%")
-        matcher.update(header_content)
+        matcher = AcoraMatcher(content=header_content, ignore_case=False)
         # for content in header_content:
         #     first_name, last_name = get_first_last_name(content)
         #     if len(first_name) > self.threshold_size:
         #         matcher.add(first_name)
         #     if len(last_name) > self.threshold_size:
         #         matcher.add(last_name)
-        return matcher.build(ignore_case=False)
+        return matcher
 
-    def get_matcher_of_clerks_from_headers(self) -> acora._cacora.UnicodeAcora:
+    def get_matcher_of_clerks_from_headers(self) -> AcoraMatcher:
         """
         Create variations of items to search
         :return: a matcher of string which ignore case
         """
         header_content = self.current_header['greffier']
-        matcher = AcoraBuilder("@!#$%")
-        matcher.update(header_content)
+        matcher = AcoraMatcher(content=header_content, ignore_case=False)
         # for content in header_content:
         #     first_name, last_name = get_first_last_name(content)
         #     if len(first_name) > self.threshold_size:
         #         matcher.add(first_name)
         #     if len(last_name) > self.threshold_size:
         #         matcher.add(last_name)
-        return matcher.build(ignore_case=False)
+        return matcher

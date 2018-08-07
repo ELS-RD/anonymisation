@@ -1,6 +1,6 @@
 import regex
 
-from match_text_unsafe.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import AcoraMatcher
 from resources.config_provider import get_config_default
 
 
@@ -23,8 +23,8 @@ class CourtName:
                 if len(clean_text) > 0:
                     self.court_names.add(clean_text)
         assert len(self.court_names) > 1000
-        self.matcher = get_acora_object(list(self.court_names),
-                                        ignore_case=True)
+        self.matcher = AcoraMatcher(content=list(self.court_names),
+                                    ignore_case=True)
 
     def get_matches(self, text: str) -> list:
         """
@@ -32,7 +32,7 @@ class CourtName:
         :param text: original text
         :return: list of offsets
         """
-        return get_matches(self.matcher, text, "COURT")
+        return self.matcher.get_matches(text=text, tag="COURT")
 
 
 # List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/

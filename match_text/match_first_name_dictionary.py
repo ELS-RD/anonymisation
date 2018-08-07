@@ -1,4 +1,4 @@
-from match_text_unsafe.match_acora import get_acora_object, get_matches
+from match_text_unsafe.match_acora import AcoraMatcher
 from modify_text.change_case import get_title_case
 from resources.config_provider import get_config_default
 
@@ -40,8 +40,8 @@ class FirstName:
             firs_name.remove(item_to_remove)
 
         self.first_name_dict = firs_name
-        self.matcher = get_acora_object(list(self.first_name_dict),
-                                        ignore_case=ignore_case)
+        self.matcher = AcoraMatcher(content=list(self.first_name_dict),
+                                    ignore_case=ignore_case)
 
     def get_matches(self, text: str) -> list:
         """
@@ -49,7 +49,7 @@ class FirstName:
         :param text: original text
         :return: list of offsets
         """
-        offsets = get_matches(self.matcher, text, "PERS")
+        offsets = self.matcher.get_matches(text=text, tag="PERS")
         # names include a space so we fix the point by removing 1 to the offset
         results = [(start, end - 1, type_name) for start, end, type_name in offsets]
         return results
