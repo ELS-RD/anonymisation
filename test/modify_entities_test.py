@@ -1,6 +1,6 @@
 from random import seed
 
-from modify_text.change_case import get_title_case, random_case_change, change_random_word_case
+from modify_text.change_case import get_title_case, random_case_change, lower_randomly_word_case
 from modify_text.modify_strings import remove_org_type, remove_key_words
 
 
@@ -18,17 +18,19 @@ def test_random_case_change():
     offsets = [(3, 9, "PERS")]
     seed(123)
     results = [random_case_change(text, offsets, 100) for _ in range(1, 500)]
-
     assert "La Banque est fermée" in results
     assert "La banque est fermée" in results
     assert "La BANQUE est fermée" in results
 
 
-def test_random_case_change_word_level():
+def test_random_lower_case_word_level():
     seed(123)
     text = "La Banque est fermée"
-    results = [change_random_word_case(text) for _ in range(1, 500)]
-    assert "LA Banque EST fermée" in results
+    results = [lower_randomly_word_case(text) for _ in range(1, 500)]
+    assert "la banque est fermée" in results
+    assert "La banque est fermée" in results
+    assert "la Banque est fermée" in results
+    assert "La Banque est fermée" in results
 
 
 def test_remove_key_words():

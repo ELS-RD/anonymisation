@@ -22,7 +22,7 @@ from match_text.match_natural_persons import get_partie_pers
 from match_text.match_company_names import get_company_names
 from match_text.match_rg import MatchRg
 from modify_text.modify_strings import remove_key_words
-from misc.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
+from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, clean_offsets_from_unwanted_words
 from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -35,7 +35,7 @@ n_iter = int(config_training["number_iterations"])
 batch_size = int(config_training["batch_size"])
 dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
-train_dataset = False  # bool(config_training["train_data_set"])
+train_dataset = True  # bool(config_training["train_data_set"])
 export_dataset = False  # not bool(config_training["train_data_set"])
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
@@ -168,7 +168,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     add_unknown_words_offsets(texts=last_document_texts,
                                               offsets=last_doc_offset_unwanted_words_rmved)
 
-                last_doc_offsets_no_space = [remove_offset_space(text, off) for text, off in
+                last_doc_offsets_no_space = [remove_spaces_included_in_offsets(text, off) for text, off in
                                              zip(last_document_texts,
                                                  last_doc_with_unknown_entities)]
 

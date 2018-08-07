@@ -1,5 +1,6 @@
 from match_text.match_doubtful_mwe import MatchDoubfulMwe
-from misc.normalize_offset import normalize_offsets, remove_offset_space, clean_offsets_from_unwanted_words
+from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, \
+    clean_offsets_from_unwanted_words, remove_tag_priority_info
 
 
 def test_normalize_offsets():
@@ -25,6 +26,10 @@ def test_normalize_offsets():
     assert normalize_offsets(data10) == [(1, 10, "PERS")]
     data11 = [(0, 34, "ORGANIZATION"), (0, 8, "ORGANIZATION")]
     assert normalize_offsets(data11) == [(0, 34, "ORGANIZATION")]
+    data12 = [(1, 10, "PERS"), (1, 10, "ORGANIZATION_1")]
+    assert normalize_offsets(data12) == [(1, 10, "ORGANIZATION")]
+    data13 = [(1, 10, "PERS"), (5, 10, "ORGANIZATION_1")]
+    assert normalize_offsets(data13) == [(1, 10, "ORGANIZATION")]
 
 
 def test_remove_spaces():
@@ -32,9 +37,13 @@ def test_remove_spaces():
     offset = [(3, 8, "TEST")]
     span_original = text[offset[0][0]:offset[0][1]]
     assert span_original == "suis "
-    new_offset = remove_offset_space(text, offset)
+    new_offset = remove_spaces_included_in_offsets(text, offset)
     span_new = text[new_offset[0][0]:new_offset[0][1]]
     assert span_new == span_original.strip()
+
+
+def test_remove_tag_priority_info():
+    assert remove_tag_priority_info("PERS_1") == "PERS"
 
 
 def test_remove_unwanted_words():
