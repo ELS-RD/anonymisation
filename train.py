@@ -1,4 +1,5 @@
 import pickle
+import sys
 
 from tqdm import tqdm
 
@@ -37,9 +38,19 @@ dropout_rate = float(config_training["dropout_rate"])
 training_set_export_path = config_training["training_set"]
 change_case_rate = int(config_training["change_case_rate"])
 remove_keyword_rate = int(config_training["remove_keyword_rate"])
+frequent_entity_threshold = int(config_training["frequent_entity_threshold"])
+number_of_paragraph_to_display = int(config_training["number_of_paragraph_to_display"])
 
-train_dataset = bool(int(config_training["train_data_set"]))
-export_dataset = bool(int(config_training["export_dataset"]))
+
+assert len(sys.argv) <= 2
+
+if len(sys.argv) == 2:
+    param = sys.argv[1]
+    train_dataset = "train_data_set" == param
+    export_dataset = "export_dataset" == param
+else:
+    train_dataset = False
+    export_dataset = False
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
@@ -47,7 +58,7 @@ TRAIN_DATA = list(TRAIN_DATA)
 
 if (not train_dataset) and (not export_dataset):
     print("Prepare training set for display")
-    TRAIN_DATA = TRAIN_DATA[0:100000]
+    TRAIN_DATA = TRAIN_DATA[:number_of_paragraph_to_display]
 elif train_dataset:
     print("Train model")
 else:
@@ -71,7 +82,7 @@ last_document_offsets = list()
 last_document_texts = list()
 
 frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
-                                             threshold_occurrences=100,
+                                             threshold_occurrences=frequent_entity_threshold,
                                              load_data= not export_dataset,
                                              type_name_to_not_load=["PERS", "UNKNOWN"])
 
@@ -237,5 +248,5 @@ elif export_dataset:
         pickle.dump(obj=doc_annotated, file=export_training_set_file, protocol=pickle.HIGHEST_PROTOCOL)
 else:
     # Display training set
-    docs = convert_offsets_to_spacy_docs(doc_annotated[0:10000])
+    docs = convert_offsets_to_spacy_docs(doc_annotated)
     view_spacy_docs(docs)

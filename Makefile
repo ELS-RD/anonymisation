@@ -2,7 +2,7 @@
 SHELL:=/bin/bash
 
 # avoid collision with a file having the same name as a command listed here
-.PHONY: setup train spacy_entities temis_entities display_errors test
+.PHONY: setup train show_spacy_entities show_temis_entities list_differences test
 
 VIRT_ENV_FOLDER = ~/.local/share/virtualenvs/anonymisation/venv
 SOURCE_VIRT_ENV = source $(VIRT_ENV_FOLDER)/bin/activate
@@ -21,24 +21,38 @@ train:
 # launch model training
 	( \
 	$(SOURCE_VIRT_ENV); \
+	python3 train.py train_data_set; \
+	)
+
+export_frequent_entities:
+# launch model training
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python3 train.py export_dataset; \
+	)
+
+display_dataset:
+# launch model training
+	( \
+	$(SOURCE_VIRT_ENV); \
 	python3 train.py; \
 	)
 
-spacy_entities:
+show_spacy_entities:
 # launch a server to display entities found by Spacy
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 entities_viewer_spacy.py; \
 	)
 
-temis_entities:
+show_temis_entities:
 # launch a server to display entities found by Temis
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 entities_viewer_temis.py; \
 	)
 
-display_differences:
+list_differences:
 # print differences between entities found by Spacy and Temis
 	( \
 	$(SOURCE_VIRT_ENV); \

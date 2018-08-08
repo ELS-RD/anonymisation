@@ -6,10 +6,11 @@ from viewer.spacy_viewer import view_spacy_docs
 config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]
 xml_dev_path = config_training["xml_dev_path"]
+number_of_paragraph_to_display = int(config_training["number_of_paragraph_to_display"])
 
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
-DEV_DATA = list(DEV_DATA)[0:10000]
+DEV_DATA = list(DEV_DATA)[:number_of_paragraph_to_display]
 
 doc_annotated = list()
 

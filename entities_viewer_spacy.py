@@ -14,6 +14,8 @@ warnings.filterwarnings('ignore')
 config_training = get_config_default()
 model_dir_path = config_training["model_dir_path"]
 xml_dev_path = config_training["xml_dev_path"]
+number_of_paragraph_to_display = int(config_training["number_of_paragraph_to_display"])
+
 nlp = get_empty_model(load_labels_for_training=False)
 nlp = nlp.from_disk(model_dir_path)
 
@@ -25,7 +27,7 @@ all_docs_to_view = list()
 last_case_docs = list()
 former_case_id = None
 entity_typename_builder = EntityTypename()
-for (case_id, original_text, _, _) in DEV_DATA[0:10000]:
+for (case_id, original_text, _, _) in DEV_DATA[:number_of_paragraph_to_display]:
     if case_id != former_case_id:
         last_case_spans = entity_typename_builder.get_dict()
         last_case_matcher = AcoraMatcher(content=list(last_case_spans.keys()),
