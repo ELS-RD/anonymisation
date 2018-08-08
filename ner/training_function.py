@@ -29,7 +29,7 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
             for current_batch_item in batches:
                 case_id, texts, annotations = zip(*current_batch_item)
                 docs = [nlp.make_doc(text) for text in texts]
-                gold_with_unknown_bilou = convert_unknown_bilou_bulk(docs, annotations)
+                gold_with_unknown_bilou = convert_unknown_bilou_bulk(docs=docs, offsets=annotations)
                 nlp.update(
                     docs,  # batch of texts
                     gold_with_unknown_bilou,  # batch of annotations

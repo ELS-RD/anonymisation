@@ -66,18 +66,19 @@ The main focus of this work is to generate a **large high quality training set**
     - `ADDRESS`: addresses *(**very** badly done by `Temis`)*
         - there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed
     - `DATE`: any date, in numbers or letters *(not done by `Temis`)*
+    - `RG` : ID of the legal case
+    - `UNKNOWN` : only for train set, indicates that no loss should be apply on the word, whatever the prediction is
 
-> Only taking care of `PERS` has been tried at first.  
-It appeared that there was some issues with other entity types.  
-Therefore, they have been added, greatly improving the quality of `PERS` recognition.
-`BAR` and `DATE` where very easy to add and are useful for some specific purposes.  
+> Only taking care of `PERS` and `ADDRESS` has been tried at first.  
+It appeared that there was some issues with the other entity types.  
+Therefore, these entity types have been added, greatly improving the quality of `PERS` recognition.  
+`RG`. `BAR` and `DATE` where very easy to add and are useful for some specific purposes.  
 
 Type of entities to add in the future:
 
 - phone numbers
 - social security numbers
 - credit card number
-- RG
 
 All the types to add may be managed by `regex`.
 
@@ -117,69 +118,70 @@ Both are not strategic to the success of the learning but provide a little help.
 ## Commands to use the code
 
 This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies.  
+`pip3` is supposed to be available on the machine.  
 To setup an environment on your machine, install `virtualenv` and install the project dependencies (from the `requirements.txt` file).  
+These steps are scripted in the `Makefile` (tested only on `Ubuntu`).
 
-> These steps can be managed by your IDE.  
-Following commands are tested on Ubuntu only.
 
 ```bash
-# first time
-pip3 install virtualenv
-cd /ANY_PATH/anonymisation
-virtualenv venv
-pip install -r requirements.txt
-
-# Use virtual env (each reboot)
-source venv/bin/activate
+# TODO to test
+make setup
 ```
+
+> variable `VIRT_ENV_FOLDER` can be changed in the `Makefile` to decide where to install `Python` dependencies.
 
 ... then you can use the project by running one of the following action:
 
 * learn the model
 
 ```bash
-python3 train.py
+make train
 ```
 
 * view `Spacy` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
 ```bash
-python3 entities_viewer_spacy.py
+make spacy_entities
 ```
 
 * view `Temis` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
 ```bash
-python3 entity_viewer_temis.py
+make temis_entities
 ```
 
 * view differences with `Temis` (only for shared entity types)
 
 ```bash
-python3 display_errors.py
+make display_errors
 ```
 
-> All the project configuration is done through `resources/config.ini` file (mainly paths to resources).
+* run tests
+
+```bash
+make test
+```
+
+> Most of the project configuration is done in `resources/config.ini` file.
 
 ### TODO:
 
-- replace Acora
+- test setup in Makefile
+- switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
 - create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
-- create a `Makefile` with train, create dataset, view Spacy, view Temis, view errors, run tests
 - credit card: (?:\d{4}-?){3}\d{4}
-- add RG pattern
 - search for phone number, etc.
 - plaque immatriculation
 - Court formation
 - social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
-- test if unknown entity match an existing one (A in B)
- + https://github.com/ronanguilloux/IsoCodes/blob/master/src/IsoCodes/Insee.php
+- test if dubious entity match another one (A in B), even after splitting in words -> pour lever un doute
+- test merging of type entities with the one guessed when there is a doubt
+- test indicating that an entity has been found only one time with NER and many times with match
 - implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
 - Add rapporteurs / experts (close to word rapport)
 - Birthday (né le ...) ?
 - paste randomly the first word of a NER with the previous word to simulate recurrent errors
-- extraires les acronymes et leurs defs textacy.extract.acronyms_and_definitions
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -386,6 +388,8 @@ Iter 3
 Learn NER model:  75%|███████▌  | 52181/69572.76 [8:03:34<2:40:13,  1.81 paragraphs/s, loss: 49.494463511491176]
 Iter 4
 Learn NER model: 69576 paragraphs [10:53:42,  2.22 paragraphs/s, loss: 47.33417880529146]
+---------------
+Learn NER model: 69652 paragraphs [10:31:30,  1.76 paragraphs/s, loss: 46.25509752095968]
 ---------------
 
 Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv

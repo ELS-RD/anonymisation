@@ -14,7 +14,8 @@ class AcoraMatcher:
         # start with a string in case content is empty
         # otherwise it builds a binary Acora matcher
         builder = AcoraBuilder("!@#$%%^&*")
-        builder.update(content)
+        if len(content) > 0:
+            builder.update(content)
         self.matcher = builder.build(ignore_case=ignore_case)
 
     def get_matches(self, text: str, tag: str):
@@ -26,7 +27,7 @@ class AcoraMatcher:
         """
         # matcher not loaded with any pattern
         if self.matcher.__sizeof__() == 0:
-            return []
+            return list()
         results = self.matcher.findall(text)
         return [(start_offset, start_offset + len(match_text), tag)
                 for match_text, start_offset in results if

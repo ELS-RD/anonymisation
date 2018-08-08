@@ -25,12 +25,13 @@ def test_random_case_change():
 
 def test_random_lower_case_word_level():
     seed(123)
-    text = "La Banque est fermée"
+    text = "La Banque est Fermée"
     results = [lower_randomly_word_case(text) for _ in range(1, 500)]
-    assert "la banque est fermée" in results
-    assert "La banque est fermée" in results
-    assert "la Banque est fermée" in results
-    assert "La Banque est fermée" in results
+    assert "la banque est Fermée" in results
+    assert "La banque est Fermée" in results
+    assert "la Banque est Fermée" in results
+    assert "La Banque est Fermée" in results
+    assert "la Banque est fermée" not in results
 
 
 def test_remove_key_words():

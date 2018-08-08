@@ -41,6 +41,7 @@ def lower_randomly_word_case(text: str) -> str:
     """
     Lower randomly the case of some words from the original text.
     Applied only if the entity is made of several words.
+    Last word is never lowered case as in real entity.
     :param text: original text
     :return: transformed case text
     """
@@ -48,7 +49,7 @@ def lower_randomly_word_case(text: str) -> str:
     result = list()
     for word in words:
         action_choice = randint(1, 2)
-        if action_choice == 1:
+        if (action_choice == 1) and (len(result) < len(words) - 1):
             result.append(word.lower())
         else:
             result.append(word)

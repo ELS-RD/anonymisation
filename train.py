@@ -20,7 +20,7 @@ from match_text.match_judge import get_judge_name
 from match_text.match_lawyer import get_lawyer_name
 from match_text.match_natural_persons import get_partie_pers
 from match_text.match_company_names import get_company_names
-from match_text.match_rg import MatchRg
+from match_text.match_rg import MatchRg, get_rg_from_regex
 from modify_text.modify_strings import remove_key_words
 from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, clean_offsets_from_unwanted_words
 from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
@@ -38,15 +38,21 @@ training_set_export_path = config_training["training_set"]
 change_case_rate = int(config_training["change_case_rate"])
 remove_keyword_rate = int(config_training["remove_keyword_rate"])
 
-train_dataset = bool(config_training["train_data_set"])
-export_dataset = bool(config_training["export_dataset"])
+train_dataset = bool(int(config_training["train_data_set"]))
+export_dataset = bool(int(config_training["export_dataset"]))
 
 TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
                                        keep_paragraph_without_annotation=True)
 TRAIN_DATA = list(TRAIN_DATA)
 
 if (not train_dataset) and (not export_dataset):
+    print("Prepare training set for display")
     TRAIN_DATA = TRAIN_DATA[0:100000]
+elif train_dataset:
+    print("Train model")
+else:
+    print("Save recurrent entities")
+
 
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
@@ -91,6 +97,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     addresses = get_addresses(current_paragraph)
                     court_name = get_juridictions(current_paragraph)
                     case_dates = get_date(current_paragraph)
+                    rg_from_regex = get_rg_from_regex(text=current_paragraph)
                     bar = get_bar(current_paragraph)
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
@@ -110,6 +117,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                                    court_names_matches +
                                    case_dates +
                                    bar +
+                                   rg_from_regex +
                                    addresses)
 
                     if len(all_matches) > 0:

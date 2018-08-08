@@ -1,6 +1,7 @@
 from spacy.gold import biluo_tags_from_offsets, GoldParse
 
-no_action_bilou = "-"
+# TODO replace by None
+no_action_bilou = '-'
 unknown_type_name = "UNKNOWN"
 
 
@@ -27,7 +28,7 @@ def convert_unknown_bilou(doc, offsets: list) -> GoldParse:
     :param offsets: discovered offsets
     :return: tuple of docs and BILOU annotations
     """
-    bilou_annotations = convert_bilou_with_missing_action(doc, offsets)
+    bilou_annotations = convert_bilou_with_missing_action(doc=doc, offsets=offsets)
     return GoldParse(doc, entities=bilou_annotations)
 
 

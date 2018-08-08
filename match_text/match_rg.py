@@ -1,7 +1,7 @@
 import regex
 
-extract_rg_pattern = "(?<=\-)\d*(?=\-jurica$)"
-extract_rg_regex = regex.compile(pattern=extract_rg_pattern, flags=regex.VERSION1)
+extract_rg_from_case_id_pattern = "(?<=\-)\d*(?=\-jurica$)"
+extract_rg_from_case_id_regex = regex.compile(pattern=extract_rg_from_case_id_pattern, flags=regex.VERSION1)
 
 
 class MatchRg:
@@ -20,7 +20,7 @@ class MatchRg:
         Retrieve the RG from case id, as formatted by Temis
         :return: RG number as a string
         """
-        result = extract_rg_regex.findall(self.case_id)
+        result = extract_rg_from_case_id_regex.findall(self.case_id)
         assert len(result) == 1
         return result[0]
 
@@ -51,3 +51,20 @@ class MatchRg:
         :return: offsets as a list of lists (including original offsets)
         """
         return [current_offsets + self.get_rg_offset_from_text(text) for text, current_offsets in zip(texts, offsets)]
+
+
+extract_rg_from_text_pattern = "(?<=\\bR[[:punct:]]{0,5}G\\b[^\d]{0,20})(\d[[:punct:]]*)+( |$)"
+extract_rg_from_text_regex = regex.compile(extract_rg_from_text_pattern, flags=regex.VERSION1)
+
+
+def get_rg_from_regex(text: str) -> list:
+    """
+    Extract RG number from text when some pattern is found
+    :param text: original text
+    :return: offset as a list
+    """
+    offsets = extract_rg_from_text_regex.search(text)
+    if offsets is not None:
+        return [(offsets.start(), offsets.end(), "RG")]
+    else:
+        return list()

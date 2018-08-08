@@ -60,7 +60,7 @@ class ExtendNames:
         :return: offset list
         """
         if self.dont_detect:
-            return []
+            return list()
 
         result1 = [(t.start(), t.end(), self.type_name) for t in self.pattern_title.finditer(text)]
         result2 = [(t.start(), t.end(), self.type_name) for t in self.pattern_extend_right.finditer(text)]
