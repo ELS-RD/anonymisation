@@ -53,7 +53,8 @@ class MatchRg:
         return [current_offsets + self.get_rg_offset_from_text(text) for text, current_offsets in zip(texts, offsets)]
 
 
-extract_rg_from_text_pattern = "(?<=\\bR[[:punct:]]{0,5}G\\b[^\d]{0,20})(\d[[:punct:]]*)+( |$)"
+extract_rg_from_text_pattern = "(?<=(\\bR[[:punct:]]{0,5}G\\b|((?i)répertoire général))" \
+                               "[^\d]{0,20})(\d[[:punct:]]*)+( |$)"
 extract_rg_from_text_regex = regex.compile(extract_rg_from_text_pattern, flags=regex.VERSION1)
 
 

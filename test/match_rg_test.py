@@ -16,3 +16,4 @@ def test_rg_regex():
     assert get_rg_from_regex("RG numéro : 12/01503") == [(12, 20, 'RG')]
     assert get_rg_from_regex("N°RG: 13/03409") == [(6, 14, 'RG')]
     assert get_rg_from_regex("N° 13/03409") == []
+    assert get_rg_from_regex("Numéro d'inscription au répertoire général : 14/01913") == [(45, 53, 'RG')]
