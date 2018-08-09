@@ -50,10 +50,7 @@ def remove_org_type(original_text: str) -> str:
 
 key_words_matcher = AcoraMatcher(content=["Monsieur", "Madame", "Mme",
                                           "monsieur", "madame",
-                                          "la société", "Me", "Maitre", "Maître",
-                                          "la SARL", "la SAS", "la SASU", "l'EURL",
-                                          "la SA", "la SNC", "la SCP", "la SELAS",
-                                          "la SCI", "la SELARL"],
+                                          "la société", "Me", "Maitre", "Maître"],
                                  ignore_case=False)
 
 

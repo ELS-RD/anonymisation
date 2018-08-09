@@ -1,5 +1,6 @@
 import pickle
 import sys
+from random import seed
 
 from tqdm import tqdm
 
@@ -28,6 +29,9 @@ from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
+
+# reproducibility
+seed(123)
 
 config_training = get_config_default()
 xml_train_path = config_training["xml_train_path"]
@@ -78,8 +82,6 @@ postal_code_city_matcher = PostalCodeCity()
 court_names_matcher = CourtName()
 doubtful_mwe_matcher = MatchDoubfulMwe()
 doc_annotated = list()
-last_document_offsets = list()
-last_document_texts = list()
 
 frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
                                              threshold_occurrences=frequent_entity_threshold,
@@ -90,6 +92,8 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
         if current_case_id != previous_case_id:
+            last_document_offsets = list()
+            last_document_texts = list()
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,
@@ -141,6 +145,8 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                         # add empty title paragraph to avoid fake solution
                         last_document_texts.append(current_paragraph)
                         last_document_offsets.append([])
+
+            assert len(last_document_texts) == len(last_document_offsets)
 
             last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
                                                                         offsets=last_document_offsets)
@@ -213,13 +219,9 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                 last_doc_remove_keywords_offsets_norm = [normalize_offsets(off) for off in
                                                          last_doc_remove_keywords_offsets]
 
-                # , "case_id": previous_case_id
                 [doc_annotated.append((previous_case_id, txt, off)) for txt, off in
                  zip(last_doc_txt_case_updated,
                      last_doc_remove_keywords_offsets_norm)]
-
-                last_document_texts.clear()
-                last_document_offsets.clear()
 
             # update when one case is finished
             progress_bar.update()

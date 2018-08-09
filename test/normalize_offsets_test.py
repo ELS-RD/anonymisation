@@ -6,13 +6,13 @@ from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_o
 def test_normalize_offsets():
     data1 = [(5, 10, "LAWYER"), (18, 24, "ORGANIZATION"), (22, 24, "ORGANIZATION"), (120, 133, "LAWYER")]
     assert normalize_offsets(data1) == [(5, 10, "LAWYER"), (18, 24, "ORGANIZATION"), (120, 133, "LAWYER")]
-    data2 = [(71, 75, "PERS"), (77, 85, "PERS")]
+    data2 = [(71, 75, "PERS"), (76, 85, "PERS")]
     assert normalize_offsets(data2) == [(71, 85, "PERS")]
-    data3 = [(5, 10, "LAWYER"), (71, 75, "PERS"), (77, 85, "PERS"), (120, 133, "LAWYER")]
+    data3 = [(5, 10, "LAWYER"), (71, 75, "PERS"), (76, 85, "PERS"), (120, 133, "LAWYER")]
     assert normalize_offsets(data3) == [(5, 10, "LAWYER"), (71, 85, "PERS"), (120, 133, "LAWYER")]
     data4 = [(5, 10, "LAWYER"), (77, 85, "PERS"), (77, 85, "PERS"), (120, 133, "LAWYER")]
     assert normalize_offsets(data4) == [(5, 10, "LAWYER"), (77, 85, "PERS"), (120, 133, "LAWYER")]
-    data5 = [(16, 20, "PERS"), (22, 30, "PERS")]
+    data5 = [(16, 20, "PERS"), (21, 30, "PERS")]
     assert normalize_offsets(data5) == [(16, 30, "PERS")]
     data6 = [(10, 21, "PERS"), (22, 30, "PERS")]
     assert normalize_offsets(data6) == [(10, 30, "PERS")]
@@ -30,6 +30,8 @@ def test_normalize_offsets():
     assert normalize_offsets(data12) == [(1, 10, "ORGANIZATION")]
     data13 = [(1, 10, "PERS"), (5, 10, "ORGANIZATION_1")]
     assert normalize_offsets(data13) == [(1, 10, "ORGANIZATION")]
+    data14 = [(21, 33, "DATE"), (35, 55, "PERS")]
+    assert normalize_offsets(data14) == data14
 
 
 def test_remove_spaces():

@@ -35,13 +35,17 @@ def test_random_lower_case_word_level():
 
 
 def test_remove_key_words():
-    text = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
+    text1 = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
            "avocat au barreau de PARIS, toque: B1132"
-    offsets = [(22, 44, "LAWYER"), (51, 60, "LAWYER")]
-    assert remove_key_words(text=text, offsets=offsets, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
+    offsets1 = [(22, 44, "LAWYER"), (51, 60, "LAWYER")]
+    assert remove_key_words(text=text1, offsets=offsets1, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
                                                                       'et Toto TITI, avocat au barreau de PARIS, '
                                                                       'toque: B1132',
                                                                       [(19, 41, "LAWYER"),
                                                                        (45, 54, "LAWYER")])
 
-    assert remove_key_words(text=text, offsets=offsets, rate=0) == (text, offsets)
+    assert remove_key_words(text=text1, offsets=offsets1, rate=0) == (text1, offsets1)
+    # check that no word related to companies is removed
+    text2 = "Condamne la SCI CEK PARTICIPATIONS à payer à la SARL CEK LOISIRS la somme de 2.000 euros."
+    offsets2 = [(12, 34, 'ORGANIZATION'), (48, 64, 'ORGANIZATION')]
+    assert remove_key_words(text=text2, offsets=offsets2, rate=100) == (text2, offsets2)
