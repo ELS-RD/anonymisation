@@ -29,26 +29,34 @@ Therefore, developing a `NER` algorithm is not in the scope.
 
 The main focus of this work is to generate a **large high quality training set**, by:
 
-- leveraging the extractions performed by `Temis`
-- using some easy to describe patterns to catch more entities (with `regex`)
-- looking for other occurrences of entities discovered with the other strategies
-- building dictionaries of frequent names using all legal cases and look for them in each of them
-- create some variation of the discovered entities and search for them (remove first or last name, change the case, etc.)
-    - make the model more robust to error in the text
-    - these variation can not be discovered easily with patterns
-    - changing the case is an easy way to workaround the creation of patterns to catch entities written in lower case
-- apply some priority rules depending of the source of the entity offset (used when there is a conflict of type)
-    - some candidate generators are more safe than others 
-    - a `_1` is added to the end of the tag label when it is safe and it is removed during the offset normalization step
-- extending any discovered to the neighbor words when it makes sense
-    - done carefully otherwise there is a risk of lowering the quality of the training set 
-- look for doubtful MWE candidates and declare them as doubtful
-    - doubtful MWE candidates are any sequence of words starting with an up case
-    - a filter is then applied to keep only those with a first name (based on a dictionary) 
-    - no loss is computed on these entities, meaning they don't influence the model during training
-- find cities using a city dictionary
-- removing from train set paragraphs containing 0 entity 
-    - no entity paragraphs may be due to too simplistic patterns 
+- `Temis`
+    - leveraging the extractions performed by `Temis`
+- Rules
+    - using some easy to describe patterns to catch some entities (with `regex`)
+    - find some other entities using dictionaries
+- Name extension
+    - extending any discovered entity to the neighbor words when it makes sense
+        - done carefully otherwise there is a risk of lowering the quality of the training set 
+- Find all occurrences of caught entities
+    - looking for all occurrences of each entity already found in a document (2 pass process)
+    - building dictionaries of frequent names using all documents and look for them in each of them (2 pass process)
+- Dataset augmentation
+    - Create some variation of the discovered entities and search for them 
+        - By removing first or last name, change the case of one or more word in entity, remove key words (M., Mme, la société, ...), etc.
+        - transformation are randomly applied (20% of entities are transformed)
+        - make the model more robust to error in the text
+        - these variations can not be discovered easily with patterns
+            - eg. : changing the case is an easy way to workaround the creation of patterns to catch entities written in lower case
+- Miscellaneous tricks
+    - removing from train set all paragraphs containing 0 entity 
+        - no entity paragraphs may be due to too simplistic patterns
+    - Apply some priority rules depending of the source of the entity offset for cases where there is a conflict of type
+        - some candidate generators are more safe than others 
+        - a `_1` is added to the end of the tag label when it is safe and it is removed during the offset normalization step
+    - Look for doubtful MWE candidates and declare them as doubtful
+        - doubtful MWE candidates are any sequence of words starting with an up case
+        - a filter is then applied to keep only those with a first name (based on a dictionary) 
+        - no loss is computed on these entities, meaning they don't influence the model during training
 
 > The purpose of ML is **to smooth the rules and the other tricks**, 
 making the whole system much more robust to hard to catch entities. 
@@ -57,20 +65,22 @@ Data augmentation in particular has proved to be very efficient.
 ## Recognized entity types
 
 - Persons:
-    - `PERS`: natural person *(include first name unlike `Temis`)*
-    - `ORGANIZATION`: organization *(not done by `Temis`)*
+    - `PERS`: natural person *(include first name unlike `Temis`)*, **source**: `Temis` + name extension + other occurrences
+    - `ORGANIZATION`: organization *(not done by `Temis`)*, **source**: `Temis` + rules + extension + other occurrences
 - Lawyers:
-    - `LAWYER`: lawyers *(not done by `Temis`)*
-    - `BAR`: bar where lawyers are registered *(not done by `Temis`)* 
+    - `LAWYER`: lawyers *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `BAR`: bar where lawyers are registered *(not done by `Temis`)*, **source**: rules + other occurrences
 - Courts:
-    - `COURT`: names of French courts *(not done by `Temis`)*
-    - `JUDGE_CLERKS`: judges and court clerks *(not done by `Temis`)*
+    - `COURT`: names of French courts *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `JUDGE_CLERKS`: judges and court clerks *(not done by `Temis`)*, **source**: rules + other occurrences
 - Miscellaneous:
-    - `ADDRESS`: addresses *(**very** badly done by `Temis`)*
+    - `ADDRESS`: addresses *(**very** badly done by `Temis`)*, **source**: rules + other occurrences + dictionary
         - there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed
-    - `DATE`: any date, in numbers or letters *(not done by `Temis`)*
-    - `RG` : ID of the legal case
-    - `UNKNOWN` : only for train set, indicates that no loss should be apply on the word, whatever the prediction is
+    - `DATE`: any date, in numbers or letters *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `RG` : ID of the legal case, **source**: `Temis` + rules
+    - `UNKNOWN` : only for train set, indicates that no loss should be apply on the word, whatever the prediction is, **source**: rules + dictionary
+
+To each type, dataset augmentation and miscellaneous tricks have been applied.
 
 In the future, French legislation may require to pseudo-anonymize following mentions in addition to those already known:
 
@@ -78,7 +88,6 @@ In the future, French legislation may require to pseudo-anonymize following ment
 * judge name
 * clerk name
 * lawyer name
-
 
 > Only taking care of `PERS` and `ADDRESS` entities has been tried at first.  
 It appeared that there was some issues with the other entity types.  
@@ -126,12 +135,31 @@ Few open data dictionary are used:
 > Both resources are stored on the Git repository (`resources/` folder).  
 Both are not strategic to the success of the learning but provide a little help.
 
+## Data and model paths
+
+`XML`
+- Cases have to be provided as XML in the format used by `Temis`.  
+- One XML file represents one week of legal cases.  
+- `XML` files should be put in folder `resources/training_data/`.  
+- The case used for inference has to be placed in `resources/dev_data/`.  
+- Folder `resources/test/` contains a `XML` used for unit tests.
+
+Other resources  
+- Resources are to be put in folder `resources/courts`, `resources/postal_codes`, `resources/first_names`.  
+
+Model   
+- Folder `resources/model/` will contain the `Spacy` model.
+
+> These paths can be modified in the config file `resources/config.ini`.
+
+
 ## Commands to use the code
 
-This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies.  
-`pip3` should be installed on the machine.  
-To setup a virtual environment on the machine, install `virtualenv` and install the project dependencies (from the `requirements.txt` file).  
-These steps are scripted in the `Makefile` (tested only on `Ubuntu`).  
+This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies without interfering with the those used by the machine.  
+`pip3` and `python3` are the only requirements.  
+To setup a virtual environment on the machine, install `virtualenv` from `pip3` and install the project dependencies (from the `requirements.txt` file).  
+
+These steps are scripted in the `Makefile` (tested only on `Ubuntu`) and can be performed with the following command:  
 
 ```bash
 make setup
@@ -181,7 +209,8 @@ make test
 
 ### TODO:
 
-- pattern demeurant ... 12345 MAJ...
+- adresse par bloc -> retirer Domiciliée : ou Demeurant... :
+- change name LAWYER -> LEGAL_OFFICER
 - switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
 - create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
@@ -195,7 +224,7 @@ make test
 - test indicating that an entity has been found only one time with NER and many times with match
 - implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
 - Add rapporteurs / experts (close to word rapport) ?
-- paste randomly the first word of a NER with the previous word to simulate recurrent errors
+- paste randomly the first word of a NER with the previous word to simulate recurrent typo errors
 
 Number of tags: 1773909
 Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
@@ -405,11 +434,12 @@ Learn NER model: 69576 paragraphs [10:53:42,  2.22 paragraphs/s, loss: 47.334178
 ---------------
 Learn NER model: 69652 paragraphs [10:31:30,  1.76 paragraphs/s, loss: 46.25509752095968]
 ---------------
-
-Mot clés justice : http://www.justice.gouv.fr/_telechargement/mot_cle.csv
-
+Generate NER dataset: 100%|██████████| 28635/28635 [44:59<00:00,  6.55 paragraphs/s]
+Learn NER model: 69988 paragraphs [11:06:39,  2.09 paragraphs/s, loss: 43.44088593197807]
+Train model
+Number of tags: 2918705
+Warning: Unnamed vectors -- this won't allow multiple vectors models to be loaded. (Shape: (0, 0))
+----------------
 
 Ajouter un pattern d addresse:
 BP 40122
-
-Ajouter demeurant en pattern

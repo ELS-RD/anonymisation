@@ -3,21 +3,27 @@ import regex
 places_pattern = ("rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|"
                   "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
-extract_address_pattern = regex.compile("([\d][\d,/\- ]*)?"
-                                        "("
-                                        "(?i)\\b(" +
-                                        places_pattern +
-                                        ")\\b"
-                                        "( (de |d'|du |des |l'|le |la )*)?"
-                                        ")"
-                                        "[A-ZÉÈ\-]+[\w\-\.']*"
-                                        "( (de |le |la |les |et |d'|du |l'|à )*[A-ZÉÈ\-]+[\w\-\.']*)*"
-                                        "[\- à\d]*"
-                                        "("
-                                        "\\b[A-ZÉÈ\-]+[\w\-\.']*\\b"
-                                        "( (de |le |la |les |et |d'|du |sur )*[A-ZÉÈ\-]+[\w\-\.']*)*"
-                                        ")?",
-                                        flags=regex.VERSION1)
+extract_address_pattern_1 = regex.compile("([\d][\d,/\- ]*)?"
+                                          "("
+                                          "(?i)\\b(" +
+                                          places_pattern +
+                                          ")\\b"
+                                          "( (de |d'|du |des |l'|le |la )*)?"
+                                          ")"
+                                          "[A-ZÉÈ\-]+[\w\-\.']*"
+                                          "( (de |le |la |les |et |d'|du |l'|à )*[A-ZÉÈ\-]+[\w\-\.']*)*"
+                                          "[\- à\d]*"
+                                          "("
+                                          "\\b[A-ZÉÈ\-]+[\w\-\.']*\\b"
+                                          "( (de |le |la |les |et |d'|du |sur )*[A-ZÉÈ\-]+[\w\-\.']*)*"
+                                          ")?",
+                                          flags=regex.VERSION1)
+
+extract_address_pattern_2 = regex.compile("(?<=demeurant [^\dA-Z]{0,25}( )?)(\d|[A-Z]).*\d{5} "
+                                          "\\b[A-ZÉÈ\-]+[\w\-\.']*\\b"
+                                          "( (de |le |la |les |et |d'|du |sur )*[A-ZÉÈ\-]+[\w\-\.']*)*"
+                                          ,
+                                          flags=regex.VERSION1)
 
 
 def get_addresses(text: str) -> list:
@@ -26,8 +32,10 @@ def get_addresses(text: str) -> list:
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern.finditer(text)]
-    return result
+    result1 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_1.finditer(text)]
+    result2 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_2.finditer(text)]
+    print(text, result1, result2)
+    return sorted(list(set(result1 + result2)), key=lambda tup: (tup[0], tup[1]))
 
 
 # contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1 | regex.IGNORECASE)

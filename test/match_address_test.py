@@ -45,11 +45,11 @@ def test_get_address():
     text22 = "avant, 130/ 140, rue Victor HUGO    - 123456 Saint-Etienne après"
     assert get_addresses(text22) == [(7, 58, "ADDRESS_1")]
     text23 = "demeurant 385 rue de Lyon - BP 70004 - 13015 MARSEILLE après"
-    assert get_addresses(text23) == [(10, 54, "ADDRESS_1")]
+    assert get_addresses(text23) == [(10, 54, 'ADDRESS_1')]
     text24 = "demeurant 9 avenue Désambrois Palais Stella - 06000 NICE après"
     assert get_addresses(text24) == [(10, 56, "ADDRESS_1")]
     text25 = "demeurant 9 Avenue Desambrois - 06000 NICE FORNASERO SAS, 20 rue De France 06000 Fornasero après"
-    assert get_addresses(text25) == [(10, 56, "ADDRESS_1"), (58, 90, "ADDRESS_1")]
+    assert get_addresses(text25) == [(10, 56, 'ADDRESS_1'), (10, 90, 'ADDRESS_1'), (58, 90, 'ADDRESS_1')]
     text26 = "demeurant 61 avenue Halley - 59866 VILLENEUVE D'ASQ CEDEX après"
     assert get_addresses(text26) == [(10, 57, "ADDRESS_1")]
     text27 = "Réf : 35057719643, demeurant 6 rue du Professeur LAVIGNOLLE - BP 189 - 33042 BORDEAUX CEDEX après"
@@ -60,6 +60,12 @@ def test_get_address():
     assert get_addresses(text29) == [(10, 64, "ADDRESS_1")]
     text30 = "20 place Jean Baptiste Durand"
     assert get_addresses(text30) == [(0, 29, "ADDRESS_1")]
+    text31 = "demeurant au lieu dit de la Grande Bégude - RN 96 - 13770 VENELLES"
+    assert get_addresses(text31) == [(28, 66, 'ADDRESS_1')]
+    text32 = "demeurant 2 Avenue Jean Baptiste Galandy - 19100 BRIVE après"
+    assert get_addresses(text32) == [(10, 54, 'ADDRESS_1')]
+    text33 = "Profession : Retraité, demeurant Bourlioux - 19380 SAINT BONNET ELVERT"
+    assert get_addresses(text33) == [(33, 70, 'ADDRESS_1')]
 
 
 def test_find_address_in_paragraph_block():
