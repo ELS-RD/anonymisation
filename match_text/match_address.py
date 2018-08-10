@@ -34,7 +34,6 @@ def get_addresses(text: str) -> list:
     """
     result1 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_1.finditer(text)]
     result2 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_2.finditer(text)]
-    print(text, result1, result2)
     return sorted(list(set(result1 + result2)), key=lambda tup: (tup[0], tup[1]))
 
 
@@ -72,3 +71,36 @@ def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
                 copy_offsets[index].append(postal_code_city)
     # reached when offsets is empty
     return copy_offsets
+
+
+clean_address_regex: regex = regex.compile(pattern="^(?i)(demeurant|domicilié(e|s)?( ensemble)?)[^\w]*",
+                                           flags=regex.VERSION1)
+
+
+def clean_address_offset(text: str, offsets: list) -> list:
+    """
+    Remove some common mentions in addresses which are not related to the address.
+    :param text: original text
+    :param offsets: list of offsets provided as tuples
+    :return: cleaned list of offsets
+    """
+    result_offsets = list()
+    for start, end, type_name in offsets:
+        if type_name == "ADDRESS":
+            address_span = text[start:end]
+            found_text_to_remove = clean_address_regex.search(address_span)
+            if found_text_to_remove is not None:
+                result_offsets.append((found_text_to_remove.end(), end, type_name))
+            else:
+                result_offsets.append((start, end, type_name))
+        else:
+            result_offsets.append((start, end, type_name))
+    return result_offsets
+
+
+def clean_address_offsets(texts: list, offsets: list) -> list:
+    result_offsets = list()
+    for text, current_offset in zip(texts, offsets):
+        cleaned_offsets = clean_address_offset(text=text, offsets=current_offset)
+        result_offsets.append(cleaned_offsets)
+    return result_offsets

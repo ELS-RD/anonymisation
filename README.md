@@ -27,7 +27,13 @@ However, technical constrains (ex.: memory foot print, avoiding costly hardware)
 Many `SOTA` algorithms are available as open source project.  
 Therefore, developing a `NER` algorithm is not in the scope.  
 
-The main focus of this work is to generate a **large high quality training set**, by:
+The main focus of this work is to generate a **large high quality training set**.  
+Learning on a dataset only made with simple rules may only build a very weak model repeating the rules.  
+Therefore, we have tried to include as many tricks as needed to catch / create complex pattern.  
+With those, we have been able to produce a robust model, able to find much more entities than the rules which have been used to create the dataset.  
+
+Below is listed of strategies used:
+
 
 - `Temis`
     - leveraging the extractions performed by `Temis`
@@ -66,21 +72,22 @@ Data augmentation in particular has proved to be very efficient.
 
 - Persons:
     - `PERS`: natural person *(include first name unlike `Temis`)*, **source**: `Temis` + name extension + other occurrences
-    - `ORGANIZATION`: organization *(not done by `Temis`)*, **source**: `Temis` + rules + extension + other occurrences
+    - `ORGANIZATION`: organization, **source**: `Temis` + rules + extension + other occurrences
 - Lawyers:
-    - `LAWYER`: lawyers *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `LAWYER`: lawyers, **source**: rules + other occurrences
     - `BAR`: bar where lawyers are registered *(not done by `Temis`)*, **source**: rules + other occurrences
 - Courts:
-    - `COURT`: names of French courts *(not done by `Temis`)*, **source**: rules + other occurrences
-    - `JUDGE_CLERKS`: judges and court clerks *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `COURT`: names of French courts, **source**: rules + other occurrences
+    - `JUDGE_CLERKS`: judges and court clerks, **source**: rules + other occurrences
 - Miscellaneous:
     - `ADDRESS`: addresses *(**very** badly done by `Temis`)*, **source**: rules + other occurrences + dictionary
         - there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed
-    - `DATE`: any date, in numbers or letters *(not done by `Temis`)*, **source**: rules + other occurrences
+    - `DATE`: any date, in numbers or letters, **source**: rules + other occurrences
     - `RG` : ID of the legal case, **source**: `Temis` + rules
     - `UNKNOWN` : only for train set, indicates that no loss should be apply on the word, whatever the prediction is, **source**: rules + dictionary
 
-To each type, dataset augmentation and miscellaneous tricks have been applied.
+To each type, dataset augmentation and miscellaneous tricks have been applied.  
+`Temis` only managed `PERS`, `ADDRESS` and `RG` types.  
 
 In the future, French legislation may require to pseudo-anonymize following mentions in addition to those already known:
 
@@ -109,19 +116,20 @@ Main NER model is from [Spacy](https://spacy.io/) library and is best described 
 Basically it is a **CNN + HashingTrick / Bloom filter + L2S** approach over it.  
 The L2S part is very similar to classical dependency parser algorithm (stack + actions).
 
-#### Advantages:
+### Advantages of the `Spacy` approach:
 
 - *no manual feature extraction* (done by `Spacy`: suffix and prefix, 3 letters each, and the word shape)
-- quite *rapid on `CPU`*
-- *low memory foot print* (for possible [Lambda deployment](https://github.com/ryfeus/lambda-packs))
-- very *few dependencies*
+- quite *rapid on `multicore CPU`* (to limit anonymization cost)
+- *low memory foot print* (for possible [Lambda deployment](https://github.com/ryfeus/lambda-packs), to limit cost)
+- off the shelf algorithm (documented, maintained, large community, third party lib, etc.)
 
-Project is done in `Python` and can't be rewritten in something else because `Spacy` only exists in Python.  
+Project is fully written in `Python` and can't be rewritten in something else because `Spacy` only exists on `Python`.  
 
-> `Spark` on `Scala` in particular would be a bad choice for this project (`NLP` tool are very limited).
+> `Spark` on `Scala` in particular would be a bad choice for this project (`NLP` tools are limited).
 
-Other approaches (`Bi-LSTM`, etc.) may have shown slightly better performance but are much slower to train and during inference.  
-For these reasons, and the specific need to run it over a `GPU` (costly option), they are not in our scope.
+Other approaches (`Bi-LSTM`, etc.) may have shown slightly better performances but are much slower to train and during inference.  
+For these reasons, and the specific need to run it over a `GPU` (costly option), they are not in our scope.  
+If available, `Spacy` can leverage `GPU`, however this option has not been explored.  
 
 ## Resources
 
@@ -137,20 +145,20 @@ Both are not strategic to the success of the learning but provide a little help.
 
 ## Data and model paths
 
-`XML`
+Paths listed below can be modified in the config file `resources/config.ini`.
+
+### `XML`
 - Cases have to be provided as XML in the format used by `Temis`.  
 - One XML file represents one week of legal cases.  
 - `XML` files should be put in folder `resources/training_data/`.  
 - The case used for inference has to be placed in `resources/dev_data/`.  
 - Folder `resources/test/` contains a `XML` used for unit tests.
 
-Other resources  
+### Other resources  
 - Resources are to be put in folder `resources/courts`, `resources/postal_codes`, `resources/first_names`.  
 
-Model   
+### Model   
 - Folder `resources/model/` will contain the `Spacy` model.
-
-> These paths can be modified in the config file `resources/config.ini`.
 
 
 ## Commands to use the code

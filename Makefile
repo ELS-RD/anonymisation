@@ -25,14 +25,14 @@ train:
 	)
 
 export_frequent_entities:
-# launch model training
+# export the dataset to be used in a second pass, like for freq entities finding
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 train.py export_dataset; \
 	)
 
 display_dataset:
-# launch model training
+# display generated training set (for debug purpose)
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 train.py; \

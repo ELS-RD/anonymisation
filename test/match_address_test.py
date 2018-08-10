@@ -1,4 +1,5 @@
-from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs
+from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs, clean_address_offset, \
+    clean_address_offsets
 
 
 def test_get_address():
@@ -85,7 +86,14 @@ def test_find_address_in_paragraph_block():
     assert new_offsets4 == expected_result
 
 
+def test_clean_address_offset():
+    text1 = "Domiciliés ensemble :12 rue"
+    assert clean_address_offset(text=text1, offsets=[(0, len(text1) - 1, "ADDRESS")]) == [(21, 26, 'ADDRESS')]
+    text2 = "Demeurant 13 rue"
+    assert clean_address_offset(text=text2, offsets=[(0, len(text2) - 1, "ADDRESS")]) == [(10, 15, 'ADDRESS')]
+    assert clean_address_offsets(texts=[text2], offsets=[[(0, len(text2) - 1, "ADDRESS")]]) == [[(10, 15, 'ADDRESS')]]
+
+
 # def test_get_postal_code_city():
 #     matcher = PostalCodeCity()
 #     assert matcher.get_matches(text="avant 67000 Strasbourg après") == [(6, 22, "ADDRESS")]
-

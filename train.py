@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from match_text_unsafe.build_dict_from_recognized_entities import FrequentEntities
 from match_text_unsafe.find_header_values import parse_xml_headers
-from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs
+from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs, clean_address_offsets
 from match_text.match_bar import get_bar
 from match_text.match_clerk import get_clerk_name
 from match_text.match_courts import CourtName, get_juridictions
@@ -24,7 +24,8 @@ from match_text.match_natural_persons import get_partie_pers
 from match_text.match_company_names import get_company_names
 from match_text.match_rg import MatchRg, get_rg_from_regex
 from modify_text.modify_strings import remove_key_words
-from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, clean_offsets_from_unwanted_words
+from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, \
+    clean_offsets_from_unwanted_words
 from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
@@ -44,7 +45,6 @@ change_case_rate = int(config_training["change_case_rate"])
 remove_keyword_rate = int(config_training["remove_keyword_rate"])
 frequent_entity_threshold = int(config_training["frequent_entity_threshold"])
 number_of_paragraph_to_display = int(config_training["number_of_paragraph_to_display"])
-
 
 assert len(sys.argv) <= 2
 
@@ -68,7 +68,6 @@ elif train_dataset:
 else:
     print("Save recurrent entities")
 
-
 case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
@@ -85,7 +84,7 @@ doc_annotated = list()
 
 frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
                                              threshold_occurrences=frequent_entity_threshold,
-                                             load_data= not export_dataset,
+                                             load_data=not export_dataset,
                                              type_name_to_not_load=["PERS", "UNKNOWN"])
 
 with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER dataset") as progress_bar:
@@ -148,12 +147,15 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
 
             assert len(last_document_texts) == len(last_document_offsets)
 
-            last_document_offsets = find_address_in_block_of_paragraphs(texts=last_document_texts,
-                                                                        offsets=last_document_offsets)
+            last_document_offsets_with_addresses = find_address_in_block_of_paragraphs(texts=last_document_texts,
+                                                                                       offsets=last_document_offsets)
 
-            if len(last_document_offsets) > 0:
+            last_document_offsets_with_cleaned_addresses = clean_address_offsets(texts=last_document_texts,
+                                                                                 offsets=last_document_offsets_with_addresses)
+
+            if len(last_document_offsets_with_cleaned_addresses) > 0:
                 last_doc_offset_with_rg = rg_matcher.get_rg_offset_from_texts(texts=last_document_texts,
-                                                                              offsets=last_document_offsets)
+                                                                              offsets=last_document_offsets_with_cleaned_addresses)
 
                 last_doc_offset_with_var = get_all_name_variation(texts=last_document_texts,
                                                                   offsets=last_doc_offset_with_rg,
