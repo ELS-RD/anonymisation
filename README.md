@@ -218,13 +218,7 @@ make test
 ### TODO:
 
 - change name LAWYER -> LEGAL_OFFICER
-- credit card -> luhn
-- social -> pattern
-- vérifier présence mots clés dans l'ensemble de la décision ? véhicule immatriculé tel telephone fax port portable
 - id number unit tests and documentation
-- search for phone number, etc.
-- credit card: (?:\d{4}-?){3}\d{4}
-- plaque immatriculation 
 - switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
 - create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)

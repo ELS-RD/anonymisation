@@ -9,6 +9,12 @@ credit_card_regex = regex.compile(pattern="(?<!\d[[:punct:] ]*)"
 
 
 def get_credit_card_number(text: str) -> list:
+    """
+    Retrieve list of offsets related to credit cards.
+    Check the checksum code to avoid most of false positives
+    :param text: original text as a string
+    :return: list of offsets
+    """
     pattern = credit_card_regex.search(text)
     if pattern is not None:
         number_as_string = text[pattern.start():pattern.end()]
@@ -17,12 +23,18 @@ def get_credit_card_number(text: str) -> list:
     return []
 
 
-def sum_digits(digit):
+def sum_digits(digit: int):
+    """
+    Tools for checksum computation
+    :param digit: original credit card digit
+    :return: transform digit
+    """
     return digit if digit < 10 else (digit % 10) + (digit // 10)
 
 
 def validate(credit_card_number_string: str):
     """
+    Check the checksum code to avoid most of false positives
     https://www.pythoncircle.com/post/485/python-script-8-validating-credit-card-number-luhns-algorithm/
     :param credit_card_number_string:
     :return:

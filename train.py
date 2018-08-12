@@ -120,19 +120,9 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
-
-                    a = get_credit_card_number(text=current_paragraph)
-                    if len(a) > 0:
-                        print(a, current_paragraph)
-                    b = get_licence_plate(text=current_paragraph)
-                    if len(b) > 0:
-                        print(b, current_paragraph)
-                    c = get_social_security_number(text=current_paragraph)
-                    if len(c) > 0:
-                        print(c, current_paragraph)
-                    d = get_phone_number(text=current_paragraph)
-                    if len(d) > 0:
-                        print(d, current_paragraph)
+                    licence_plate_number = get_licence_plate(text=current_paragraph)
+                    social_security_number = get_social_security_number(text=current_paragraph)
+                    phone_numbers = get_phone_number(text=current_paragraph)
 
                     all_matches = (match_from_headers +
                                    current_xml_offset +
@@ -149,6 +139,9 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                                    case_dates +
                                    bar +
                                    rg_from_regex +
+                                   licence_plate_number +
+                                   social_security_number +
+                                   phone_numbers +
                                    addresses)
 
                     if len(all_matches) > 0:

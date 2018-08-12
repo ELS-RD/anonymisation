@@ -18,6 +18,7 @@ def get_social_security_number(text: str) -> list:
     """
     Get social security ID number offsets following pattern described in:
     http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
+    Check the checksum code to avoid most of false positives
     :param text: original text
     :return: list of offset
     """

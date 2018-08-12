@@ -33,6 +33,8 @@ def view_spacy_docs(docs: list):
     :param docs: spacy doc with entities ready
     """
     colors = {"PERS": "#ff9933",  # orange
+              "PHONE_NUMBER": "#ff9933",
+              "LICENCE_PLATE": "#ff9933",
               "ADDRESS": "#ff99cc",  # pink
               "ORGANIZATION": "#00ccff",  # blue
               "LAWYER": "#ccffcc",  # light green

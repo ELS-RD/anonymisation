@@ -3,7 +3,8 @@ import spacy
 # Managed type of tokens
 from spacy.lang.fr import French
 
-token_types = ["PERS", "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
+token_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
+               "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
                "ADDRESS", "COURT", "DATE", "RG",
                "BAR", "UNKNOWN"]
 
