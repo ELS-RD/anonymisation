@@ -4,6 +4,10 @@ from random import seed
 
 from tqdm import tqdm
 
+from match_text.match_credit_card import get_credit_card_number
+from match_text.match_licence_plate import get_licence_plate
+from match_text.match_phone import get_phone_number
+from match_text.match_social_security_number import get_social_security_number
 from match_text_unsafe.build_dict_from_recognized_entities import FrequentEntities
 from match_text_unsafe.find_header_values import parse_xml_headers
 from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs, clean_address_offsets
@@ -116,6 +120,19 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
+
+                    a = get_credit_card_number(text=current_paragraph)
+                    if len(a) > 0:
+                        print(a, current_paragraph)
+                    b = get_licence_plate(text=current_paragraph)
+                    if len(b) > 0:
+                        print(b, current_paragraph)
+                    c = get_social_security_number(text=current_paragraph)
+                    if len(c) > 0:
+                        print(c, current_paragraph)
+                    d = get_phone_number(text=current_paragraph)
+                    if len(d) > 0:
+                        print(d, current_paragraph)
 
                     all_matches = (match_from_headers +
                                    current_xml_offset +

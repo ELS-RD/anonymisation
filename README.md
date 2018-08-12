@@ -217,18 +217,20 @@ make test
 
 ### TODO:
 
-- adresse par bloc -> retirer Domiciliée : ou Demeurant... :
 - change name LAWYER -> LEGAL_OFFICER
+- credit card -> luhn
+- social -> pattern
+- vérifier présence mots clés dans l'ensemble de la décision ? véhicule immatriculé tel telephone fax port portable
+- id number unit tests and documentation
+- search for phone number, etc.
+- credit card: (?:\d{4}-?){3}\d{4}
+- plaque immatriculation 
 - switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
 - create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
 - test if dubious entity match another one (A in B), even after splitting in words -> pour lever un doute
 - test merging of type entities with the one guessed when there is a doubt
-- credit card: (?:\d{4}-?){3}\d{4}
-- search for phone number, etc.
-- plaque immatriculation
 - Court formation
-- social security : http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
 - test indicating that an entity has been found only one time with NER and many times with match
 - implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
 - Add rapporteurs / experts (close to word rapport) ?

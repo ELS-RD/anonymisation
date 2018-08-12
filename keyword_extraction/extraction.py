@@ -2,10 +2,8 @@
 # requires to download Spacy French trained model
 
 import spacy
-
-from textacy import extract, keyterms
-from textacy.keyterms import aggregate_term_variants
 from spacy_lefff import LefffLemmatizer, POSTagger
+from textacy import keyterms
 
 nlp = spacy.load('fr_core_news_md')
 pos = POSTagger()
