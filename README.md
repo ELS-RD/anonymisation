@@ -93,10 +93,10 @@ To each type, dataset augmentation and miscellaneous tricks have been applied.
 
 In the future, French legislation may require to pseudo-anonymize following mentions in addition to those already known:
 
-* first name of natural person
-* judge name
-* clerk name
-* lawyer name
+- first name of natural person
+- judge name
+- clerk name
+- lawyer name
 
 > Only taking care of `PERS` and `ADDRESS` entities has been tried at first.  
 It appeared that there was some issues with the other entity types.  
@@ -105,10 +105,12 @@ Therefore, these entity types have been added, greatly improving the quality of 
 
 Type of entities that will not be included:
 
-- social security numbers: there are too few, not enough to learn anything and it makes the associated risk very low (3 numbers for 30 000 cases checked)
-- credit card number: not found in 30 000 cases, very low risk.
+- social security numbers: Too few examples to learn from (3 numbers for 30 000 cases checked). Low risk.
+- credit card number: not found in 30 000 cases, but lots of false positive. Low risk.
 
-All the types to add may be managed by `regex`.
+For both types of entity, there are lots of false positives.  
+To limit these cases, we check the control number included in these Ids, but it's not enough to remove all false positives.  
+Therefore, it seems smarter to not search for these Ids, moreover, they are quite hard to use for re-identification.
 
 ## Model
 
