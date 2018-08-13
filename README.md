@@ -73,6 +73,8 @@ Data augmentation in particular has proved to be very efficient.
 - Persons:
     - `PERS`: natural person *(include first name unlike `Temis`)*, **source**: `Temis` + name extension + other occurrences
     - `ORGANIZATION`: organization, **source**: `Temis` + rules + extension + other occurrences
+    - `PHONE_NUMBER`: phone number, **source**: rules
+    - `LICENCE_PLATE`: licence plate numbers, **source**: rules
 - Lawyers:
     - `LAWYER`: lawyers, **source**: rules + other occurrences
     - `BAR`: bar where lawyers are registered *(not done by `Temis`)*, **source**: rules + other occurrences
@@ -101,11 +103,10 @@ It appeared that there was some issues with the other entity types.
 Therefore, these entity types have been added, greatly improving the quality of `PERS` recognition.  
 `RG`. `BAR` and `DATE` where very easy to add and are useful for some specific purposes.  
 
-Type of entities to add in the future:
+Type of entities that will not be included:
 
-- phone numbers
-- social security numbers
-- credit card number
+- social security numbers: there are too few, not enough to learn anything and it makes the associated risk very low (3 numbers for 30 000 cases checked)
+- credit card number: not found in 30 000 cases, very low risk.
 
 All the types to add may be managed by `regex`.
 
