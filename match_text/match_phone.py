@@ -22,10 +22,3 @@ def get_phone_number(text: str) -> list:
         if pattern is not None and ("compte" not in text):
             result.append((pattern.start(), pattern.end(), "PHONE_NUMBER"))
     return result
-
-
-# print(get_phone_number("phone: (06)-42-92 72- 29 et 01 44 23 65 89"))
-#
-# print(get_phone_number("phone: (06)-42-92 72- 29 + 12"))
-#
-# print(get_phone_number("phone: (00)-42-92 72- 29 "))

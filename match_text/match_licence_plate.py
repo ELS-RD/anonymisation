@@ -33,14 +33,3 @@ def get_licence_plate(text: str) -> list:
     for pattern in patterns:
         results.append((pattern.start(), pattern.end(), "LICENCE_PLATE"))
     return results
-
-
-# print(get_licence_plate("AA111AA"))
-# print(get_licence_plate("AA-111-AA"))
-# print(get_licence_plate("AA 111 AA"))
-# print(get_licence_plate("1 AA111AA"))
-# print(get_licence_plate("AA 111 AA 1"))
-#
-# print(get_licence_plate("1AA11"))
-# print(get_licence_plate("9999 ZZZ 99"))
-# print(get_licence_plate("9999 ZZZ 999"))

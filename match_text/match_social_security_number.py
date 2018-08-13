@@ -46,11 +46,3 @@ def check_social_number_key(number: str)-> bool:
     key = int(cleaned_number[-2:])
 
     return 97 - (nir % 97) == key
-
-
-# numero_test = "2 40 09 93 618 017 05"
-#
-# print(get_social_security_number(numero_test))
-#
-# print(get_social_security_number("1" + numero_test))
-

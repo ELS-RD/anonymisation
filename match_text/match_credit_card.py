@@ -61,13 +61,3 @@ def validate(credit_card_number_string: str):
     # sum all digits
     sum_of_digits = sum(doubled_second_digit_list)
     return sum_of_digits % 10 == 0
-
-
-# credit_card_valid = "4474 2054 6736 1295"
-# credit_card_invalid = "1265 157309414560"
-#
-# print(get_credit_card_number("pop " + credit_card_valid + " apres"))
-# print(get_credit_card_number("pop " + credit_card_invalid + " apres"))
-# print(get_credit_card_number("1234 1234 1234 1234"))
-# print(get_credit_card_number("1- 1234 1234 1234 1234"))
-# print(get_credit_card_number("1- " + credit_card_valid))

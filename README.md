@@ -219,7 +219,6 @@ make test
 ### TODO:
 
 - change name LAWYER -> LEGAL_OFFICER
-- id number unit tests and documentation
 - switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
 - create test set
 - vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
