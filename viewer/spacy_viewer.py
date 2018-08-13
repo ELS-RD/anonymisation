@@ -35,6 +35,7 @@ def view_spacy_docs(docs: list):
     colors = {"PERS": "#ff9933",  # orange
               "PHONE_NUMBER": "#ff9933",
               "LICENCE_PLATE": "#ff9933",
+              # "SOCIAL_SECURITY_NUMBER": "#ff9933",
               "ADDRESS": "#ff99cc",  # pink
               "ORGANIZATION": "#00ccff",  # blue
               "LAWYER": "#ccffcc",  # light green

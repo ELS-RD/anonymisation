@@ -121,7 +121,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
                     frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
                     licence_plate_number = get_licence_plate(text=current_paragraph)
-                    social_security_number = get_social_security_number(text=current_paragraph)
+                    # social_security_number = get_social_security_number(text=current_paragraph)
                     phone_numbers = get_phone_number(text=current_paragraph)
 
                     all_matches = (match_from_headers +
@@ -140,7 +140,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                                    bar +
                                    rg_from_regex +
                                    licence_plate_number +
-                                   social_security_number +
+                                   # social_security_number +
                                    phone_numbers +
                                    addresses)
 
