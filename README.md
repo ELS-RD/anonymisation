@@ -218,6 +218,12 @@ make test
 
 > Most of the project configuration is done in `resources/config.ini` file.
 
+## Setup Pycharm
+
+For tests run from Pycharm, you need to create a Pytest test task.  
+Then the working folder by default (implicit) is the test folder.  
+It has to be setup as the project root folder explicitly.
+
 ### TODO:
 
 - change name LAWYER -> LEGAL_OFFICER
