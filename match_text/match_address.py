@@ -41,6 +41,19 @@ def get_addresses(text: str) -> list:
 start_with_postal_code = regex.compile("^\s*\d{5} (?!Euro.* |Franc.* |Fr )[A-ZÉÈ]", flags=regex.VERSION1)
 
 
+def get_stripped_offsets(text: str, tag: str) -> tuple:
+    """
+    Get offsets of a the actual text ie. the text without the surronding whitespaces
+    :param text: a line of text
+    :param tag: tag to apply to the text
+    :return: a tuple (start offset, end offset, tag name)
+    """
+    stripped_text = text.strip()
+    start = text.find(stripped_text)
+    end = start + len(stripped_text)
+    return (start, end, tag)
+
+
 def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
     """
     Search a multi paragraph pattern of address in the first half of a case:
@@ -63,11 +76,10 @@ def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
             # and \
             #     (contain_place_pattern.search(texts[index - 1]) is not None):
             if len(copy_offsets[index - 1]) == 0:
-                offset_street = (0, len(texts[index - 1]), ""
-                                                           "ADDRESS")
+                offset_street = get_stripped_offsets(texts[index -1], "ADDRESS")
                 copy_offsets[index - 1].append(offset_street)
             if len(copy_offsets[index]) == 0:
-                postal_code_city = (0, len(text), "ADDRESS")
+                postal_code_city = get_stripped_offsets(text, "ADDRESS")
                 copy_offsets[index].append(postal_code_city)
     # reached when offsets is empty
     return copy_offsets

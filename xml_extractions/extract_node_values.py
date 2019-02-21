@@ -35,7 +35,9 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
             contents.append((text, node.tag))
         elif node.tag == "Adresse":
             text = replace_none(node.text)
+            tail = replace_none(node.tail)
             contents.append((text, "ADDRESS"))
+            contents.append((tail, "after"))
         elif node.tag in ["Texte", "TexteAnonymise"]:
             pass
         else:
