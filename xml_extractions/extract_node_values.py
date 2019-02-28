@@ -38,10 +38,11 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
             tail = replace_none(node.tail)
             contents.append((text, "ADDRESS"))
             contents.append((tail, "after"))
-        elif node.tag in ["Texte", "TexteAnonymise"]:
+        elif node.tag in ["Texte", "TexteAnonymise", "President", "Conseiller", "Greffier", "AvocatGeneral"]:
             pass
         else:
-            raise NotImplementedError("Unexpected type of node: [" + node.tag + "]")
+            raise NotImplementedError(f"Unexpected type of node: [{node.tag}], node content is [{node.text}] and is "
+                                      f"part of [{node.getparent().text}]")
     clean_content = list()
     extracted_text = list()
     offset = list()
