@@ -86,10 +86,10 @@ court_names_matcher = CourtName()
 doubtful_mwe_matcher = MatchDoubfulMwe()
 doc_annotated = list()
 
-frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
-                                             threshold_occurrences=frequent_entity_threshold,
-                                             load_data=not export_dataset,
-                                             type_name_to_not_load=["PERS", "UNKNOWN"])
+# frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
+#                                              threshold_occurrences=frequent_entity_threshold,
+#                                              load_data=not export_dataset,
+#                                              type_name_to_not_load=["PERS", "UNKNOWN"])
 
 with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER dataset") as progress_bar:
     for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
@@ -119,7 +119,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                     bar = get_bar(current_paragraph)
                     postal_code_matches = postal_code_city_matcher.get_matches(text=current_paragraph)
                     court_names_matches = court_names_matcher.get_matches(text=current_paragraph)
-                    frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
+                    # frequent_entities = frequent_entities_matcher.get_matches(text=current_paragraph)
                     licence_plate_number = get_licence_plate(text=current_paragraph)
                     phone_numbers = get_phone_number(text=current_paragraph)
 
@@ -132,7 +132,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
                                    lawyer_names +
                                    partie_pp +
                                    postal_code_matches +
-                                   frequent_entities +
+                                   # frequent_entities +
                                    court_name +
                                    court_names_matches +
                                    case_dates +
@@ -262,3 +262,4 @@ else:
     # Display training set
     docs = convert_offsets_to_spacy_docs(doc_annotated)
     view_spacy_docs(docs)
+    print("view result on browser (localhost - port 5000)")  # TODO set port in config

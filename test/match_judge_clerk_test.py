@@ -55,6 +55,9 @@ def test_extract_judge_names():
     assert get_judge_name(text24) == [(6, 16, "JUDGE_CLERK_1")]
     text25 = "Monsieur Gilles BOURGEOIS, Conseiller faisant fonction de Président"
     assert get_judge_name(text25) == [(9, 25, "JUDGE_CLERK_1")]
+    text26 = "Signé par Madame Laure BOURREL, Président et Madame Priscilla BOSIO, Greffier, auquel la minute de" \
+             " la décision a été remise par le magistrat signataire.    "
+    assert get_judge_name(text26) == [(17, 30, "JUDGE_CLERK_1")]
 
 
 def test_extract_clerk_names():
@@ -74,4 +77,6 @@ def test_extract_clerk_names():
     assert get_clerk_name(text7) == [(15, 35, "JUDGE_CLERK_1")]
     text8 = 'Arrêt signé par Monsieur LE GALLO, Président et par Madame HAON, Greffier.'
     assert get_clerk_name(text8) == [(59, 63, "JUDGE_CLERK_1")]
-
+    text9 = "Signé par Madame Laure BOURREL, Président et Madame Priscilla BOSIO, Greffier, auquel la minute " \
+            "de la décision a été remise par le magistrat signataire.    "
+    assert get_clerk_name(text9) == [(52, 67, 'JUDGE_CLERK_1')]

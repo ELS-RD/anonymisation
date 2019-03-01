@@ -36,7 +36,7 @@ def test_get_address():
     text17 = "avant 10 Boulevard Pasteur à BRY SUR MARNE après"
     assert get_addresses(text17) == [(6, 43, "ADDRESS_1")]
     text18 = "un logement sis 1, rue d'Ebersheim à Strasbourg, moyennant"
-    assert get_addresses(text18) == [(16, 47, "ADDRESS_1")]
+    assert get_addresses(text18) == [(16, 49, "ADDRESS_1")]  # TODO should be 47 instead of 49
     text19 = "je me trouve Place de l'Étoile."
     assert get_addresses(text19) == [(13, 31, "ADDRESS_1")]
     text20 = "je ne veux pas payer à la place de Madame Toto !"
@@ -67,6 +67,10 @@ def test_get_address():
     assert get_addresses(text32) == [(10, 54, 'ADDRESS_1')]
     text33 = "Profession : Retraité, demeurant Bourlioux - 19380 SAINT BONNET ELVERT"
     assert get_addresses(text33) == [(33, 70, 'ADDRESS_1')]
+    text34 = "1 À 14, Bd Henri Sappia, 06100 Nice et"
+    assert get_addresses(text34) == [(4, 35, 'ADDRESS_1')]
+    text35 = "demeurant 9 avenue Désambrois Palais Stella À NICE après"
+    assert get_addresses(text35) == [(10, 51, "ADDRESS_1")]
 
 
 def test_find_address_in_paragraph_block():

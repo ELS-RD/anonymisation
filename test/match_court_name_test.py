@@ -12,6 +12,8 @@ def test_extract_court_name():
     assert get_juridictions(text=text4) == [(12, 42, "COURT_1")]
     text5 = "par le conseil de prud'hommes d'Aix en Provence après"
     assert get_juridictions(text=text5) == [(7, 48, "COURT_1")]
+    text6 = "par le conseil de prud'hommes d'Aix en Provence en l'an"
+    assert get_juridictions(text=text6) == [(7, 47, "COURT_1")]
 
 
 def test_match_court_name():

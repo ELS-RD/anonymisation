@@ -50,7 +50,8 @@ juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal
                                       "("
                                       "(?!\\bDU\\b\s)"
                                       "[A-ZÉÈ]+[\w\-']*\s*"
-                                      "((de|d'|en|des|du|à)\s*)?"
+                                      # "((de|d'|en|des|du|à)\s*)?"
+                                      "((de\s+|d'|en\s+|des\s+|du\s+|à\s+)(?![[:lower:]]))?"
                                       ")+"
                                       "(?!(?i)\\b(en|le|du)\\b)",
                                       flags=regex.VERSION1)

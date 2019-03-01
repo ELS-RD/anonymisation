@@ -1,4 +1,5 @@
 import random
+from math import ceil
 from pathlib import Path
 
 from spacy import util
@@ -18,10 +19,11 @@ def train_model(data: list, folder_to_save_model: str, n_iter: int, batch_size: 
     :param dropout_rate: more : learn less / better generalization
     """
     nlp = get_empty_model(load_labels_for_training=True)
+    nlp.vocab.vectors.name = 'spacy_pretrained_vectors'
     optimizer = nlp.begin_training()
-    with tqdm(total=n_iter * len(data) / batch_size, unit=" paragraphs", desc="Learn NER model") as pbar:
+    with tqdm(total=n_iter * ceil(len(data) / batch_size), unit=" paragraphs", desc="Learn NER model") as pbar:
         for itn in range(n_iter):
-            print("\nIter", itn + 1)
+            pbar.set_description(f"Learn NER model - iteration {itn + 1}")
             losses = {}
             random.shuffle(data)
             batches = util.minibatch(data, batch_size)
