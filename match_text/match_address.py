@@ -25,6 +25,9 @@ extract_address_pattern_2 = regex.compile("(?<=demeurant [^\dA-Z]{0,25}( )?)(\d|
                                           ,
                                           flags=regex.VERSION1)
 
+extract_address_pattern_3 = regex.compile("(?<=cadastré(e)?(s)? ).{1,30}\\d+",
+                                          flags=regex.VERSION1)
+
 
 def get_addresses(text: str) -> list:
     """
@@ -34,7 +37,9 @@ def get_addresses(text: str) -> list:
     """
     result1 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_1.finditer(text)]
     result2 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_2.finditer(text)]
-    return sorted(list(set(result1 + result2)), key=lambda tup: (tup[0], tup[1]))
+    result3 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_3.finditer(text)]
+
+    return sorted(list(set(result1 + result2 + result3)), key=lambda tup: (tup[0], tup[1]))
 
 
 # contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1 | regex.IGNORECASE)

@@ -71,6 +71,10 @@ def test_get_address():
     assert get_addresses(text34) == [(4, 35, 'ADDRESS_1')]
     text35 = "demeurant 9 avenue Désambrois Palais Stella À NICE après"
     assert get_addresses(text35) == [(10, 51, "ADDRESS_1")]
+    text36 = "situé à Bormes Les Mimosas, cadastré section AA n° 477, situé"
+    assert get_addresses(text36) == [(37, 54, "ADDRESS_1")]
+    text37 = "les constructions semblent empiéter sur la parcelle cadastrée AO n° 122 appartenant, au cadastre, à la"
+    assert get_addresses(text37) == [(62, 71, "ADDRESS_1")]
 
 
 def test_find_address_in_paragraph_block():

@@ -30,7 +30,7 @@ last_case_docs = list()
 former_case_id = None
 entity_typename_builder = EntityTypename()
 
-with tqdm(total=number_of_paragraph_to_display, unit=" paragraphs", desc="Find entities") as progress_bar:
+with tqdm(total=len(DEV_DATA[:number_of_paragraph_to_display]), unit=" paragraphs", desc="Find entities") as progress_bar:
     for (case_id, original_text, _, _) in DEV_DATA[:number_of_paragraph_to_display]:
         if case_id != former_case_id:
             last_case_spans = entity_typename_builder.get_dict()
