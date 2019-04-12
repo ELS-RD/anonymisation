@@ -1,12 +1,16 @@
 import os
 
-import lxml
-from lxml import etree
+from lxml.etree import Element  # type: ignore
 
 from xml_extractions.common_xml_parser_function import replace_none, read_xml
 
+from typing import List, Tuple, Union, Optional, Iterator
 
-def get_person_name(node: lxml.etree._Element) -> tuple:
+Offset = Tuple[int, int, str]
+Paragraph = Tuple[str, str, List[str], List[Offset]]
+
+
+def get_person_name(node: Element) -> Optional[Tuple[str, str]]:
     """
     Extract value of node <Personne>
     :param node: <Personne> from Lxml
@@ -15,9 +19,10 @@ def get_person_name(node: lxml.etree._Element) -> tuple:
     assert node.tag == "Personne"
     for t in node.iterchildren(tag="Texte"):
         return replace_none(t.text), replace_none(node.tail)
+    return None
 
 
-def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
+def get_paragraph_with_entities(parent_node: Element) -> Tuple[str, List[str], List[Offset]]:
     """
     Extract the entities from paragraph nodes
     :param parent_node: the one containing the others
@@ -27,9 +32,11 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
 
     for node in parent_node.iter():
         if node.tag == "Personne":
-            name, after = get_person_name(node)
-            contents.append((name, "PERS"))
-            contents.append((after, "after"))
+            person_name = get_person_name(node)
+            if person_name is not None:
+                name, after = person_name
+                contents.append((name, "PERS"))
+                contents.append((after, "after"))
         elif node.tag == "P":
             text = replace_none(node.text)
             contents.append((text, node.tag))
@@ -64,47 +71,65 @@ def get_paragraph_with_entities(parent_node: lxml.etree._Element) -> tuple:
     return paragraph_text, extracted_text, offset
 
 
-def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) -> list:
+def get_paragraph_from_juri(case_id: str, juri_node: Element, keep_paragraph_without_annotation: bool) -> List[Paragraph]:
     """
-    Read paragraph from a file
-    :param path: path to the XML file
+    Extract paragraphs from node <Juri>
+    :param case_id: xml
+    :param juri_node: xml <Juri> node
     :param keep_paragraph_without_annotation: keep paragraph which doesn't include annotation according to Themis
-    :return: a tupple of (paragraph text, value inside node, offset) OR (paragraph text, offset)
+    :return: a list of tuple of (paragraph text, value inside node, offset)
     """
     result = list()
-    tree = read_xml(path)
-    nodes = tree.xpath('//Juri|//TexteJuri/P')
-    current_case_id = None
+    nodes = juri_node.xpath('./TexteJuri/P')
     for node in nodes:
-        if node.tag == "Juri":
-            current_case_id = node.get("id")
-        if node.tag == "P":
-            paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
-            has_some_annotation = len(extracted_text) > 0
-            if has_some_annotation:
-                # TODO replace by unit test
-                item_text = extracted_text[0]
-                current_attribute = offset[0]
-                start = current_attribute[0]
-                end = current_attribute[1]
-                assert item_text == paragraph_text[start:end]
-            else:
-                offset = list()
-                extracted_text = list()
+        paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
+        has_some_annotation = len(extracted_text) > 0
+        if has_some_annotation:
+            # TODO replace by unit test
+            item_text = extracted_text[0]
+            current_attribute = offset[0]
+            start = current_attribute[0]
+            end = current_attribute[1]
+            assert item_text == paragraph_text[start:end]
+        else:
+            offset = list()
+            extracted_text = list()
 
-            if has_some_annotation | keep_paragraph_without_annotation:
-                result.append((current_case_id, paragraph_text, extracted_text, offset))
+        if has_some_annotation | keep_paragraph_without_annotation:
+            result.append((case_id, paragraph_text, extracted_text, offset))
 
     return result
 
 
-def get_paragraph_from_folder(folder_path: str, keep_paragraph_without_annotation: bool) -> list:
+def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool, flatten: bool = True) -> Union[List[Paragraph], List[List[Paragraph]]]:
+    """
+    Read paragraph from a file
+    :param path: path to the XML file
+    :param keep_paragraph_without_annotation: keep paragraph which doesn't include annotation according to Themis
+    :param flatten: whether to flatten all the paragraph of the file or group paragraph by case
+    :return: a list of tupple (or a list of list of tuple) of (paragraph text, value inside node, offset)
+    """
+    result = list()
+    tree = read_xml(path)
+    nodes = tree.xpath('//Juri')
+    for node in nodes:
+        case_id = node.get("id")
+        if flatten:
+            result.extend(get_paragraph_from_juri(case_id, node, keep_paragraph_without_annotation))
+        else:
+            result.append(get_paragraph_from_juri(case_id, node, keep_paragraph_without_annotation))
+
+    return result
+
+
+def get_paragraph_from_folder(folder_path: str, keep_paragraph_without_annotation: bool, flatten: bool = True) -> Iterator[Union[Paragraph, List[Paragraph]]]:
     paths = os.listdir(folder_path)
     assert len(paths) > 0
     for path in paths:
         if path.endswith(".xml"):
             current_path = os.path.join(folder_path, path)
             paragraphs = get_paragraph_from_file(path=current_path,
-                                                 keep_paragraph_without_annotation=keep_paragraph_without_annotation)
+                                                 keep_paragraph_without_annotation=keep_paragraph_without_annotation,
+                                                 flatten=flatten)
             for paragraph in paragraphs:
                 yield paragraph
