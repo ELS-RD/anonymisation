@@ -4,9 +4,7 @@ from tqdm import tqdm
 
 from match_text_unsafe.build_entity_dictionary import EntityTypename
 from xml_extractions.extract_node_values import get_paragraph_from_file
-from match_text_unsafe.match_acora import AcoraMatcher
-from match_text.match_address import find_address_in_block_of_paragraphs
-from misc.normalize_offset import normalize_offsets
+from annotate_case.annotate_case import complete_case_annotations
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import view_spacy_docs
@@ -33,39 +31,10 @@ entity_typename_builder = EntityTypename()
 with tqdm(total=len(DEV_DATA[:number_of_paragraph_to_display]), unit=" paragraphs", desc="Find entities") as progress_bar:
     for (case_id, original_text, _, _) in DEV_DATA[:number_of_paragraph_to_display]:
         if case_id != former_case_id:
-            last_case_spans = entity_typename_builder.get_dict()
-            last_case_matcher = AcoraMatcher(content=list(last_case_spans.keys()),
-                                             ignore_case=True)
-            if len(last_case_docs) > 1:
-                doc_text, empty_offsets = zip(*[(doc.text, []) for doc in last_case_docs])
-                last_document_addresses_offsets = find_address_in_block_of_paragraphs(texts=list(doc_text),
-                                                                                      offsets=list(empty_offsets))
+            spans = entity_typename_builder.get_dict()
+            complete_case_annotations(last_case_docs, spans)
 
-                for last_case_doc, last_doc_address_offset in zip(last_case_docs, last_document_addresses_offsets):
-                    matches = last_case_matcher.get_matches(text=last_case_doc.text,
-                                                            tag="UNKNOWN")
-                    matcher_offsets = list()
-                    for start_offset, end_offset, _ in matches:
-                        span_text = last_case_doc.text[start_offset:end_offset]
-                        # print(span_text)
-                        type_name = last_case_spans[span_text.lower()]
-                        matcher_offsets.append((start_offset, end_offset, type_name))
-                    matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + last_doc_address_offset)
-
-                    spacy_matcher_offset = list()
-                    for start_offset, end_offset, type_name in matcher_offsets_normalized:
-                        # https://spacy.io/usage/linguistic-features#section-named-entities
-                        span_doc = last_case_doc.char_span(start_offset, end_offset, label=type_name)
-                        if span_doc is not None:
-                            # span will be none if the word is incomplete
-                            spacy_matcher_offset.append(span_doc)
-                        else:
-                            print("ERROR char offset", last_case_doc.text[start_offset:end_offset])
-
-                    last_case_doc.ents = spacy_matcher_offset  # all_offsets
-                    all_docs_to_view.append(last_case_doc)
-
-            last_case_spans.clear()
+            all_docs_to_view.extend(last_case_docs)
             last_case_docs.clear()
             entity_typename_builder.clear()
             former_case_id = case_id
