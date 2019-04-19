@@ -56,7 +56,7 @@ def get_stripped_offsets(text: str, tag: str) -> tuple:
     stripped_text = text.strip()
     start = text.find(stripped_text)
     end = start + len(stripped_text)
-    return (start, end, tag)
+    return start, end, tag
 
 
 def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
