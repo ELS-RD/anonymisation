@@ -14,7 +14,7 @@ def test_match_headers_content():
 
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
 
-    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 22, "PERS")]
+    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 29, "PERS")]
 
     text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
     # TODO review tests (code is now very strict, does these tests make sense?)
