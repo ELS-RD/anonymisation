@@ -1,6 +1,6 @@
 import regex
 
-places_pattern = ("rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|"
+places_pattern = ("rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|lieudit|"
                   "(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
 
 extract_address_pattern_1 = regex.compile("([\d][\d,/\- ]*)?"

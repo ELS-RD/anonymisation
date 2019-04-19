@@ -17,3 +17,7 @@ def test_match_company_names():
     text7 = "SA CAISSE D'EPARGNE ET DE PREVOYANCE PROVENCE ALPES C ORSE LA CAISSE D'EPARGNE ET, " \
             "Banque coopérative"
     assert get_company_names(text7) == [(0, 81, "ORGANIZATION_1")]
+    text8 = "représentée et assistée par Me Grégory PILLIAR de l'AARPI ESCLAPEZ SINELLE PILLIARD pour"
+    assert get_company_names(text8) == [(52, 83, 'ORGANIZATION_1')]
+    text9 = "représentée par Me Joseph MAGNAN de la SCP MAGNAN PAUL MAGNAN JOSEPH, avocat"
+    assert get_company_names(text9) == [(39, 68, 'ORGANIZATION_1')]

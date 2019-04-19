@@ -77,7 +77,8 @@ def test_get_address():
     assert get_addresses(text37) == [(62, 71, "ADDRESS_1")]
     text38 = "rangée de parpaings sous les tuiles aux lieu et place du toit en tôles ondulées"
     assert get_addresses(text38) == []
-
+    text39 = "les parcelles cadastrées section A numéros 601 et 602, (devenues 1421) situées lieudit Barbeiranne Sud à Pignans."
+    assert get_addresses(text39) == [(25, 53, 'ADDRESS_1'), (79, 113, 'ADDRESS_1')]
 
 
 def test_find_address_in_paragraph_block():

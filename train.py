@@ -86,6 +86,7 @@ court_names_matcher = CourtName()
 doubtful_mwe_matcher = MatchDoubfulMwe()
 doc_annotated = list()
 
+# TODO remove
 # frequent_entities_matcher = FrequentEntities(path_trainset=training_set_export_path,
 #                                              threshold_occurrences=frequent_entity_threshold,
 #                                              load_data=not export_dataset,
