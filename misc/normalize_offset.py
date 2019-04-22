@@ -18,7 +18,8 @@ def normalize_offsets(offsets: list) -> list:
         if (previous_end_offset is not None) and (previous_end_offset + 1 >= current_start_offset):
             previous_start_offset, previous_end_offset, previous_type_tag = previous_start_offset, \
                                                                             current_end_offset, \
-                                                                            previous_type_tag
+                                                                            tag_priority(previous_type_tag,
+                                                                                         current_type_tag)
 
         if (previous_end_offset is not None) and (previous_end_offset < current_end_offset):
             offset_to_keep.append((previous_start_offset, previous_end_offset,
@@ -28,7 +29,8 @@ def normalize_offsets(offsets: list) -> list:
         if (previous_end_offset is not None) and (previous_end_offset >= current_end_offset):
             current_start_offset, current_end_offset, current_type_tag = previous_start_offset, \
                                                                          previous_end_offset, \
-                                                                         previous_type_tag
+                                                                         tag_priority(previous_type_tag,
+                                                                                      current_type_tag)
 
         # delete short offsets (1 - 2 chars)
         if current_end_offset - current_start_offset <= 2:
@@ -44,7 +46,7 @@ def normalize_offsets(offsets: list) -> list:
                                remove_tag_priority_info(previous_type_tag)))
     return offset_to_keep
 
-# TODO remove
+
 def tag_priority(previous_tag: str, current_tag: str) -> str:
     """
     Apply some rules to decide which tag to keep when merging 2 offsets
@@ -62,7 +64,7 @@ def tag_priority(previous_tag: str, current_tag: str) -> str:
         # return the first seen tag otherwise
         return previous_tag
 
-# TODO remove
+
 def remove_tag_priority_info(tag: str) -> str:
     """
     Remove the tag priority information
