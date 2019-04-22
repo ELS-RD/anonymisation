@@ -16,7 +16,7 @@ def complete_case_annotations(spacy_docs: List[Doc], entity_typename: Dict[str, 
     Complete/Normalize annotations from the spacy tagger.
 
     :param spacy_docs: the spacy annotations
-    :param entity_typename: the dictionnary with each occurence type
+    :param entity_typename: the dictionary with each occurence type
     :returns: the updated spacy_annotions (for convenience only, as the update is inplace)
     """
 
