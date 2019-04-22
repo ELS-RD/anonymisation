@@ -11,13 +11,12 @@ pytest.nlp = get_empty_model(load_labels_for_training=True)
 def test_bilou_conv():
     doc: Doc = pytest.nlp.make_doc("Ceci est un test.")
     offset1 = [(5, 8, "UNKNOWN")]
-    assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', no_action_bilou, 'O', 'O', 'O']
-    assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ['O', no_action_bilou, 'O', 'O', 'O']
+    assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', '-', 'O', 'O', 'O']
+    assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ['O', '-', 'O', 'O', 'O']
     offset2 = [(5, 8, "PERS")]
     assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PERS', 'O', 'O', 'O']
-    # TODO Spacy bug -> https://github.com/explosion/spaCy/issues/2603#issuecomment-410524122
-    # offset3 = [(0, 4, "UNKNOWN")]
-    # assert convert_unknown_bilou(doc, offsets=offset3).ner == [None, 'O', 'O', 'O', 'O']
+    offset3 = [(0, 4, "UNKNOWN")]
+    assert convert_unknown_bilou(doc, offsets=offset3).ner == ['-', 'O', 'O', 'O', 'O']
 
 
 def test_build_entity_dict():

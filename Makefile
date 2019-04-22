@@ -59,6 +59,13 @@ list_differences:
 	python3 display_errors.py; \
 	)
 
+eval:
+# print differences between entities found by Spacy and Temis
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python3 eval_model.py; \
+	)
+
 test:
 # run unit tests
 	( \

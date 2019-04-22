@@ -27,10 +27,11 @@ def convert_offsets_to_spacy_docs(doc_annotated: list) -> list:
     return docs
 
 
-def view_spacy_docs(docs: list):
+def view_spacy_docs(docs: list, port: int):
     """
     Launch a server to View entities
     :param docs: spacy doc with entities ready
+    :param port: port to use to serve the file
     """
     colors = {"PERS": "#ff9933",  # orange
               "PHONE_NUMBER": "#ff9933",
@@ -46,4 +47,4 @@ def view_spacy_docs(docs: list):
               "BAR": "#ffe699",  # light yellow
               "UNKNOWN": "#ff0000"}  # red
     options = {"ents": None, "colors": colors}
-    displacy.serve(docs, style="ent", minify=True, port=5000, options=options)
+    displacy.serve(docs, style="ent", minify=True, port=port, options=options)

@@ -220,20 +220,6 @@ make test
 
 ## Setup Pycharm
 
-For tests run from Pycharm, you need to create a Pytest test task.  
+For tests run from Pycharm, you need to create a Pytest test task.    
 Then the working folder by default (implicit) is the test folder.  
-It has to be setup as the project root folder explicitly.
-
-### TODO:
-
-- change name LAWYER -> LEGAL_OFFICER
-- switch to flashtext (to improve performances during training set preparation) https://github.com/vi3k6i5/flashtext
-- create test set
-- vote en cas de doute sur le type d'une entité et si doute regarder le type de l'occurence (pendant training)
-- test if dubious entity match another one (A in B), even after splitting in words -> pour lever un doute
-- test merging of type entities with the one guessed when there is a doubt
-- Court formation
-- test indicating that an entity has been found only one time with NER and many times with match
-- implement prediction with multi thread (pipe) V2.1 ? https://github.com/explosion/spaCy/issues/1530 
-- Add rapporteurs / experts (close to word rapport) ?
-- paste randomly the first word of a NER with the previous word to simulate recurrent typo errors
+**It has to be setup as the project root folder explicitly.**

@@ -32,4 +32,4 @@ for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in DEV_DATA:
     doc_annotated.append(doc)
 
 # docs = convert_offsets_to_spacy_docs(doc_annotated)
-view_spacy_docs(doc_annotated)
+view_spacy_docs(doc_annotated, port=5000)

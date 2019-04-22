@@ -1,7 +1,6 @@
 from spacy.gold import biluo_tags_from_offsets, GoldParse
 
-# TODO replace by None
-no_action_bilou = '-'
+no_action_bilou = None
 unknown_type_name = "UNKNOWN"
 
 

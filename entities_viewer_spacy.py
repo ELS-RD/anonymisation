@@ -47,5 +47,5 @@ with tqdm(total=len(DEV_DATA[:number_of_paragraph_to_display]), unit=" paragraph
         progress_bar.update()
 
 print("Generate HTML")
-view_spacy_docs(all_docs_to_view)
-print("view result on browser (port 5000)")  # TODO port number should be a parameter
+view_spacy_docs(all_docs_to_view, port=5000)
+print("view result on browser (port 5000)")

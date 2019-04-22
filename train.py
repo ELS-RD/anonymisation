@@ -262,5 +262,5 @@ elif export_dataset:
 else:
     # Display training set
     docs = convert_offsets_to_spacy_docs(doc_annotated)
-    view_spacy_docs(docs)
-    print("view result on browser (localhost - port 5000)")  # TODO set port in config
+    view_spacy_docs(docs, port=5000)
+    print("view result on browser (localhost - port 5000)")
