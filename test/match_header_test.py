@@ -14,18 +14,4 @@ def test_match_headers_content():
 
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
 
-    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 22, "PERS")]
-
-    text2 = "Me Touboul s'avance avec Patrice Cipre pendant que la greffière, Mme. Laure Metge, prend des notes"
-    # TODO review tests (code is now very strict, does these tests make sense?)
-    # matcher_lawyers = headers_matcher.get_matcher_of_lawyers_from_headers()
-    # assert get_matches(matcher_lawyers, text2, "LAWYER") == [(3, 10, "LAWYER"),
-    #                                                          (25, 32, "LAWYER"),
-    #                                                          (25, 38, "LAWYER"),
-    #                                                          (33, 38, "LAWYER")]
-
-    # matcher_clerks = headers_matcher.get_matcher_of_clerks_from_headers()
-    # assert get_matches(matcher_clerks, text2, "JUDGE_CLERK") == [(70, 75, "JUDGE_CLERK"),
-    #                                                           (70, 81, "JUDGE_CLERK"),
-    #                                                           (76, 81, "JUDGE_CLERK")]
-
+    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 29, "PERS")]
