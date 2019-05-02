@@ -2,7 +2,7 @@
 SHELL:=/bin/bash
 
 # avoid collision with a file having the same name as a command listed here
-.PHONY: setup train show_spacy_entities show_temis_entities list_differences test
+.PHONY: setup train show_spacy_entities show_rule_based_entities list_differences test
 
 VIRT_ENV_FOLDER = ~/.local/share/virtualenvs/anonymisation/venv
 SOURCE_VIRT_ENV = source $(VIRT_ENV_FOLDER)/bin/activate
@@ -45,22 +45,22 @@ show_spacy_entities:
 	python3 entities_viewer_spacy.py; \
 	)
 
-show_temis_entities:
-# launch a server to display entities found by Temis
+show_rule_based_entities:
+# launch a server to display entities found by rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 entities_viewer_temis.py; \
+	python3 entities_viewer_rule_based.py; \
 	)
 
 list_differences:
-# print differences between entities found by Spacy and Temis
+# print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 display_errors.py; \
 	)
 
 eval:
-# print differences between entities found by Spacy and Temis
+# print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python3 eval_model.py; \

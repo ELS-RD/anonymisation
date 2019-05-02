@@ -34,7 +34,7 @@ class MatchRg:
 
     def get_rg_from_case_id(self) -> list:
         """
-        Retrieve the RG from case id, as formatted by Temis
+        Retrieve the RG from case id, as formatted by rule based system
         :return: RG number as a string
         """
         result = extract_rg_from_case_id_regex.findall(self.case_id)
@@ -43,7 +43,7 @@ class MatchRg:
 
     def get_search_rg_regex(self) -> str:
         """
-        Build a regex pattern to find any mention of the RG number corresponding to the one from the Temis case ID
+        Build a regex pattern to find any mention of the RG number corresponding to the one from the rule based case ID
         :return: the pattern as a string
         """
         pattern = [fr"({number}([[:punct:]\s])*)" for number in self.rg[0:len(self.rg) - 1]]

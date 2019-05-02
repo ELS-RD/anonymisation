@@ -7,6 +7,7 @@
 
 
 Build `Named Entity Recognition` (`NER`) training dataset and learn a model dedicated to French legal case anonymization by leveraging existing rule based system and adding noise and synthetic data.    
+The projects goes above the scope covered by the rule based system which was limited to address and natural person names.  
 This model can be used in a pseudo-anonymization system.    
 Input format is the one from rule based system `skill cartridges`.  
 
@@ -173,7 +174,7 @@ make show_spacy_entities
 * view `skill cartridges` results on a local web page ([`http://localhost:5000`](http://localhost:5000))
 
 ```bash
-make show_temis_entities
+make show_rule_based_entities
 ```
 
 * view differences between [Spacy](https://spacy.io/) and `skill cartridges` (only for shared entity types)
