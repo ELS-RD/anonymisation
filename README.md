@@ -48,7 +48,7 @@ Below strategies used are listed:
     - building dictionaries of frequent names using all documents and look for them in each of them (2 pass process)
 - Dataset augmentation
     - Create some variation of the discovered entities and search for them 
-        - By removing first or last name, change the case of one or more word in entity, remove key words (M., Mme, la société, ...), etc.
+        - By removing first or last name, changing the case of one or more word in entity, removing key words (M., Mme, la société, ...), etc.
         - transformation are randomly applied (20% of entities are transformed)
         - make the model more robust to error in the text
         - these variations can not be discovered easily with patterns
@@ -56,11 +56,11 @@ Below strategies used are listed:
 - Miscellaneous tricks
     - removing from train set all paragraphs containing 0 entity 
         - no entity paragraphs may be due to too simplistic patterns
-    - Apply some priority rules depending of the source of the entity offset for cases where there is a conflict of type
+    - Apply some priority rules over the source of the entity offset for cases where there is a conflict of type
         - some candidate generators are more safe than others 
         - a `_1` is added to the end of the tag label when it is safe and it is removed during the offset normalization step
     - Look for doubtful MWE candidates and declare them as doubtful
-        - doubtful MWE candidates are any sequence of words starting with an up case
+        - doubtful MWE candidates are any sequence of words starting with an upper case
         - a filter is then applied to keep only those with a first name (based on a dictionary) 
         - no loss is computed on these entities, meaning they don't influence the model during training
 
@@ -69,6 +69,8 @@ making the whole system much more robust to *hard to catch* entities.
 Data augmentation in particular has proved to be very efficient.  
 
 ## Recognized entity types
+
+Our rule based system only managed `PERS`, `ADDRESS` and `RG` types.
 
 * Persons:
     * `PERS`: natural person *(include first name unlike `skill cartridges`)*, **source**: `skill cartridges` + name extension + other occurrences
@@ -82,14 +84,13 @@ Data augmentation in particular has proved to be very efficient.
     * `COURT`: names of French courts, **source**: rules + other occurrences
     * `JUDGE_CLERKS`: judges and court clerks, **source**: rules + other occurrences
 * Miscellaneous:
-    * `ADDRESS`: addresses *(**very** badly done by `skill cartridges`)*, **source**: rules + other occurrences + dictionary
+    * `ADDRESS`: addresses *(badly done by `skill cartridges`)*, **source**: rules + other occurrences + dictionary
         * there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed
     * `DATE`: any date, in numbers or letters, **source**: rules + other occurrences
     * `RG` : ID of the legal case, **source**: `skill cartridges` + rules
     * `UNKNOWN` : only for train set, indicates that no loss should be apply on the word, whatever the prediction is, **source**: rules + dictionary
 
-To each type, dataset augmentation and miscellaneous tricks have been applied.  
-`skill cartridges` only managed `PERS`, `ADDRESS` and `RG` types.  
+To each type, dataset augmentation and miscellaneous tricks have been applied.    
 
 ## Model
 
@@ -124,7 +125,7 @@ Both are not strategic to the success of the learning but provide a little help.
 Paths listed below can be modified in the config file `resources/config.ini`.
 
 ### `XML`
-* Cases have to be provided as XML in the format used by `skill cartridges`.  
+* Cases have to be provided as XML in the format used by `skill cartridges` (example provided in `resources` folder).  
 * One XML file represents one week of legal cases.  
 * `XML` files should be put in folder `resources/training_data/`.  
 * The case used for inference has to be placed in `resources/dev_data/`.  
@@ -139,7 +140,7 @@ Paths listed below can be modified in the config file `resources/config.ini`.
 
 ## Commands to use the code
 
-This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies without interfering with the those used by the machine.  
+This project uses [Python virtual environment](https://virtualenv.pypa.io/en/stable/) to manage dependencies without interfering with those used by the machine.  
 `pip3` and `python3` are the only requirements.  
 To setup a virtual environment on the machine, install `virtualenv` from `pip3` and install the project dependencies (from the `requirements.txt` file).  
 
