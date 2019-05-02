@@ -1,6 +1,6 @@
 import regex
 
-extract_rg_from_case_id_pattern = "(?<=\-)\d*(?=\-jurica$)"
+extract_rg_from_case_id_pattern = r"(?<=\-)\d*(?=\-jurica$)"
 extract_rg_from_case_id_regex = regex.compile(pattern=extract_rg_from_case_id_pattern, flags=regex.VERSION1)
 
 
@@ -29,7 +29,7 @@ class MatchRg:
         Build a regex pattern to find any mention of the RG number corresponding to the one from the Temis case ID
         :return: the pattern as a string
         """
-        pattern = [f"({number}([[:punct:]\s])*)" for number in self.rg[0:len(self.rg) - 1]]
+        pattern = [fr"({number}([[:punct:]\s])*)" for number in self.rg[0:len(self.rg) - 1]]
         pattern += self.rg[len(self.rg) - 1]
         pattern = ''.join(pattern)
         pattern = "\\b" + pattern + "\\b"
@@ -53,8 +53,8 @@ class MatchRg:
         return [current_offsets + self.get_rg_offset_from_text(text) for text, current_offsets in zip(texts, offsets)]
 
 
-extract_rg_from_text_pattern = "(?<=(\\bR[[:punct:]]{0,5}G\\b|((?i)répertoire général))" \
-                               "[^\d]{0,20})(\d[[:punct:]]*)+( |$)"
+extract_rg_from_text_pattern = (r"(?<=(\bR[[:punct:]]{0,5}G\b|((?i)répertoire général))"
+                                r"[^\d]{0,20})(\d[[:punct:]]*)+( |$)")
 extract_rg_from_text_regex = regex.compile(extract_rg_from_text_pattern, flags=regex.VERSION1)
 
 

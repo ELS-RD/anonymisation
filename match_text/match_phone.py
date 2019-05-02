@@ -1,11 +1,11 @@
 import regex
 
-phone_regex = regex.compile(pattern="(?<!\d[[:punct:] ]*)"
-                                    "\\b"
-                                    "(\()?0[1-9][\- \)\.]*"
-                                    "(\d\d[\- \(\)\.]*){4}"
-                                    "\\b"
-                                    "(?![[:punct:] ]*\d)",
+phone_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
+                                    r"\b"
+                                    r"(\()?0[1-9][\- \)\.]*"
+                                    r"(\d\d[\- \(\)\.]*){4}"
+                                    r"\b"
+                                    r"(?![[:punct:] ]*\d)",
                             flags=regex.VERSION1)
 
 

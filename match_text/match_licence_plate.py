@@ -1,21 +1,21 @@
 import regex
 
-new_licence_plate_regex = regex.compile(pattern="(?<!(\d|[A-Z])[[:punct:] ]*)"
-                                                "\\b"
-                                                "([A-Z][\- \.]*){2}"
-                                                "([1-9][\- \.]*){3}"
-                                                "([A-Z][\- \.]*){2}"
-                                                "\\b"
-                                                "(?![[:punct:] ]*(\d|[A-Z]))",
+new_licence_plate_regex = regex.compile(pattern=r"(?<!(\d|[A-Z])[[:punct:] ]*)"
+                                                r"\b"
+                                                r"([A-Z][\- \.]*){2}"
+                                                r"([1-9][\- \.]*){3}"
+                                                r"([A-Z][\- \.]*){2}"
+                                                r"\b"
+                                                r"(?![[:punct:] ]*(\d|[A-Z]))",
                                         flags=regex.VERSION1)
 
-old_licence_plate_regex = regex.compile(pattern="(?<!(\d|[A-Z])[[:punct:] ]*)"
-                                                "\\b"
-                                                "([1-9]{1,4}[\- \.]*)"
-                                                "[A-Z]{2,3}[\- \.]*"
-                                                "[1-9]{2}"
-                                                "\\b"
-                                                "(?![[:punct:] ]*(\d|[A-Z]))",
+old_licence_plate_regex = regex.compile(pattern=r"(?<!(\d|[A-Z])[[:punct:] ]*)"
+                                                r"\b"
+                                                r"([1-9]{1,4}[\- \.]*)"
+                                                r"[A-Z]{2,3}[\- \.]*"
+                                                r"[1-9]{2}"
+                                                r"\b"
+                                                r"(?![[:punct:] ]*(\d|[A-Z]))",
                                         flags=regex.VERSION1)
 
 

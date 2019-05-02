@@ -1,8 +1,8 @@
 import regex
 
-barreau_pattern = regex.compile("barreau ((?i)de |d'|du )"
-                                "[A-ZÉÈ'\-]+\w*"
-                                "( (en |de |et les |du )?[A-Z'\-]+\w*)*",
+barreau_pattern = regex.compile(r"barreau ((?i)de |d'|du )"
+                                r"[A-ZÉÈ'\-]+\w*"
+                                r"( (en |de |et les |du )?[A-Z'\-]+\w*)*",
                                 flags=regex.VERSION1)
 
 

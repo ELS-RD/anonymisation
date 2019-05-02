@@ -1,14 +1,14 @@
 import regex
 
-extract_clerk_pattern_1 = regex.compile("(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
-                                        "("
-                                        "(?!Conseil|Présid|Magistrat|Mme|M |Madame|Monsieur)"
-                                        "[A-ZÉÈ]+[\w-']*\s*)+(?=.{0,20}"
-                                        "(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
+extract_clerk_pattern_1 = regex.compile(r"(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
+                                        r"("
+                                        r"(?!Conseil|Présid|Magistrat|Mme|M |Madame|Monsieur)"
+                                        r"[A-ZÉÈ]+[\w-']*\s*)+(?=.{0,20}"
+                                        r"(greffier|Greffier|GREFFIER|greffière|Greffière|GREFFIERE))",
                                         flags=regex.VERSION1)
 
-extract_clerk_pattern_2 = regex.compile("(?<=(Greffi|greffi|GREFFI)[^:]{0,50}:.{0,10})"
-                                        "((?!Madame |Monsieur |M. |Mme. |M |Mme )[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)+",
+extract_clerk_pattern_2 = regex.compile(r"(?<=(Greffi|greffi|GREFFI)[^:]{0,50}:.{0,10})"
+                                        r"((?!Madame |Monsieur |M. |Mme. |M |Mme )[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)+",
                                         flags=regex.VERSION1)
 
 

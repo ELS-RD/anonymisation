@@ -1,8 +1,8 @@
 import regex
 
-extract_lawyer = regex.compile("(?<=(Me|Me\.|(M|m)a(i|î)tre|M°) )"
-                               "[A-ZÉÈ]+[\w-']*"
-                               "( [A-ZÉÈ\-]+[\w-']*)*",
+extract_lawyer = regex.compile(r"(?<=(Me|Me\.|(M|m)a(i|î)tre|M°) )"
+                               r"[A-ZÉÈ]+[\w-']*"
+                               r"( [A-ZÉÈ\-]+[\w-']*)*",
                                flags=regex.VERSION1)
 
 

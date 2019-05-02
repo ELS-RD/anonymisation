@@ -36,24 +36,24 @@ class CourtName:
 
 
 # List of French courts: http://www.justice.gouv.fr/organisation-de-la-justice-10031/lordre-judiciaire-10033/
-juridiction_pattern_1 = regex.compile("((?i)Tribunal de grande instance|Tribunal d'instance|"
-                                      "Conseil de prud.*hommes(.{0,10}formation (paritaire|de départage))?|"
-                                      "Tribunal( mixte)? de commerce|Tribunal des affaires de sécurité sociale|"
-                                      "Tribunal paritaire des baux ruraux|Cour d'assises|Tribunal correctionnel|"
-                                      "Tribunal de police|Juge de proximit.|Juge des enfants|Tribunal pour enfants|"
-                                      "Cour d'assises des mineurs|Cour d'appel|"
-                                      "Tribunal administratif|Cour administrative d'appel|"
-                                      "Cour nationale du droit d'asile|"
-                                      "\\bT(\.| )*G(\.| )*I(\.| )*|T(\.| )*I(\.| )*\\b|"
-                                      "\\bT(\.| )*A(\.| )*S(\.| )*S(\.| )*\\b)"
+juridiction_pattern_1 = regex.compile(r"((?i)Tribunal de grande instance|Tribunal d'instance|"
+                                      r"Conseil de prud.*hommes(.{0,10}formation (paritaire|de départage))?|"
+                                      r"Tribunal( mixte)? de commerce|Tribunal des affaires de sécurité sociale|"
+                                      r"Tribunal paritaire des baux ruraux|Cour d'assises|Tribunal correctionnel|"
+                                      r"Tribunal de police|Juge de proximit.|Juge des enfants|Tribunal pour enfants|"
+                                      r"Cour d'assises des mineurs|Cour d'appel|"
+                                      r"Tribunal administratif|Cour administrative d'appel|"
+                                      r"Cour nationale du droit d'asile|"
+                                      r"\bT(\.| )*G(\.| )*I(\.| )*|T(\.| )*I(\.| )*\\b|"
+                                      r"\bT(\.| )*A(\.| )*S(\.| )*S(\.| )*\\b)"
                                       "[^A-Z]{0,5}"
-                                      "("
-                                      "(?!\\bDU\\b\s)"
-                                      "[A-ZÉÈ]+[\w\-']*\s*"
+                                      r"("
+                                      r"(?!\bDU\b\s)"
+                                      r"[A-ZÉÈ]+[\w\-']*\s*"
                                       # "((de|d'|en|des|du|à)\s*)?"
-                                      "((de\s+|d'|en\s+|des\s+|du\s+|à\s+)(?![[:lower:]]))?"
-                                      ")+"
-                                      "(?!(?i)\\b(en|le|du)\\b)",
+                                      r"((de\s+|d'|en\s+|des\s+|du\s+|à\s+)(?![[:lower:]]))?"
+                                      r")+"
+                                      r"(?!(?i)\b(en|le|du)\b)",
                                       flags=regex.VERSION1)
 
 # http://fr.jurispedia.org/index.php/Liste_des_juridictions_(fr)

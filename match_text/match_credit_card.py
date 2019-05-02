@@ -1,10 +1,10 @@
 import regex
 
-credit_card_regex = regex.compile(pattern="(?<!\d[[:punct:] ]*)"
-                                          "\\b"
-                                          "(\d[\- \.]*){16}"
-                                          "\\b"
-                                          "(?![[:punct:] ]*\d)",
+credit_card_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
+                                          r"\b"
+                                          r"(\d[\- \.]*){16}"
+                                          r"\b"
+                                          r"(?![[:punct:] ]*\d)",
                                   flags=regex.VERSION1)
 
 

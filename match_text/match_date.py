@@ -26,11 +26,11 @@ date_pattern_in_letters = "(" + get_or_regex(un_trent_et_un) + ") (" + get_or_re
 date_pattern_in_letters_regex = regex.compile(date_pattern_in_letters,
                                               flags=regex.VERSION1 | regex.IGNORECASE)
 
-date_pattern_in_numbers_1 = "[0-3]?\d( ?er)? (" + get_or_regex(months) + ") (19|20|20)?\d{2}"
+date_pattern_in_numbers_1 = r"[0-3]?\d( ?er)? (" + get_or_regex(months) + r") (19|20|20)?\d{2}"
 date_pattern_in_numbers_regex_1 = regex.compile(date_pattern_in_numbers_1,
                                                 flags=regex.VERSION1 | regex.IGNORECASE)
 
-date_pattern_in_numbers_regex_2 = regex.compile('(\d{1,2}.?(/|\-).?\d{1,2}.?(/|\-).?\d{2,4})',
+date_pattern_in_numbers_regex_2 = regex.compile(r'(\d{1,2}.?(/|\-).?\d{1,2}.?(/|\-).?\d{2,4})',
                                                 flags=regex.VERSION1 | regex.IGNORECASE)
 
 

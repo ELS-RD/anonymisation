@@ -1,16 +1,16 @@
 import regex
 
-security_social_regex = regex.compile(pattern="(?<!\d[[:punct:] ]*)"
-                                              "\\b"
-                                              "[1-47-8][\- \.]*"
-                                              "\d{2}[\- \.]*"
-                                              "[0-1]\d[\- \.]*"
-                                              "\d\w[\- \.]*"
-                                              "\d{3}[\- \.]*"
-                                              "\d{3}[\- \.]*"
-                                              "\d{2}[\- \.]*"
-                                              "\\b"
-                                              "(?![[:punct:] ]*\d)",
+security_social_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
+                                              r"\b"
+                                              r"[1-47-8][\- \.]*"
+                                              r"\d{2}[\- \.]*"
+                                              r"[0-1]\d[\- \.]*"
+                                              r"\d\w[\- \.]*"
+                                              r"\d{3}[\- \.]*"
+                                              r"\d{3}[\- \.]*"
+                                              r"\d{2}[\- \.]*"
+                                              r"\b"
+                                              r"(?![[:punct:] ]*\d)",
                                       flags=regex.VERSION1 | regex.IGNORECASE)
 
 

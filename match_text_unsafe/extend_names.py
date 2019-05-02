@@ -34,21 +34,21 @@ class ExtendNames:
         self.dont_detect = (len(extracted_names) == 0)
 
         extracted_names_pattern = '|'.join(extracted_names)
-        pattern_title = "(?<=M\. |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )" \
-                        "(" \
-                        "(" \
-                        "(?!\\b(M\.)\\b |\\bM\\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )" \
-                        "[A-ZÉÈ\-\.]+\w*\s*)*" \
-                        "\\b(" + \
-                        extracted_names_pattern + \
-                        ")\\b" \
-                        "( [A-ZÉÈ\-\.]+\w*)*" \
-                        ")"
+        pattern_title = (r"(?<=M\. |\bM\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )"
+                         r"("
+                         r"("
+                         r"(?!\b(M\.)\b |\bM\b |Mme |Mlle |(M|m)onsieur |(M|m)adame |(M|m)ademoiselle )"
+                         r"[A-ZÉÈ\-\.]+\w*\s*)*"
+                         r"\b(" +
+                         extracted_names_pattern +
+                         r")\b"
+                         r"( [A-ZÉÈ\-\.]+\w*)*"
+                         r")")
 
-        pattern_extend_right = "\\b(" + \
-                               extracted_names_pattern + \
-                               ")\\b" \
-                               "(\s+[A-ZÉÈ\-]+\w*)+"
+        pattern_extend_right = (r"\b(" +
+                                extracted_names_pattern +
+                                r")\b"
+                                r"(\s+[A-ZÉÈ\-]+\w*)+")
         self.pattern_title = regex.compile(pattern_title, flags=regex.VERSION1)
         self.pattern_extend_right = regex.compile(pattern_extend_right, flags=regex.VERSION1)
 

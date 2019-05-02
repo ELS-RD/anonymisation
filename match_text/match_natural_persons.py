@@ -1,14 +1,14 @@
 import regex
 
-extract_partie_pp_pattern_1 = regex.compile("([A-Z][\w-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
+extract_partie_pp_pattern_1 = regex.compile(r"([A-Z][\w-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
                                             flags=regex.VERSION1)
 
-extract_partie_pp_pattern_2 = regex.compile("(?<=((?i)consorts|époux|docteur|dr(\.)?|professeur|prof(\.)?)\s+)"
-                                            "([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
+extract_partie_pp_pattern_2 = regex.compile(r"(?<=((?i)consorts|époux|docteur|dr(\.)?|professeur|prof(\.)?)\s+)"
+                                            r"([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
                                             flags=regex.VERSION1)
 
-extract_partie_pp_pattern_3 = regex.compile("((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*) (épouse|veuve) "
-                                            "([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
+extract_partie_pp_pattern_3 = regex.compile(r"((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*) (épouse|veuve) "
+                                            r"([A-ZÉÈ]+[\w]*(?:\s[A-ZÉÈ]+[\w]*)*)",
                                             flags=regex.VERSION1)
 
 
