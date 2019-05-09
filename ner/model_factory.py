@@ -20,8 +20,8 @@ import spacy
 # Managed type of tokens
 from spacy.lang.fr import French
 
-token_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
-               # "SOCIAL_SECURITY_NUMBER",
+entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
+                # "SOCIAL_SECURITY_NUMBER",
                "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
                "ADDRESS", "COURT", "DATE", "RG",
                "BAR", "UNKNOWN"]
@@ -51,7 +51,7 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     ner = nlp.create_pipe('ner')
     # add labels
     if load_labels_for_training:
-        for token_type in token_types:
+        for token_type in entity_types:
             ner.add_label(token_type)
 
     nlp.add_pipe(ner, last=True)

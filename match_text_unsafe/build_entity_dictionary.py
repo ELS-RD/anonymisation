@@ -17,7 +17,7 @@
 
 from spacy.tokens.doc import Doc
 
-from ner.model_factory import token_types
+from ner.model_factory import entity_types
 
 
 class EntityTypename:
@@ -30,7 +30,7 @@ class EntityTypename:
         Build a new 0 count dict for each type of token
         :return: 0 count dict
         """
-        default_dict_value = dict([(token, 0) for token in token_types])
+        default_dict_value = dict([(token, 0) for token in entity_types])
         return default_dict_value
 
     def add_spacy_entities(self, spacy_doc: Doc):

@@ -257,7 +257,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
             # init element specific to the current legal case
             current_case_paragraphs.clear()
             current_case_offsets.clear()
-            previous_case_id = current_case_id
+            previous_case_id: str = current_case_id
             current_item_header = case_header_content[current_case_id]
 
             headers_matcher = MatchValuesFromHeaders(current_header=current_item_header, threshold_size=3)

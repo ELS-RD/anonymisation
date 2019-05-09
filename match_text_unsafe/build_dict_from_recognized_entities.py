@@ -19,7 +19,7 @@ import pickle
 import warnings
 
 from match_text_unsafe.match_acora import AcoraMatcher
-from ner.model_factory import token_types
+from ner.model_factory import entity_types
 from resources.config_provider import get_config_default
 
 config_training = get_config_default()
@@ -76,7 +76,7 @@ class FrequentEntities(object):
                 data = pickle.load(file=f)
 
             def get_default_dict_value() -> dict:
-                default_dict_value = dict([(token, set()) for token in token_types])
+                default_dict_value = dict([(token, set()) for token in entity_types])
                 # default_dict_value['general_count'] = 0
                 return default_dict_value
 

@@ -142,7 +142,7 @@ def save_doc(case: Case, spacy_docs: List[Doc], directory: str) -> None:
     """
     Save document annotation.
 
-    :param case_id: the case id
+    :param case: the case id
     :param spacy_docs: the spacy annotations
     :param directory: the output directory
     """
@@ -167,7 +167,7 @@ def annotate(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample
     """
     Annotate a sample of the given files an save them into the given directory.
 
-    :param model_dir_path: the directory of the spacy model
+    :param model_dir_path: the directory of the Spacy model
     :param files_dir_path: the directory containing the case files
     :param out_dir_path: the directory where to write the annotations
     :param sample_size: the size of the sample to annotate
