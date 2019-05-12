@@ -59,11 +59,11 @@ list_differences:
 	python3 display_errors.py; \
 	)
 
-eval:
+fine_tune:
 # print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 eval_model.py; \
+	python3 fine_tune_pre_trained_model.py; \
 	)
 
 test:

@@ -106,7 +106,7 @@ def eval(model: French, classes: List[str], content: List[Tuple[str, List[Offset
                     scores[entity_type] = current_scores
                     # if score != 1:
                     #     print(token_type, ":", pred_tokens, "VS", gold_tokens)
-                progress_bar.update()
+            progress_bar.update()
 
     for entity_type in classes:
         if (entity_type in scores) and (len(scores[entity_type]) > 0):
@@ -114,44 +114,47 @@ def eval(model: French, classes: List[str], content: List[Tuple[str, List[Offset
                   len(scores[entity_type]))
 
 
+def load_content(paths) -> List[Tuple[str, List[Offset]]]:
+    results: List[Tuple[str, List[Offset]]] = []
+    for file_path in paths:
+        file_path = os.path.join(eval_dataset_path, file_path)
+        if file_path.endswith('.txt'):
+            with open(file_path, 'r') as f:
+                content_case = [item.strip() for item in f.readlines()]
+            path_annotations = file_path.replace('.txt', '.ent')
+            with open(path_annotations, 'r') as f:
+                annotations = [item.strip() for item in f.readlines()]
+
+            assert len(content_case) > 0
+            assert len(content_case) == len(annotations)
+
+            for line_case, line_annotations in zip(content_case, annotations):
+                gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
+                if len(gold_offsets) > 0:
+                    results.append((line_case, gold_offsets))
+    return results
+
+
 config_training = get_config_default()
 eval_dataset_path = config_training["eval_path"]
 ner_model = get_empty_model(load_labels_for_training=False)
 ner_model = ner_model.from_disk(config_training["model_dir_path"])
 
-content_to_rate: List[Tuple[str, List[Offset]]] = []
+file_paths = os.listdir(eval_dataset_path)
+content_to_rate: List[Tuple[str, List[Offset]]] = load_content(file_paths[:-20])
+content_to_rate_test = load_content(file_paths[-20:])
 
-for file_path in os.listdir(eval_dataset_path):
-    file_path = os.path.join(eval_dataset_path, file_path)
-    if file_path.endswith('.txt'):
-        with open(file_path, 'r') as f:
-            content_case = [item.strip() for item in f.readlines()]
-        path_annotations = file_path.replace('.txt', '.ent')
-        with open(path_annotations, 'r') as f:
-            annotations = [item.strip() for item in f.readlines()]
-
-        assert len(content_case) > 0
-        assert len(content_case) == len(annotations)
-
-        for line_case, line_annotations in zip(content_case, annotations):
-            gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
-            if len(gold_offsets) > 0:
-                content_to_rate.append((line_case, gold_offsets))
-
-eval(model=ner_model, classes=entity_types, content=content_to_rate)
+eval(model=ner_model, classes=entity_types, content=content_to_rate_test)
 
 # results = spacy_evaluate(ner_model, content_to_rate)
 # print(results)
 
 print("nb entities", sum([len(item) for item in content_to_rate]))
 
+train_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=gold_offsets)) for current_line, gold_offsets in content_to_rate]
 
-all_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=gold_offsets)) for current_line, gold_offsets in content_to_rate]
-train_data = all_data[:1800]
-
-
-with tqdm(total=15, unit=" epoch", desc="update model") as progress_bar:
-    for itn in range(15):
+with tqdm(total=30, unit=" epoch", desc="update model") as progress_bar:
+    for itn in range(30):
         random.shuffle(train_data)
         losses = dict()
         batches = minibatch(train_data, size=compounding(4.0, 32.0, 1.001))
@@ -165,4 +168,4 @@ with tqdm(total=15, unit=" epoch", desc="update model") as progress_bar:
             )
         progress_bar.update()
 
-eval(model=ner_model, classes=entity_types, content=content_to_rate[1800:])
+eval(model=ner_model, classes=entity_types, content=content_to_rate_test)
