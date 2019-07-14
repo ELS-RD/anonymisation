@@ -18,15 +18,13 @@
 import os
 import random
 from collections import namedtuple
-from typing import Tuple, List, Dict
+from typing import Tuple, List
 
-import numpy as np
 from spacy.gold import GoldParse
-from spacy.lang.fr import French
 from spacy.scorer import Scorer
 from spacy.util import minibatch
 
-from ner.model_factory import get_empty_model, entity_types
+from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
 
 Offset = namedtuple('Offset', ['start', 'end', 'type'])
@@ -70,51 +68,37 @@ def convert_offset_to_words(line: str, offsets: List[Offset], selected_type: str
     return words
 
 
-def spacy_evaluate(model, samples: List[Tuple[str, List[Offset]]]) -> Dict[str, float]:
+def spacy_evaluate(model, samples: List[Tuple[str, List[Offset]]]) -> None:
     """
     Compute entity global scores according to Spacy
     :param model: Spacy NER model
     :param samples: list of tuples containgin the filename, the text, and the offsets
     :return: a dict of scores
     """
-    scorer = Scorer()
+    s = Scorer()
+
     for input_, annot in samples:
         doc_gold_text = model.make_doc(input_)
         gold = GoldParse(doc_gold_text, entities=annot)
         pred_value = model(input_)
-        scorer.score(pred_value, gold)
-    return scorer.scores
+        s.score(pred_value, gold)
 
+    entities = list(s.ents_per_type.items())
+    entities.sort(key=lambda tup: tup[0])
 
-def compute_score_per_entity(model: French, classes: List[str], content: List[Tuple[str, List[Offset]]],
-                             print_errors: bool):
-    entity_scores = {}
+    print(f"\n----\n"
+          f"global scores  :\t\t"
+          f"P: {s.scores['ents_p']:.2f}\t"
+          f"R: {s.scores['ents_r']:.2f}\t"
+          f"F1: {s.scores['ents_f']:.2f}")
 
-    for current_line, gold_offsets in content:
-        spacy_offsets: List[Offset] = [Offset(ent.start_char, ent.end_char, ent.label_) for ent in
-                                       model(current_line).ents]
-        for entity_type in classes:
-            # predictions from Spacy
-            pred_words = convert_offset_to_words(line=current_line,
-                                                 offsets=spacy_offsets,
-                                                 selected_type=entity_type)
-            # manual annotations
-            gold_words = convert_offset_to_words(line=current_line,
-                                                 offsets=gold_offsets,
-                                                 selected_type=entity_type)
-            if len(gold_words) > 0:
-                score = len(set(gold_words).intersection(set(pred_words))) / len(set(gold_words))
-                current_scores: List[float] = entity_scores.get(entity_type, [])
-                current_scores.append(score)
-                entity_scores[entity_type] = current_scores
-                if (score != 1) and print_errors:
-                    print(entity_type, ": gold: ", gold_words, "pred:", set(pred_words),
-                          "-|- diff", set(gold_words).difference(set(pred_words)))
-
-    for entity_type in classes:
-        if (entity_type in entity_scores) and (len(entity_scores[entity_type]) > 0):
-            print(entity_type, np.round(100 * np.mean(entity_scores[entity_type]), 2), "%\tnb samples",
-                  len(entity_scores[entity_type]))
+    print("----\nscores per entities\n----")
+    print('\n'.join([f"{ent_type + (15 - len(ent_type)) * ' '}:\t\t"
+                     f"P: {measures['p']:.2f}\t"
+                     f"R: {measures['r']:.2f}\t"
+                     f"F1: {measures['f']:.2f}"
+                     for ent_type, measures in entities]))
+    print(f"-----\n")
 
 
 def load_content(paths) -> List[Tuple[str, List[Offset]]]:
@@ -145,26 +129,40 @@ def load_content(paths) -> List[Tuple[str, List[Offset]]]:
 config_training = get_config_default()
 eval_dataset_path = config_training["eval_path"]
 
-file_paths: List[str] = os.listdir(eval_dataset_path)
-random.shuffle(file_paths)
+all_annotated_files: List[str] = os.listdir(eval_dataset_path)
+# random.shuffle(file_paths)
 
 ner_model = get_empty_model(load_labels_for_training=True)
 ner_model = ner_model.from_disk(config_training["model_dir_path"])
 # ner_model.begin_training()
 
-content_to_rate: List[Tuple[str, List[Offset]]] = load_content(file_paths[:80])
-content_to_rate_test = load_content(file_paths[80:])
+# fixed dev set
+dev_files = ['CA-montpellier-20150203-1306777-jurica.txt',
+             'CA-versailles-20150205-1308492-jurica.txt',
+             'CA-aix-en-provence-20150203-2015056-jurica.txt',
+             'CA-paris-20150205-1420931-jurica.txt',
+             'CA-aix-en-provence-20090506-088938-jurica.txt',
+             'CA-chambery-20150205-1401394-jurica.txt',
+             'CA-douai-20150205-1591-jurica.txt',
+             'CA-versailles-20150205-1401403-jurica.txt',
+             'CA-caen-20120626-102034-jurica.txt',
+             'CA-aix-en-provence-20130214-1201797-jurica.txt',
+             'CA-aix-en-provence-20150203-1419737-jurica.txt']
+
+train_files = [file for file in all_annotated_files if file not in dev_files]
+
+content_to_rate: List[Tuple[str, List[Offset]]] = load_content(train_files)
+content_to_rate_test = load_content(dev_files)
 
 print("total nb entities", sum([len(item) for item in content_to_rate]))
 
-compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=False)
-scores = spacy_evaluate(ner_model, content_to_rate_test)
-print(f"Spacy scores: P: {scores['ents_p']}, R: {scores['ents_r']}, F: {scores['ents_f']}")
+# compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=False)
+spacy_evaluate(ner_model, content_to_rate_test)
 
 train_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=gold_offsets))
               for current_line, gold_offsets in content_to_rate]
 
-for epoch in range(10):
+for epoch in range(20):
     random.shuffle(train_data)
     losses = dict()
     batches = minibatch(train_data)
@@ -173,10 +171,9 @@ for epoch in range(10):
         ner_model.update(
             texts,
             manual_annotations,
-            drop=0.5,
+            # drop=0.8,
             losses=losses)
-    scores = spacy_evaluate(ner_model, content_to_rate_test)
-    print(f"Training - round {epoch}, P: {scores['ents_p']}, R: {scores['ents_r']}, F: {scores['ents_f']}")
+    print(f"Epoch {epoch+1}\n")
+    spacy_evaluate(ner_model, content_to_rate_test)
 
-
-compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=True)
+# compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=False)

@@ -22,9 +22,9 @@ from spacy.lang.fr import French
 
 entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
                 # "SOCIAL_SECURITY_NUMBER",
-               "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
-               "ADDRESS", "COURT", "DATE", "RG",
-               "BAR", "UNKNOWN"]
+                "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
+                "ADDRESS", "COURT", "DATE", "RG",
+                "BAR", "UNKNOWN"]
 
 
 def prevent_sentence_boundary_detection(doc):

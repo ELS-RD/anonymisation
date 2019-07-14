@@ -1,8 +1,8 @@
 numpy
 acora
 tqdm
-spacy==2.1.4
+spacy==2.1.6
 lxml
 pytest
-textacy
+# textacy
 regex
