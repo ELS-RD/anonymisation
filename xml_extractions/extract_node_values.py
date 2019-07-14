@@ -118,7 +118,9 @@ def get_paragraph_from_juri(case_id: str, juri_node: Element, keep_paragraph_wit
     return result
 
 
-def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool, flatten: bool = True) -> Union[List[Paragraph], List[List[Paragraph]]]:
+def get_paragraph_from_file(path: str,
+                            keep_paragraph_without_annotation: bool,
+                            flatten: bool = True) -> Union[List[Paragraph], List[List[Paragraph]]]:
     """
     Read paragraph from a file
     :param path: path to the XML file

@@ -175,5 +175,3 @@ for epoch in range(20):
             losses=losses)
     print(f"Epoch {epoch+1}\n")
     spacy_evaluate(ner_model, content_to_rate_test)
-
-# compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=False)

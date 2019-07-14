@@ -40,7 +40,7 @@ Case = List[Tuple[str, str, List[str], List[Offset]]]
 warnings.filterwarnings('ignore')
 
 
-def parseArgs() -> Namespace:
+def parse_args() -> Namespace:
     """
     Parse command line arguments.
 
@@ -74,7 +74,7 @@ def parseArgs() -> Namespace:
         required=True
     )
     parser.add_argument(
-        '-o', '--onput-files-dir',
+        '-o', '--output-files-dir',
         help="Output files directory",
         action="store", dest="output_dir",
         required=True
@@ -109,7 +109,7 @@ def random_iter(iterable: Iterable, size: int, seed: int = 123) -> Iterable:
 
     random.seed(seed)
     sequence = list(iterable)
-    assert(len(sequence) >= size)
+    assert (len(sequence) >= size)
     sample = random.sample(sequence, size)
     return iter(sample)
 
@@ -119,7 +119,7 @@ def annotate_case(case: Case, entity_typename_builder: EntityTypename, nlp: Lang
     Annotate one case.
 
     :param case: the case id
-    :param entity_typename_builder: the entity typename dictionnary builder
+    :param entity_typename_builder: the entity typename dictionary builder
     :param nlp: the spacy tagger
 
     """
@@ -147,8 +147,8 @@ def save_doc(case: Case, spacy_docs: List[Doc], directory: str) -> None:
     :param directory: the output directory
     """
 
-    assert(len(case) == len(spacy_docs))
-    assert(len(case) > 0)
+    assert (len(case) == len(spacy_docs))
+    assert (len(case) > 0)
 
     case_id, _, _, _ = case[0]
     text_file = os.path.join(directory, case_id) + '.txt'
@@ -160,15 +160,18 @@ def save_doc(case: Case, spacy_docs: List[Doc], directory: str) -> None:
     sep_intra_token = ' '
     with open(ents_file, 'w') as out:
         for spacy_doc in spacy_docs:
-            out.write(sep_inter_token.join([sep_intra_token.join([str(ent.start_char), str(ent.end_char), ent.label_]) for ent in spacy_doc.ents]) + '\n')
+            out.write(sep_inter_token.join(
+                [sep_intra_token.join([str(ent.start_char), str(ent.end_char), ent.label_]) for ent in
+                 spacy_doc.ents]) + '\n')
 
 
-def annotate(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample_size: int, seed: int) -> None:
+# TODO merge with annotate_txt
+def annotate_xml(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample_size: int, seed: int) -> None:
     """
-    Annotate a sample of the given files an save them into the given directory.
+    Annotate a sample of the given XML files and save them into the given directory.
 
     :param model_dir_path: the directory of the Spacy model
-    :param files_dir_path: the directory containing the case files
+    :param files_dir_path: the directory containing the XML files
     :param out_dir_path: the directory where to write the annotations
     :param sample_size: the size of the sample to annotate
     :param seed: the seed to select an random sample
@@ -181,9 +184,51 @@ def annotate(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample
 
     logging.info("Loading cases…")
     cases = list(random_iter(
-        get_paragraph_from_folder(files_dir_path, keep_paragraph_without_annotation=True, flatten=False), sample_size, seed=seed))
+        get_paragraph_from_folder(folder_path=files_dir_path,
+                                  keep_paragraph_without_annotation=True,
+                                  flatten=False), sample_size, seed=seed))
 
-    with tqdm(total=len(cases), unit=" case", desc="Find entities") as progress_bar:
+    with tqdm(total=len(cases), unit=" cases", desc="Find entities") as progress_bar:
+        for case in cases:
+            if len(case) > 0:
+                spacy_docs = annotate_case(case, entity_typename_builder, nlp)
+                save_doc(case, spacy_docs, out_dir_path)
+                progress_bar.update()
+            else:
+                logging.error("Empty case")
+
+
+def annotate_txt(model_dir_path: str, files_dir_path: str, out_dir_path: str) -> None:
+    """
+    Annotate a sample of the given flat text files and save them into the given directory.
+
+    :param model_dir_path: the directory of the Spacy model
+    :param files_dir_path: the directory containing the text files
+    :param out_dir_path: the directory where to write the annotations
+    """
+
+    logging.info("Loading NER model…")
+    nlp = get_empty_model(load_labels_for_training=False)
+    nlp = nlp.from_disk(model_dir_path)
+    entity_typename_builder = EntityTypename()
+
+    logging.info("Loading cases…")
+
+    cases: List[Case] = list()
+
+    for filename in os.listdir(files_dir_path):
+        case: Case = list()
+        basename = filename.split(".")[0]
+        path = os.path.join(files_dir_path, filename)
+        with open(path) as f:
+            lines = f.readlines()
+            for line in lines:
+                if len(line) > 1:
+                    clean_text = line.strip()
+                    case.append((basename, clean_text, list(), list()))
+            cases.append(case)
+
+    with tqdm(total=len(cases), unit=" cases", desc="Find entities") as progress_bar:
         for case in cases:
             if len(case) > 0:
                 spacy_docs = annotate_case(case, entity_typename_builder, nlp)
@@ -194,7 +239,7 @@ def annotate(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample
 
 
 def main() -> None:
-    args = parseArgs()
+    args = parse_args()
 
     if args.loglevel == logging.DEBUG:
         log_format = '%(asctime)s %(levelname)s %(funcName)s: %(message)s'
@@ -202,7 +247,7 @@ def main() -> None:
         log_format = logging.BASIC_FORMAT
     logging.basicConfig(level=args.loglevel, format=log_format)
 
-    annotate(args.model_dir, args.input_dir, args.output_dir, args.sample_size, args.seed)
+    annotate_xml(args.model_dir, args.input_dir, args.output_dir, args.sample_size, args.seed)
 
 
 if __name__ == '__main__':
