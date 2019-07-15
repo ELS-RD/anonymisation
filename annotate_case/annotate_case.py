@@ -48,22 +48,22 @@ def complete_case_annotations(spacy_docs: List[Doc], entity_typename: Dict[str, 
         for spacy_doc, doc_address_offset in zip(spacy_docs, document_addresses_offsets):
             matches = matcher.get_matches(text=spacy_doc.text, tag="UNKNOWN")
             matcher_offsets = list()
-            for start_offset, end_offset, _ in matches:
-                span_text = spacy_doc.text[start_offset:end_offset]
+            for offset in matches:
+                span_text = spacy_doc.text[offset.start:offset.end]
                 logger.debug(span_text)
-                type_name = entity_typename[span_text.lower()]
-                matcher_offsets.append((start_offset, end_offset, type_name))
+                offset.type = entity_typename[span_text.lower()]
+                matcher_offsets.append(offset)
             matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + doc_address_offset)
 
             spacy_matcher_offset = list()
-            for start_offset, end_offset, type_name in matcher_offsets_normalized:
+            for offset in matcher_offsets_normalized:
                 # https://spacy.io/usage/linguistic-features#section-named-entities
-                span_doc = spacy_doc.char_span(start_offset, end_offset, label=type_name)
+                span_doc = spacy_doc.char_span(offset.start, offset.end, label=offset.type)
                 if span_doc is not None:
                     # span will be none if the word is incomplete
                     spacy_matcher_offset.append(span_doc)
                 else:
-                    logger.error(f"ERROR char offset [{spacy_doc.text[start_offset:end_offset]}] "
+                    logger.error(f"ERROR char offset [{spacy_doc.text[offset.start:offset.end]}] "
                                  f"from [{spacy_doc.text}]")
 
             spacy_doc.ents = spacy_matcher_offset  # all_offsets
