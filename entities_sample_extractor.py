@@ -177,7 +177,8 @@ def annotate(model_dir_path: str, files_dir_path: List[str], out_dir_path: str) 
                 for line in lines:
                     clean_text = line.strip()
                     if len(clean_text) > 1:
-                        basename = path.split(".")[0]
+                        basename = os.path.basename(path)
+                        basename = basename.split(".")[0]
                         case.append(Paragraph(basename, clean_text, list(), list()))
                 cases.append(case)
         else:
@@ -187,6 +188,7 @@ def annotate(model_dir_path: str, files_dir_path: List[str], out_dir_path: str) 
         for case in cases:
             if len(case) > 0:
                 spacy_docs = annotate_case(case, entity_typename_builder, nlp)
+
                 save_doc(case, spacy_docs, out_dir_path)
                 progress_bar.update()
             else:
@@ -213,5 +215,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
-# python entities_sample_extractor.py -i ./resources/doc_courts/txt -o ./resources/doc_courts/spacy_output -m ./resources/model -k 100

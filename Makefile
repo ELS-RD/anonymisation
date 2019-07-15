@@ -72,3 +72,21 @@ test:
 	$(SOURCE_VIRT_ENV); \
 	pytest; \
 	)
+
+extract_com_1:
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python entities_sample_extractor.py -i ./resources/doc_courts/txt -o ./resources/doc_courts/spacy_output -m ./resources/model -k 100; \
+	)
+
+extract_com_2:
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python entities_sample_extractor.py -i ./resources/doc_courts/tc_tesseract_selection -o ./resources/doc_courts/spacy_tc_2_tesseract_selection -m ./resources/model -k 100; \
+	)
+
+extract_ca:
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python entities_sample_extractor.py -i ./resources/training_data -o ../case_annotation/data_spacy_automatic_annotations -m ./resources/model -k 100; \
+	)

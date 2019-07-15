@@ -14,6 +14,7 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from spacy.tokens.span import Span
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from match_text.match_address import find_address_in_block_of_paragraphs
@@ -46,6 +47,7 @@ def complete_case_annotations(spacy_docs: List[Doc], entity_typename: Dict[str, 
                                                                          offsets=list(empty_offsets))
 
         for spacy_doc, doc_address_offset in zip(spacy_docs, document_addresses_offsets):
+
             matches = matcher.get_matches(text=spacy_doc.text, tag="UNKNOWN")
             matcher_offsets = list()
             for offset in matches:
@@ -53,15 +55,17 @@ def complete_case_annotations(spacy_docs: List[Doc], entity_typename: Dict[str, 
                 logger.debug(span_text)
                 offset.type = entity_typename[span_text.lower()]
                 matcher_offsets.append(offset)
+
             matcher_offsets_normalized = normalize_offsets(offsets=matcher_offsets + doc_address_offset)
 
-            spacy_matcher_offset = list()
+            spacy_matcher_offset: List[Span] = list()
             for offset in matcher_offsets_normalized:
                 # https://spacy.io/usage/linguistic-features#section-named-entities
-                span_doc = spacy_doc.char_span(offset.start, offset.end, label=offset.type)
+                span_doc: Span = spacy_doc.char_span(offset.start, offset.end, label=offset.type)
                 if span_doc is not None:
                     # span will be none if the word is incomplete
                     spacy_matcher_offset.append(span_doc)
+
                 else:
                     logger.error(f"ERROR char offset [{spacy_doc.text[offset.start:offset.end]}] "
                                  f"from [{spacy_doc.text}]")
