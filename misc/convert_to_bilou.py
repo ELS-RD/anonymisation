@@ -14,14 +14,18 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List, Tuple, Union, Optional
 
 from spacy.gold import biluo_tags_from_offsets, GoldParse
+from spacy.tokens.doc import Doc
+
+from xml_extractions.extract_node_values import Offset
 
 no_action_bilou = None
 unknown_type_name = "UNKNOWN"
 
 
-def convert_bilou_with_missing_action(doc, offsets: list) -> list:
+def convert_bilou_with_missing_action(doc: Doc, offsets: List[Tuple[int, int, str]]) -> List[Optional[str]]:
     """
     Convert unknown type token to missing value for NER
     Therefore no Loss will be applied to these tokens
@@ -30,12 +34,12 @@ def convert_bilou_with_missing_action(doc, offsets: list) -> list:
     :param offsets: original offsets
     :return: list of BILOU types
     """
-    result1 = biluo_tags_from_offsets(doc, offsets)
+    result = biluo_tags_from_offsets(doc, offsets)
     return [no_action_bilou if unknown_type_name in action_bilou else action_bilou
-            for action_bilou in result1]
+            for action_bilou in result]
 
 
-def convert_unknown_bilou(doc, offsets: list) -> GoldParse:
+def convert_unknown_bilou(doc: Doc, offsets: List[Offset]) -> GoldParse:
     """
     Convert entity offsets to list of BILOU annotations
     and convert UNKNOWN label to Spacy missing values
@@ -44,11 +48,12 @@ def convert_unknown_bilou(doc, offsets: list) -> GoldParse:
     :param offsets: discovered offsets
     :return: tuple of docs and BILOU annotations
     """
-    bilou_annotations = convert_bilou_with_missing_action(doc=doc, offsets=offsets)
+    tupple_offset = [(offset.start, offset.end, offset.type) for offset in offsets]
+    bilou_annotations = convert_bilou_with_missing_action(doc=doc, offsets=tupple_offset)
     return GoldParse(doc, entities=bilou_annotations)
 
 
-def convert_unknown_bilou_bulk(docs: list, offsets: list) -> list:
+def convert_unknown_bilou_bulk(docs: List[Doc], offsets: List[List[Offset]]) -> List[GoldParse]:
     """
     Convert list of entity offsets to list of BILOU annotations
     and convert UNKNOWN label to Spacy missing values

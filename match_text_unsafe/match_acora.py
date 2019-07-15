@@ -24,7 +24,7 @@ from xml_extractions.extract_node_values import Offset
 class AcoraMatcher:
     matcher = None
 
-    def __init__(self, content: list, ignore_case: bool):
+    def __init__(self, content: List[str], ignore_case: bool):
         """
         Acora matcher factory
         :param content: a list of items to search

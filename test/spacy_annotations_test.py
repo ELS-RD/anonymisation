@@ -22,17 +22,19 @@ from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_b
 from ner.model_factory import get_empty_model
 import pytest
 
+from xml_extractions.extract_node_values import Offset
+
 pytest.nlp = get_empty_model(load_labels_for_training=True)
 
 
 def test_bilou_conv():
     doc: Doc = pytest.nlp.make_doc("Ceci est un test.")
-    offset1 = [(5, 8, "UNKNOWN")]
+    offset1 = [Offset(5, 8, "UNKNOWN")]
     assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', '-', 'O', 'O', 'O']
     assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ['O', '-', 'O', 'O', 'O']
-    offset2 = [(5, 8, "PERS")]
+    offset2 = [Offset(5, 8, "PERS")]
     assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PERS', 'O', 'O', 'O']
-    offset3 = [(0, 4, "UNKNOWN")]
+    offset3 = [Offset(0, 4, "UNKNOWN")]
     assert convert_unknown_bilou(doc, offsets=offset3).ner == ['-', 'O', 'O', 'O', 'O']
 
 

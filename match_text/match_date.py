@@ -31,7 +31,7 @@ months = ["janvier", "f.vrier", "mars", "avril", "mai", "juin", "juillet", "ao.t
           "septembre", "octobre", "novembre", "d.cembre"]
 
 
-def get_or_regex(original_list: list) -> str:
+def get_or_regex(original_list: List[str]) -> str:
     """
     Transform a list of string to a [OR] regex
     :param original_list:

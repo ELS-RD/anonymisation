@@ -17,6 +17,7 @@
 
 import pickle
 import warnings
+from typing import List
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from ner.model_factory import entity_types
@@ -30,7 +31,7 @@ class FrequentEntities(object):
     matcher = None
     frequent_entities_dict = None
 
-    def __init__(self, path_trainset: str, threshold_occurrences: int, type_name_to_not_load: list, load_data: bool):
+    def __init__(self, path_trainset: str, threshold_occurrences: int, type_name_to_not_load: List[str], load_data: bool):
         """
         Build an Acora matcher based on the dict of frequent entities
         :param path_trainset: path to a file storing the entity
@@ -67,7 +68,7 @@ class FrequentEntities(object):
         return instance
 
     @staticmethod
-    def __read_frequent_entities(path_trainset: str, threshold_occurrences: int, type_name_to_not_load: list) -> dict:
+    def __read_frequent_entities(path_trainset: str, threshold_occurrences: int, type_name_to_not_load: List[str]) -> dict:
         """
         Analyze recognized entities and return those over a defined threshold in a dict entity -> type_name
         """
