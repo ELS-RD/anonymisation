@@ -14,10 +14,12 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from modify_text.change_case import get_title_case
 from resources.config_provider import get_config_default
+from xml_extractions.extract_node_values import Offset
 
 
 class FirstName:
@@ -60,7 +62,7 @@ class FirstName:
         self.matcher = AcoraMatcher(content=list(self.first_name_dict),
                                     ignore_case=ignore_case)
 
-    def get_matches(self, text: str) -> list:
+    def get_matches(self, text: str) -> List[Offset]:
         """
         Find match of first name in a text
         :param text: original text
@@ -68,7 +70,7 @@ class FirstName:
         """
         offsets = self.matcher.get_matches(text=text, tag="PERS")
         # names include a space so we fix the point by removing 1 to the offset
-        results = [(start, end - 1, type_name) for start, end, type_name in offsets]
+        results = [Offset(offset.start, offset.end - 1, offset.type) for offset in offsets]
         return results
 
     def contain_first_names(self, text: str) -> bool:
@@ -78,8 +80,8 @@ class FirstName:
         :return: True if it contains a first name
         """
         matches = self.get_matches(text=text)
-        for start, end, _ in matches:
-            if (end == len(text) - 1) or (not text[end + 1].isalpha()):
+        for offset in matches:
+            if (offset.end == len(text) - 1) or (not text[offset.end + 1].isalpha()):
                 return True
 
         return False

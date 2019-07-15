@@ -16,8 +16,12 @@
 #  under the License.
 
 import string
+from typing import List
 
 import regex
+
+from match_text.match_address import remove_duplicates
+from xml_extractions.extract_node_values import Offset
 
 translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space
 
@@ -28,7 +32,7 @@ class ExtendNames:
     type_name = None
     dont_detect = True
 
-    def __init__(self, texts: list, offsets: list, type_name: str):
+    def __init__(self, texts: List[str], offsets: List[List[Offset]], type_name: str):
         """
         Extend names to include first and last name when explicitly preceded by Monsieur / Madame
         :param type_name: filter on type name
@@ -39,10 +43,10 @@ class ExtendNames:
         self.type_name = type_name
         extracted_names = set()
         for text, current_offsets in zip(texts, offsets):
-            for (start, end, current_type_name) in current_offsets:
-                if current_type_name == self.type_name:
+            for offset in current_offsets:
+                if offset.type == self.type_name:
                     # avoid parentheses and other regex interpreted characters inside the items
-                    item: str = text[start:end].translate(translator).strip()
+                    item: str = text[offset.start:offset.end].translate(translator).strip()
                     if len(item) > 3:
                         extracted_names.add(item)
                     elif (len(item) == 3) and (item[0].isupper()):
@@ -69,7 +73,7 @@ class ExtendNames:
         self.pattern_title = regex.compile(pattern_title, flags=regex.VERSION1)
         self.pattern_extend_right = regex.compile(pattern_extend_right, flags=regex.VERSION1)
 
-    def get_extended_names(self, text: str) -> list:
+    def get_extended_names(self, text: str) -> List[Offset]:
         """
         Apply the generated regex pattern to current paragraph text
         No computation if there is nothing to find
@@ -79,14 +83,16 @@ class ExtendNames:
         if self.dont_detect:
             return list()
 
-        result1 = [(t.start(), t.end(), self.type_name) for t in self.pattern_title.finditer(text)]
-        result2 = [(t.start(), t.end(), self.type_name) for t in self.pattern_extend_right.finditer(text)]
-        result = list(set(result1 + result2))
-        result = sorted(result, key=lambda tup: tup[0])
+        result1 = [Offset(t.start(), t.end(), self.type_name) for t in self.pattern_title.finditer(text)]
+        result2 = [Offset(t.start(), t.end(), self.type_name) for t in self.pattern_extend_right.finditer(text)]
+        result = list(remove_duplicates(result1 + result2))
+        result = sorted(result, key=lambda o: o.start)
         return result
 
     @staticmethod
-    def get_extended_extracted_name_multiple_texts(texts: list, offsets: list, type_name: str) -> list:
+    def get_extended_extracted_name_multiple_texts(texts: List[str],
+                                                   offsets: List[List[Offset]],
+                                                   type_name: str) -> List[List[Offset]]:
         """
         Extend known names for a list of texts and offsets
         :param texts: list of original texts
@@ -98,7 +104,7 @@ class ExtendNames:
                               offsets=offsets,
                               type_name=type_name)
         result = list()
-        for offset, text in zip(offsets, texts):
+        for text, offset in zip(texts, offsets):
             current = pattern.get_extended_names(text=text)
             result.append(current + offset)
 

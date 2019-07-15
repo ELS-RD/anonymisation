@@ -14,43 +14,40 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-
+import os
 import pickle
 import sys
 from random import seed
+from typing import List
 
 from tqdm import tqdm
 
-from match_text.match_credit_card import get_credit_card_number
-from match_text.match_licence_plate import get_licence_plate
-from match_text.match_phone import get_phone_number
-from match_text.match_social_security_number import get_social_security_number
-from match_text_unsafe.build_dict_from_recognized_entities import FrequentEntities
-from match_text_unsafe.find_header_values import parse_xml_headers
 from match_text.match_address import get_addresses, find_address_in_block_of_paragraphs, clean_address_offsets
 from match_text.match_bar import get_bar
 from match_text.match_clerk import get_clerk_name
+from match_text.match_company_names import get_company_names
 from match_text.match_courts import CourtName, get_juridictions
 from match_text.match_date import get_date
-from match_text_unsafe.extend_names import ExtendNames
-from modify_text.change_case import random_case_change
-
-from xml_extractions.extract_node_values import get_paragraph_from_folder
 from match_text.match_doubtful_mwe import MatchDoubfulMwe
 from match_text.match_extension_of_entity_name import get_all_name_variation
 from match_text.match_header import MatchValuesFromHeaders
 from match_text.match_judge import get_judge_name
 from match_text.match_lawyer import get_lawyer_name
+from match_text.match_licence_plate import get_licence_plate
 from match_text.match_natural_persons import get_partie_pers
-from match_text.match_company_names import get_company_names
+from match_text.match_phone import get_phone_number
 from match_text.match_rg import MatchRg, get_rg_from_regex
-from modify_text.modify_strings import remove_key_words
+from match_text_unsafe.extend_names import ExtendNames
+from match_text_unsafe.find_header_values import parse_xml_headers
+from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
 from misc.normalize_offset import normalize_offsets, remove_spaces_included_in_offsets, \
     clean_offsets_from_unwanted_words
-from match_text_unsafe.postal_code_dictionary_matcher import PostalCodeCity
+from modify_text.change_case import random_case_change
+from modify_text.modify_strings import remove_key_words
 from ner.training_function import train_model
 from resources.config_provider import get_config_default
 from viewer.spacy_viewer import convert_offsets_to_spacy_docs, view_spacy_docs
+from xml_extractions.extract_node_values import get_paragraph_from_file, Paragraph, Offset
 
 # reproducibility
 seed(123)
@@ -77,9 +74,13 @@ else:
     train_dataset = False
     export_dataset = False
 
-TRAIN_DATA = get_paragraph_from_folder(folder_path=xml_train_path,
-                                       keep_paragraph_without_annotation=True)
-TRAIN_DATA = list(TRAIN_DATA)
+TRAIN_DATA: List[Paragraph] = list()
+
+for filename in os.listdir(xml_train_path):
+    if filename.endswith(".xml"):
+        current_path = os.path.join(xml_train_path, filename)
+        TRAIN_DATA += get_paragraph_from_file(path=current_path,
+                                              keep_paragraph_without_annotation=True)
 
 if (not train_dataset) and (not export_dataset):
     print("Prepare training set for display")
@@ -110,11 +111,11 @@ doc_annotated = list()
 #                                              type_name_to_not_load=["PERS", "UNKNOWN"])
 
 with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER dataset") as progress_bar:
-    for current_case_id, xml_paragraph, xml_extracted_text, xml_offset in TRAIN_DATA:
+    for paragraph in TRAIN_DATA:
         # when we change of legal case, apply matcher to each paragraph of the previous case
-        if current_case_id != previous_case_id:
-            last_document_offsets = list()
-            last_document_texts = list()
+        if paragraph.case_id != previous_case_id:
+            last_document_offsets: List[List[Offset]] = list()
+            last_document_texts: List[str] = list()
             if len(current_case_paragraphs) > 0:
                 current_doc_extend_pp_name_pattern = ExtendNames(texts=current_case_paragraphs,
                                                                  offsets=current_case_offsets,
@@ -257,13 +258,13 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
             # init element specific to the current legal case
             current_case_paragraphs.clear()
             current_case_offsets.clear()
-            previous_case_id: str = current_case_id
-            current_item_header = case_header_content[current_case_id]
+            previous_case_id: str = paragraph.case_id
+            current_item_header = case_header_content[paragraph.case_id]
 
             headers_matcher = MatchValuesFromHeaders(current_header=current_item_header, threshold_size=3)
 
-        current_case_paragraphs.append(xml_paragraph)
-        current_case_offsets.append(xml_offset)
+        current_case_paragraphs.append(paragraph.text)
+        current_case_offsets.append(paragraph.offsets)
 
 print("Number of tags:", sum([len(offsets) for _, _, offsets in doc_annotated]))
 

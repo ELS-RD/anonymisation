@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 barreau_pattern = regex.compile(r"barreau ((?i)de |d'|du )"
                                 r"[A-ZÉÈ'\-]+\w*"
@@ -23,11 +26,11 @@ barreau_pattern = regex.compile(r"barreau ((?i)de |d'|du )"
                                 flags=regex.VERSION1)
 
 
-def get_bar(text: str) -> list:
+def get_bar(text: str) -> List[Offset]:
     """
     Extract offset related to a bar and its city localization
     French bar list: http://www.conferencedesbatonniers.com/barreaux/userslist/7-liste-des-barreaux
     :param text: original text
     :return: offset as a list
     """
-    return [(t.start(), t.end(), "BAR_1") for t in barreau_pattern.finditer(text)]
+    return [Offset(t.start(), t.end(), "BAR_1") for t in barreau_pattern.finditer(text)]

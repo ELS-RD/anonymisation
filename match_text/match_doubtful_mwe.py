@@ -14,11 +14,13 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from match_text.match_first_name_dictionary import FirstName
+from xml_extractions.extract_node_values import Offset
 
 
 class MatchDoubfulMwe:
@@ -33,7 +35,7 @@ class MatchDoubfulMwe:
                                            " mme "],
                                   ignore_case=False)
 
-    def add_unknown_words_offsets(self, texts: list, offsets: list) -> list:
+    def add_unknown_words_offsets(self, texts: List[str], offsets: List[List[Offset]]) -> List[List[Offset]]:
         """
         Add offsets of UNKNOWN words
         :param texts: list of original texts
@@ -46,7 +48,7 @@ class MatchDoubfulMwe:
             result.append(new_offset)
         return result
 
-    def get_unknown_words_offsets(self, text: str, offsets: list) -> list:
+    def get_unknown_words_offsets(self, text: str, offsets: List[Offset]) -> List[Offset]:
         """
         Add unknown upcase words offset to existing ones
         :param text: original text
@@ -57,13 +59,13 @@ class MatchDoubfulMwe:
         all_offsets = offsets + unknown_offsets
         return self.clean_unknown_offsets(offsets=all_offsets)
 
-    def get_all_unknown_words_offsets(self, text: str) -> list:
+    def get_all_unknown_words_offsets(self, text: str) -> List[Offset]:
         """
         Find offsets of all words in upcase.
         :param text: original paragraph text
         :return: offsets as a list
         """
-        return [(t.start(), t.end(), self.unknown_type_name) for t in self.upcase_words_regex.finditer(text) if
+        return [Offset(t.start(), t.end(), self.unknown_type_name) for t in self.upcase_words_regex.finditer(text) if
                 self.predicate_keep_unknown_entities(text=text, start=t.start(), end=t.end())]
 
     def predicate_keep_unknown_entities(self, text: str, start: int, end: int) -> bool:
@@ -86,27 +88,33 @@ class MatchDoubfulMwe:
 
         return contain_first_name or contain_mister
 
-    def clean_unknown_offsets(self, offsets: list) -> list:
+    # TODO rework by removing direct index access
+    def clean_unknown_offsets(self, offsets: List[Offset]) -> List[Offset]:
         """
         Remove offsets of unknown type span when there is an overlap with a known offset
         :param offsets: cleaned offsets with old known offsets and the new ones
         """
         result = list()
         sorted_offsets = sorted(offsets,
-                                key=lambda tup: (tup[0], tup[1]))
+                                key=lambda o: (o.start, o.end))
 
-        for (index, (start_offset, end_offset, type_name)) in enumerate(sorted_offsets):
-            if type_name == self.unknown_type_name:
+        for (index, offset) in enumerate(sorted_offsets):
+            start_offset, end_offset, type_name = offset.start, offset.end, offset.type
+            if offset.type == self.unknown_type_name:
 
                 # is first token?
                 if index > 0:
-                    previous_start_offset, previous_end_offset, previous_type_name = sorted_offsets[index - 1]
+                    previous_start_offset, previous_end_offset, previous_type_name = sorted_offsets[index - 1].start, \
+                                                                                     sorted_offsets[index - 1].end, \
+                                                                                     sorted_offsets[index - 1].type
                 else:
                     previous_start_offset, previous_end_offset, previous_type_name = None, None, None
 
                 # is last token?
                 if index < len(sorted_offsets) - 1:
-                    next_start_offset, next_end_offset, next_type_name = sorted_offsets[index + 1]
+                    next_start_offset, next_end_offset, next_type_name = sorted_offsets[index + 1].start, \
+                                                                         sorted_offsets[index + 1].end, \
+                                                                         sorted_offsets[index + 1].type
                 else:
                     next_start_offset, next_end_offset, next_type_name = None, None, None
 
@@ -117,8 +125,8 @@ class MatchDoubfulMwe:
                                     (end_offset < next_start_offset) or (next_start_offset is None))
 
                 if is_start_offset_ok and is_end_offset_ok:
-                    result.append((start_offset, end_offset, type_name))
+                    result.append(Offset(start_offset, end_offset, type_name))
 
             else:
-                result.append((start_offset, end_offset, type_name))
+                result.append(Offset(start_offset, end_offset, type_name))
         return result

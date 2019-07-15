@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 extract_judge_pattern_1 = regex.compile(r"("
                                         r"(?!Madame |Monsieur|M\. |Mme\.|M |Mme|Conseil|Présid|Magistrat|Chambre)"
@@ -48,14 +51,14 @@ extract_judge_pattern_2 = regex.compile(r"(?<=(?i)"
                                         flags=regex.VERSION1)
 
 
-def get_judge_name(text: str) -> list:
+def get_judge_name(text: str) -> List[Offset]:
     """
     Extract judge name from text
     :param text: original paragraph text
     :return: offsets as a list
     """
 
-    r1 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_judge_pattern_1.finditer(text)]
-    r2 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_judge_pattern_2.finditer(text)]
+    r1 = [Offset(start=t.start(), end=t.end(), type="JUDGE_CLERK_1") for t in extract_judge_pattern_1.finditer(text)]
+    r2 = [Offset(start=t.start(), end=t.end(), type="JUDGE_CLERK_1") for t in extract_judge_pattern_2.finditer(text)]
     return r1 + r2
 

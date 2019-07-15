@@ -18,26 +18,25 @@
 #  specific language governing permissions and limitations
 #  under the License.
 
-import warnings
 import logging
-import random
 import os
-from spacy.tokens.doc import Doc  # type: ignore
+import random
+import warnings
+from argparse import ArgumentParser, Namespace
+from typing import List
+
+import spacy
 from spacy.language import Language  # type: ignore
+from spacy.tokens.doc import Doc  # type: ignore
 from tqdm import tqdm  # type: ignore
 
-from argparse import ArgumentParser, Namespace
-from match_text_unsafe.build_entity_dictionary import EntityTypename
-from xml_extractions.extract_node_values import get_paragraph_from_folder
 from annotate_case.annotate_case import complete_case_annotations
+from match_text_unsafe.build_entity_dictionary import EntityTypename
 from ner.model_factory import get_empty_model
-
-from typing import List, Tuple, Iterable
-
-Offset = Tuple[int, int, str]
-Case = List[Tuple[str, str, List[str], List[Offset]]]
+from xml_extractions.extract_node_values import Paragraph, get_paragraph_from_file, Case
 
 warnings.filterwarnings('ignore')
+random.seed(123)
 
 
 def parse_args() -> Namespace:
@@ -86,32 +85,8 @@ def parse_args() -> Namespace:
         action="store", dest="sample_size",
         required=True
     )
-    parser.add_argument(
-        '-s', '--seed',
-        help="Seed",
-        type=int,
-        action="store", dest="seed",
-        default=123
-    )
     args = parser.parse_args()
     return args
-
-
-def random_iter(iterable: Iterable, size: int, seed: int = 123) -> Iterable:
-    """
-    Get a random sample iterator.
-
-    :param iterable: the iterable to pick a random sample from
-    :param size: the size of the sample
-    :param seed: the random seed
-    :returns: an iterator of the random sample
-    """
-
-    random.seed(seed)
-    sequence = list(iterable)
-    assert (len(sequence) >= size)
-    sample = random.sample(sequence, size)
-    return iter(sample)
 
 
 def annotate_case(case: Case, entity_typename_builder: EntityTypename, nlp: Language) -> List[Doc]:
@@ -127,8 +102,8 @@ def annotate_case(case: Case, entity_typename_builder: EntityTypename, nlp: Lang
     spacy_docs = list()
     entity_typename_builder.clear()
 
-    for _, original_text, _, _ in case:
-        spacy_doc = nlp(original_text)
+    for paragraph in case:
+        spacy_doc = nlp(paragraph.text)
         entity_typename_builder.add_spacy_entities(spacy_doc=spacy_doc)
         spacy_docs.append(spacy_doc)
 
@@ -150,12 +125,12 @@ def save_doc(case: Case, spacy_docs: List[Doc], directory: str) -> None:
     assert (len(case) == len(spacy_docs))
     assert (len(case) > 0)
 
-    case_id, _, _, _ = case[0]
-    text_file = os.path.join(directory, case_id) + '.txt'
-    ents_file = os.path.join(directory, case_id) + '.ents'
+    first_paragraph = case[0]
+    text_file = os.path.join(directory, first_paragraph.case_id) + '.txt'
+    ents_file = os.path.join(directory, first_paragraph.case_id) + '.ents'
     with open(text_file, 'w') as out:
-        for _, original_text, _, _ in case:
-            out.write(original_text + '\n')
+        for paragraph in case:
+            out.write(paragraph.text + '\n')
     sep_inter_token = ','
     sep_intra_token = ' '
     with open(ents_file, 'w') as out:
@@ -165,68 +140,48 @@ def save_doc(case: Case, spacy_docs: List[Doc], directory: str) -> None:
                  spacy_doc.ents]) + '\n')
 
 
-# TODO merge with annotate_txt
-def annotate_xml(model_dir_path: str, files_dir_path: str, out_dir_path: str, sample_size: int, seed: int) -> None:
+# TODO replace files dir by a list of paths
+def annotate(model_dir_path: str, files_dir_path: List[str], out_dir_path: str) -> None:
     """
     Annotate a sample of the given XML files and save them into the given directory.
 
     :param model_dir_path: the directory of the Spacy model
     :param files_dir_path: the directory containing the XML files
     :param out_dir_path: the directory where to write the annotations
-    :param sample_size: the size of the sample to annotate
-    :param seed: the seed to select an random sample
     """
 
     logging.info("Loading NER model…")
     nlp = get_empty_model(load_labels_for_training=False)
     nlp = nlp.from_disk(model_dir_path)
-    entity_typename_builder = EntityTypename()
 
-    logging.info("Loading cases…")
-    cases = list(random_iter(
-        get_paragraph_from_folder(folder_path=files_dir_path,
-                                  keep_paragraph_without_annotation=True,
-                                  flatten=False), sample_size, seed=seed))
+    # TODO remove when we have retrained
+    infixes = nlp.Defaults.infixes + [r':', r"(?<=[\W\d_])-|-(?=[\W\d_])"]
+    infixes_regex = spacy.util.compile_infix_regex(infixes)
+    nlp.tokenizer.infix_finditer = infixes_regex.finditer
+    # end of deletion above
 
-    with tqdm(total=len(cases), unit=" cases", desc="Find entities") as progress_bar:
-        for case in cases:
-            if len(case) > 0:
-                spacy_docs = annotate_case(case, entity_typename_builder, nlp)
-                save_doc(case, spacy_docs, out_dir_path)
-                progress_bar.update()
-            else:
-                logging.error("Empty case")
-
-
-def annotate_txt(model_dir_path: str, files_dir_path: str, out_dir_path: str) -> None:
-    """
-    Annotate a sample of the given flat text files and save them into the given directory.
-
-    :param model_dir_path: the directory of the Spacy model
-    :param files_dir_path: the directory containing the text files
-    :param out_dir_path: the directory where to write the annotations
-    """
-
-    logging.info("Loading NER model…")
-    nlp = get_empty_model(load_labels_for_training=False)
-    nlp = nlp.from_disk(model_dir_path)
     entity_typename_builder = EntityTypename()
 
     logging.info("Loading cases…")
 
     cases: List[Case] = list()
-
-    for filename in os.listdir(files_dir_path):
-        case: Case = list()
-        basename = filename.split(".")[0]
-        path = os.path.join(files_dir_path, filename)
-        with open(path) as f:
-            lines = f.readlines()
-            for line in lines:
-                if len(line) > 1:
-                    clean_text = line.strip()
-                    case.append((basename, clean_text, list(), list()))
+    for path in files_dir_path:
+        if path.endswith(".xml"):
+            case: Case = get_paragraph_from_file(path=path,
+                                                 keep_paragraph_without_annotation=True)
             cases.append(case)
+        elif path.endswith(".txt"):
+            with open(path) as f:
+                lines = f.readlines()
+                case: Case = list()
+                for line in lines:
+                    clean_text = line.strip()
+                    if len(clean_text) > 1:
+                        basename = path.split(".")[0]
+                        case.append(Paragraph(basename, clean_text, list(), list()))
+                cases.append(case)
+        else:
+            raise Exception(f"can't parse, unknown file extension': {path}")
 
     with tqdm(total=len(cases), unit=" cases", desc="Find entities") as progress_bar:
         for case in cases:
@@ -247,8 +202,16 @@ def main() -> None:
         log_format = logging.BASIC_FORMAT
     logging.basicConfig(level=args.loglevel, format=log_format)
 
-    annotate_xml(args.model_dir, args.input_dir, args.output_dir, args.sample_size, args.seed)
+    input_paths = [os.path.join(args.input_dir, filename)
+                   for filename in os.listdir(args.input_dir)]
+
+    if len(input_paths) >= args.sample_size:
+        input_paths = random.sample(input_paths, args.sample_size)
+
+    annotate(args.model_dir, input_paths, args.output_dir)
 
 
 if __name__ == '__main__':
     main()
+
+# python entities_sample_extractor.py -i ./resources/doc_courts/txt -o ./resources/doc_courts/spacy_output -m ./resources/model -k 100

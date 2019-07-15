@@ -14,11 +14,13 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from resources.config_provider import get_config_default
+from xml_extractions.extract_node_values import Offset
 
 
 class CourtName:
@@ -43,7 +45,7 @@ class CourtName:
         self.matcher = AcoraMatcher(content=list(self.court_names),
                                     ignore_case=True)
 
-    def get_matches(self, text: str) -> list:
+    def get_matches(self, text: str) -> List[Offset]:
         """
         Find match of French court names in a text
         :param text: original text
@@ -82,12 +84,12 @@ juridiction_pattern_2 = regex.compile("Cour de cassation|Conseil d'.tat|INPI|Con
                                       flags=regex.VERSION1 | regex.IGNORECASE)
 
 
-def get_juridictions(text: str) -> list:
+def get_juridictions(text: str) -> List[Offset]:
     """
     Extract Courts name from text
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_2.finditer(text)]
+    result1 = [Offset(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_1.finditer(text)]
+    result2 = [Offset(t.start(), t.end(), "COURT_1") for t in juridiction_pattern_2.finditer(text)]
     return result1 + result2

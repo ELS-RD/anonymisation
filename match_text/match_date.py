@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 un_trent_et_un = ["un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf",
                   "dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix.sept", "dix.huit",
@@ -51,13 +54,13 @@ date_pattern_in_numbers_regex_2 = regex.compile(r'(\d{1,2}.?(/|\-).?\d{1,2}.?(/|
                                                 flags=regex.VERSION1 | regex.IGNORECASE)
 
 
-def get_date(text: str) -> list:
+def get_date(text: str) -> List[Offset]:
     """
     Parse text to retrieve offset mentioning a date
     :param text: original text
     :return: offsets as a list
     """
-    r1 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_letters_regex.finditer(text)]
-    r2 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_1.finditer(text)]
-    r3 = [(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_2.finditer(text)]
+    r1 = [Offset(t.start(), t.end(), "DATE_1") for t in date_pattern_in_letters_regex.finditer(text)]
+    r2 = [Offset(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_1.finditer(text)]
+    r3 = [Offset(t.start(), t.end(), "DATE_1") for t in date_pattern_in_numbers_regex_2.finditer(text)]
     return r1 + r2 + r3

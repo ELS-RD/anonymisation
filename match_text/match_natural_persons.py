@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 extract_partie_pp_pattern_1 = regex.compile(r"([A-Z][\w-\.\s]{0,15})+(?=.{0,5}\sné(e)?\s.{0,5}\d+)",
                                             flags=regex.VERSION1)
@@ -29,14 +32,14 @@ extract_partie_pp_pattern_3 = regex.compile(r"((?!Madame|Mme(\.)?)[A-ZÉÈ]+[\w]
                                             flags=regex.VERSION1)
 
 
-def get_partie_pers(text: str) -> list:
+def get_partie_pers(text: str) -> List[Offset]:
     """
     Extract people names from text
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_2.finditer(text)]
-    result3 = [(t.start(), t.end(), "PERS") for t in extract_partie_pp_pattern_3.finditer(text)]
+    result1 = [Offset(start=t.start(), end=t.end(), type="PERS") for t in extract_partie_pp_pattern_1.finditer(text)]
+    result2 = [Offset(start=t.start(), end=t.end(), type="PERS") for t in extract_partie_pp_pattern_2.finditer(text)]
+    result3 = [Offset(start=t.start(), end=t.end(), type="PERS") for t in extract_partie_pp_pattern_3.finditer(text)]
     return result1 + result2 + result3
 

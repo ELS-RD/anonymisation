@@ -16,6 +16,9 @@
 #  under the License.
 
 from random import randint
+from typing import List
+
+from xml_extractions.extract_node_values import Offset
 
 
 def get_title_case(original_text: str) -> str:
@@ -27,7 +30,7 @@ def get_title_case(original_text: str) -> str:
     return ' '.join([word.capitalize() for word in original_text.split(' ')])
 
 
-def random_case_change(text: str, offsets: list, rate: int) -> str:
+def random_case_change(text: str, offsets: List[Offset], rate: int) -> str:
     """
     Randomly change the case of the string inside the offset to make the NER more robust
     :param text: original text
@@ -37,7 +40,7 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
     """
     for offset in offsets:
         if randint(0, 99) <= rate:
-            extracted_content = text[offset[0]:offset[1]]
+            extracted_content = text[offset.start:offset.end]
 
             random_transformation = randint(1, 4)
             if random_transformation == 1:
@@ -49,7 +52,7 @@ def random_case_change(text: str, offsets: list, rate: int) -> str:
             else:
                 new_text = get_title_case(extracted_content)
 
-            text = text[:offset[0]] + new_text + text[offset[1]:]
+            text = text[:offset.start] + new_text + text[offset.end:]
 
     return text
 

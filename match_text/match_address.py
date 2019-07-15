@@ -14,8 +14,12 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from itertools import groupby
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 places_pattern = (r"rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|lieudit|"
                   r"(?<!(à la |en lieu et ))place|zi|zone industrielle|route")
@@ -45,24 +49,24 @@ extract_address_pattern_3 = regex.compile(r"(?<=cadastré(e)?(s)? ).{1,30}\d+",
                                           flags=regex.VERSION1)
 
 
-def get_addresses(text: str) -> list:
+def get_addresses(text: str) -> List[Offset]:
     """
     Extract addresses from text
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_2.finditer(text)]
-    result3 = [(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_3.finditer(text)]
+    result1 = [Offset(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_1.finditer(text)]
+    result2 = [Offset(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_2.finditer(text)]
+    result3 = [Offset(t.start(), t.end(), "ADDRESS_1") for t in extract_address_pattern_3.finditer(text)]
 
-    return sorted(list(set(result1 + result2 + result3)), key=lambda tup: (tup[0], tup[1]))
+    return sorted(remove_duplicates(result1 + result2 + result3), key=lambda o: (o.start, o.end))
 
 
 # contain_place_pattern = regex.compile("\\b(" + places_pattern + ")\\b", flags=regex.VERSION1 | regex.IGNORECASE)
 start_with_postal_code = regex.compile(r"^\s*\d{5} (?!Euro.* |Franc.* |Fr )[A-ZÉÈ]", flags=regex.VERSION1)
 
 
-def get_stripped_offsets(text: str, tag: str) -> tuple:
+def get_stripped_offsets(text: str, tag: str) -> Offset:
     """
     Get offsets of a the actual text ie. the text without the surronding whitespaces
     :param text: a line of text
@@ -72,10 +76,10 @@ def get_stripped_offsets(text: str, tag: str) -> tuple:
     stripped_text = text.strip()
     start = text.find(stripped_text)
     end = start + len(stripped_text)
-    return start, end, tag
+    return Offset(start, end, tag)
 
 
-def find_address_in_block_of_paragraphs(texts: list, offsets: list) -> list:
+def find_address_in_block_of_paragraphs(texts: List[str], offsets: List[List[Offset]]) -> List[List[Offset]]:
     """
     Search a multi paragraph pattern of address in the first half of a case:
     - a line mentioning a street
@@ -110,30 +114,39 @@ clean_address_regex: regex = regex.compile(pattern=r"^(?i)(demeurant|domicilié(
                                            flags=regex.VERSION1)
 
 
-def clean_address_offset(text: str, offsets: list) -> list:
+def clean_address_offset(text: str, offsets: List[Offset]) -> List[Offset]:
     """
     Remove some common mentions in addresses which are not related to the address.
     :param text: original text
     :param offsets: list of offsets provided as tuples
     :return: cleaned list of offsets
     """
-    result_offsets = list()
-    for start, end, type_name in offsets:
-        if type_name == "ADDRESS":
-            address_span = text[start:end]
+    result_offsets: List[Offset] = list()
+    for offset in offsets:
+        if offset.type == "ADDRESS":
+            address_span = text[offset.start:offset.end]
             found_text_to_remove = clean_address_regex.search(address_span)
             if found_text_to_remove is not None:
-                result_offsets.append((found_text_to_remove.end(), end, type_name))
+                result_offsets.append(Offset(found_text_to_remove.end(), offset.end, offset.type))
             else:
-                result_offsets.append((start, end, type_name))
+                result_offsets.append(offset)
         else:
-            result_offsets.append((start, end, type_name))
+            result_offsets.append(offset)
     return result_offsets
 
 
-def clean_address_offsets(texts: list, offsets: list) -> list:
+def clean_address_offsets(texts: List[str], offsets: List[List[Offset]]) -> List[List[Offset]]:
     result_offsets = list()
     for text, current_offset in zip(texts, offsets):
         cleaned_offsets = clean_address_offset(text=text, offsets=current_offset)
         result_offsets.append(cleaned_offsets)
     return result_offsets
+
+
+def remove_duplicates(data):
+    """
+    Remove duplicates from the data (normally a list).
+    The data must be sortable and have an equality operator
+    """
+    data = sorted(data)
+    return [k for k, v in groupby(data)]

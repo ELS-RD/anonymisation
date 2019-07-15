@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 phone_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                                     r"\b"
@@ -26,7 +29,7 @@ phone_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                             flags=regex.VERSION1)
 
 
-def get_phone_number(text: str) -> list:
+def get_phone_number(text: str) -> List[Offset]:
     """
     Find phone number.
     Pattern catch numbers in one block or separated per block of 2 numbers
@@ -37,5 +40,5 @@ def get_phone_number(text: str) -> list:
     result = list()
     for pattern in patterns:
         if pattern is not None and ("compte" not in text):
-            result.append((pattern.start(), pattern.end(), "PHONE_NUMBER"))
+            result.append(Offset(pattern.start(), pattern.end(), "PHONE_NUMBER"))
     return result

@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 extract_clerk_pattern_1 = regex.compile(r"(?<=(m|M) |(m|M). |(m|M)me |(m|M)me. |(m|M)onsieur |(m|M)adame | )"
                                         r"("
@@ -29,13 +32,13 @@ extract_clerk_pattern_2 = regex.compile(r"(?<=(Greffi|greffi|GREFFI)[^:]{0,50}:.
                                         flags=regex.VERSION1)
 
 
-def get_clerk_name(text: str) -> list:
+def get_clerk_name(text: str) -> List[Offset]:
     """
     Extract clerk name from text
     :param text: original paragraph text
     :return: offsets as a list
     """
-    result1 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_clerk_pattern_1.finditer(text)]
-    result2 = [(t.start(), t.end(), "JUDGE_CLERK_1") for t in extract_clerk_pattern_2.finditer(text)]
+    result1 = [Offset(start=t.start(), end=t.end(), type="JUDGE_CLERK_1") for t in extract_clerk_pattern_1.finditer(text)]
+    result2 = [Offset(start=t.start(), end=t.end(), type="JUDGE_CLERK_1") for t in extract_clerk_pattern_2.finditer(text)]
     return result1 + result2
 

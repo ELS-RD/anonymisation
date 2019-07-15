@@ -16,12 +16,13 @@
 #  under the License.
 
 from match_text.match_bar import get_bar
+from xml_extractions.extract_node_values import Offset
 
 
 def test_bar():
     text1 = "Le barreau de PARIS toto"
-    assert get_bar(text=text1) == [(3, 19, "BAR_1")]
+    assert get_bar(text=text1) == [Offset(3, 19, "BAR_1")]
     text2 = "Je travaille au barreau D'AMIENS et c'est top !"
-    assert get_bar(text=text2) == [(16, 32, "BAR_1")]
+    assert get_bar(text=text2) == [Offset(16, 32, "BAR_1")]
 
 

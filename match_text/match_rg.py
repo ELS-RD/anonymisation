@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 extract_rg_from_case_id_pattern = r"(?<=\-)\d*(?=\-jurica$)"
 extract_rg_from_case_id_regex = regex.compile(pattern=extract_rg_from_case_id_pattern, flags=regex.VERSION1)
@@ -32,7 +35,7 @@ class MatchRg:
         self.pattern = regex.compile(pattern=self.get_search_rg_regex(),
                                      flags=regex.VERSION1)
 
-    def get_rg_from_case_id(self) -> list:
+    def get_rg_from_case_id(self) -> List[str]:
         """
         Retrieve the RG from case id, as formatted by rule based system
         :return: RG number as a string
@@ -52,15 +55,15 @@ class MatchRg:
         pattern = "\\b" + pattern + "\\b"
         return pattern
 
-    def get_rg_offset_from_text(self, text: str) -> list:
+    def get_rg_offset_from_text(self, text: str) -> List[Offset]:
         """
         Extract RG number offsets from a text, if any
         :param text: original text
         :return: offsets as a list
         """
-        return [(item.start(), item.end(), "RG") for item in self.pattern.finditer(text)]
+        return [Offset(item.start(), item.end(), "RG") for item in self.pattern.finditer(text)]
 
-    def get_rg_offset_from_texts(self, texts: list, offsets: list) -> list:
+    def get_rg_offset_from_texts(self, texts: List[str], offsets: List[List[Offset]]) -> List[List[Offset]]:
         """
         Extract RG number offsets from a list of texts
         :param texts: original list of texts
@@ -75,7 +78,7 @@ extract_rg_from_text_pattern = (r"(?<=(\bR[[:punct:]]{0,5}G\b|((?i)répertoire g
 extract_rg_from_text_regex = regex.compile(extract_rg_from_text_pattern, flags=regex.VERSION1)
 
 
-def get_rg_from_regex(text: str) -> list:
+def get_rg_from_regex(text: str) -> List[Offset]:
     """
     Extract RG number from text when some pattern is found
     :param text: original text
@@ -83,6 +86,6 @@ def get_rg_from_regex(text: str) -> list:
     """
     offsets = extract_rg_from_text_regex.search(text)
     if offsets is not None:
-        return [(offsets.start(), offsets.end(), "RG")]
+        return [Offset(offsets.start(), offsets.end(), "RG")]
     else:
         return list()

@@ -16,12 +16,15 @@
 #  under the License.
 
 from random import randint
+from typing import List, Tuple
 
 import regex
 
 from match_text_unsafe.match_acora import AcoraMatcher
 
 # some organization prefix patterns
+from xml_extractions.extract_node_values import Offset
+
 org_types = "société(s)?|" \
             "association|" \
             "s(\.|\s)*a(\.|\s)*s(\.|\s)*u(\.|\s)*|" \
@@ -72,7 +75,7 @@ key_words_matcher = AcoraMatcher(content=["Monsieur", "Madame", "Mme",
                                  ignore_case=False)
 
 
-def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
+def remove_key_words(text: str, offsets: List[Offset], rate: int) -> Tuple[str, List[Offset]]:
     """
     Modify text to remove some key words, making the learning harder and the model more robust.
     :param text: original paragraph as a string
@@ -80,17 +83,17 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     :param rate: chance as an integer between 1 and 100 that a key word is removed
     :return: a tuple (new_text, offsets)
     """
-    words_to_delete_offsets: list = key_words_matcher.get_matches(text=text,
-                                                                  tag="TO_DELETE")
+    words_to_delete_offsets: List[Offset] = key_words_matcher.get_matches(text=text,
+                                                                          tag="TO_DELETE")
 
     if (len(words_to_delete_offsets) == 0) or (len(offsets) == 0):
         return text, offsets
 
     detected_spans = dict()
-    for start_offset, end_offset, type_name in offsets:
-        span_text = text[start_offset:end_offset]
+    for offset in offsets:
+        span_text = text[offset.start:offset.end]
         if len(span_text) > 0:
-            detected_spans[span_text] = type_name
+            detected_spans[span_text] = offset.type
 
     if len(detected_spans) == 0:
         return text, offsets
@@ -100,14 +103,14 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
 
     cleaned_text = list()
     start_selection_offset = 0
-    for start_offset, end_offset, _ in words_to_delete_offsets:
+    for offset in words_to_delete_offsets:
         if randint(1, 99) < rate:
             # - 1 to remove also the space following the keyword to remove
-            cleaned_text.append(text[start_selection_offset:start_offset - 1])
-            start_selection_offset = end_offset
+            cleaned_text.append(text[start_selection_offset:offset.start - 1])
+            start_selection_offset = offset.end
         else:
-            cleaned_text.append(text[start_selection_offset:end_offset])
-            start_selection_offset = end_offset
+            cleaned_text.append(text[start_selection_offset:offset.end])
+            start_selection_offset = offset.end
 
     cleaned_text.append(text[start_selection_offset:len(text)])
 
@@ -119,9 +122,9 @@ def remove_key_words(text: str, offsets: list, rate: int) -> tuple:
     offsets_to_return = list()
 
     # restore original offset type name
-    for start_offset, end_offset, _ in updated_offsets:
-        span_text = cleaned_text[start_offset:end_offset]
+    for offset in updated_offsets:
+        span_text = cleaned_text[offset.start:offset.end]
         type_name = detected_spans[span_text]
-        offsets_to_return.append((start_offset, end_offset, type_name))
+        offsets_to_return.append(Offset(offset.start, offset.end, type_name))
 
     return cleaned_text, offsets_to_return

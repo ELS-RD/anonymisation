@@ -14,31 +14,34 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List, Tuple
 
 from spacy import displacy
 from spacy.tokens.doc import Doc
 
 from ner.model_factory import get_empty_model
+from xml_extractions.extract_node_values import Offset
 
 
-def convert_offsets_to_spacy_docs(doc_annotated: list) -> list:
+def convert_offsets_to_spacy_docs(doc_annotated: List[Tuple[str, str, List[Offset]]]) -> List[Doc]:
     """
     Convert a list of tuple of string with their offset to Spacy doc with entities ready
     :param doc_annotated: list of tuple (string, array of offsets)
     :return: list of spacy doc
     """
     model = get_empty_model(load_labels_for_training=False)
-    docs = list()
+    docs: List[Doc] = list()
+
     for (index, (case_id, text, tags)) in enumerate(doc_annotated):
         doc: Doc = model.make_doc(text)
         ents = list()
-        for (start_offset, end_offset, type_name) in tags:
-            span_doc = doc.char_span(start_offset, end_offset, label=type_name)
+        for offset in tags:
+            span_doc = doc.char_span(offset.start, offset.end, label=offset.type)
             if span_doc is not None:
                 ents.append(span_doc)
             else:
                 print("Issue in offset", "Index: " + str(index), "case: " + case_id,
-                      text[start_offset:end_offset], text, sep="|")
+                      text[offset.start:offset.end], text, sep="|")
         doc.ents = ents
         docs.append(doc)
     return docs

@@ -19,6 +19,7 @@ from random import seed
 
 from modify_text.change_case import get_title_case, random_case_change, lower_randomly_word_case
 from modify_text.modify_strings import remove_org_type, remove_key_words
+from xml_extractions.extract_node_values import Offset
 
 
 def test_remove_corp_name():
@@ -32,7 +33,7 @@ def test_title_case():
 
 def test_random_case_change():
     text = "La Banque est fermée"
-    offsets = [(3, 9, "PERS")]
+    offsets = [Offset(3, 9, "PERS")]
     seed(123)
     results = [random_case_change(text, offsets, 100) for _ in range(1, 500)]
     assert "La Banque est fermée" in results
@@ -53,16 +54,16 @@ def test_random_lower_case_word_level():
 
 def test_remove_key_words():
     text1 = "Ayant pour conseil Me Myriam MASSENGO LACAVE et Me Toto TITI, " \
-           "avocat au barreau de PARIS, toque: B1132"
-    offsets1 = [(22, 44, "LAWYER"), (51, 60, "LAWYER")]
+            "avocat au barreau de PARIS, toque: B1132"
+    offsets1 = [Offset(22, 44, "LAWYER"), Offset(51, 60, "LAWYER")]
     assert remove_key_words(text=text1, offsets=offsets1, rate=100) == ('Ayant pour conseil Myriam MASSENGO LACAVE '
-                                                                      'et Toto TITI, avocat au barreau de PARIS, '
-                                                                      'toque: B1132',
-                                                                      [(19, 41, "LAWYER"),
-                                                                       (45, 54, "LAWYER")])
+                                                                        'et Toto TITI, avocat au barreau de PARIS, '
+                                                                        'toque: B1132',
+                                                                        [Offset(19, 41, "LAWYER"),
+                                                                         Offset(45, 54, "LAWYER")])
 
     assert remove_key_words(text=text1, offsets=offsets1, rate=0) == (text1, offsets1)
     # check that no word related to companies is removed
     text2 = "Condamne la SCI CEK PARTICIPATIONS à payer à la SARL CEK LOISIRS la somme de 2.000 euros."
-    offsets2 = [(12, 34, 'ORGANIZATION'), (48, 64, 'ORGANIZATION')]
+    offsets2 = [Offset(12, 34, 'ORGANIZATION'), Offset(48, 64, 'ORGANIZATION')]
     assert remove_key_words(text=text2, offsets=offsets2, rate=100) == (text2, offsets2)

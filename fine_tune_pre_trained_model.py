@@ -17,7 +17,6 @@
 
 import os
 import random
-from collections import namedtuple
 from typing import Tuple, List
 
 from spacy.gold import GoldParse
@@ -26,10 +25,9 @@ from spacy.util import minibatch
 
 from ner.model_factory import get_empty_model
 from resources.config_provider import get_config_default
-
-Offset = namedtuple('Offset', ['start', 'end', 'type'])
-
 # reproducibility
+from xml_extractions.extract_node_values import Offset
+
 random.seed(123)
 
 

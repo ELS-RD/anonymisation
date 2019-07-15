@@ -14,9 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from resources.config_provider import get_config_default
+from xml_extractions.extract_node_values import Offset
 
 
 class PostalCodeCity:
@@ -43,7 +45,7 @@ class PostalCodeCity:
         self.matcher = AcoraMatcher(list(postal_code_city_list),
                                     ignore_case=True)
 
-    def get_matches(self, text: str) -> list:
+    def get_matches(self, text: str) -> List[Offset]:
         """
         Find match of postal code and city names in a text
         :param text: original text

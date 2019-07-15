@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 new_licence_plate_regex = regex.compile(pattern=r"(?<!(\d|[A-Z])[[:punct:] ]*)"
                                                 r"\b"
@@ -36,7 +39,7 @@ old_licence_plate_regex = regex.compile(pattern=r"(?<!(\d|[A-Z])[[:punct:] ]*)"
                                         flags=regex.VERSION1)
 
 
-def get_licence_plate(text: str) -> list:
+def get_licence_plate(text: str) -> List[Offset]:
     """
     Find licence plate number following pattern described in
     https://www.developpez.net/forums/d1308588/php/langage/regex/creer-regex-plaque-d-immatriculation/
@@ -48,5 +51,5 @@ def get_licence_plate(text: str) -> list:
     patterns = pattern_new + pattern_old
     results = list()
     for pattern in patterns:
-        results.append((pattern.start(), pattern.end(), "LICENCE_PLATE"))
+        results.append(Offset(pattern.start(), pattern.end(), "LICENCE_PLATE"))
     return results

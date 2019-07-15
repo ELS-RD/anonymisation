@@ -14,10 +14,12 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
 
 from modify_text.modify_strings import org_types
+from xml_extractions.extract_node_values import Offset
 
 find_corp = regex.compile("(((?i)" + org_types + r") "
                                                  r"((?i)"
@@ -30,10 +32,12 @@ find_corp = regex.compile("(((?i)" + org_types + r") "
                                                  r")", flags=regex.VERSION1)
 
 
-def get_company_names(text: str) -> list:
+def get_company_names(text: str) -> List[Offset]:
     """
     Extract company names from string text
     :param text: original text
     :return: a list of offsets
     """
-    return [(t.start(), t.end(), "ORGANIZATION_1") for t in find_corp.finditer(text)]
+    return [Offset(start=t.start(),
+                   end=t.end(),
+                   type="ORGANIZATION_1") for t in find_corp.finditer(text)]

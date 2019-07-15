@@ -63,7 +63,8 @@ def complete_case_annotations(spacy_docs: List[Doc], entity_typename: Dict[str, 
                     # span will be none if the word is incomplete
                     spacy_matcher_offset.append(span_doc)
                 else:
-                    logger.error("ERROR char offset {}".format(spacy_doc.text[start_offset:end_offset]))
+                    logger.error(f"ERROR char offset [{spacy_doc.text[start_offset:end_offset]}] "
+                                 f"from [{spacy_doc.text}]")
 
             spacy_doc.ents = spacy_matcher_offset  # all_offsets
 

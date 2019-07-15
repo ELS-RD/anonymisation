@@ -55,4 +55,7 @@ def get_empty_model(load_labels_for_training: bool) -> French:
             ner.add_label(token_type)
 
     nlp.add_pipe(ner, last=True)
+    infixes = nlp.Defaults.infixes + [r':', r"(?<=[\W\d_])-|-(?=[\W\d_])"]
+    infixes_regex = spacy.util.compile_infix_regex(infixes)
+    nlp.tokenizer.infix_finditer = infixes_regex.finditer
     return nlp

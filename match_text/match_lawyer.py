@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 extract_lawyer = regex.compile(r"(?<=(Me|Me\.|(M|m)a(i|î)tre|M°) )"
                                r"[A-ZÉÈ]+[\w-']*"
@@ -23,11 +26,11 @@ extract_lawyer = regex.compile(r"(?<=(Me|Me\.|(M|m)a(i|î)tre|M°) )"
                                flags=regex.VERSION1)
 
 
-def get_lawyer_name(text: str) -> list:
+def get_lawyer_name(text: str) -> List[Offset]:
     """
     Extract lawyer name from text
     :param text: original paragraph text
     :return: offsets as a list
     """
-    return [(t.start(), t.end(), "LAWYER") for t in extract_lawyer.finditer(text)]
+    return [Offset(t.start(), t.end(), "LAWYER") for t in extract_lawyer.finditer(text)]
 

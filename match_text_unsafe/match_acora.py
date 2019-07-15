@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 from acora import AcoraBuilder
+
+from xml_extractions.extract_node_values import Offset
 
 
 class AcoraMatcher:
@@ -35,7 +38,7 @@ class AcoraMatcher:
             builder.update(content)
         self.matcher = builder.build(ignore_case=ignore_case)
 
-    def get_matches(self, text: str, tag: str):
+    def get_matches(self, text: str, tag: str) -> List[Offset]:
         """
         Apply the matcher and return offsets
         :param text: original string where to find the matches
@@ -46,7 +49,7 @@ class AcoraMatcher:
         if self.matcher.__sizeof__() == 0:
             return list()
         results = self.matcher.findall(text)
-        return [(start_offset, start_offset + len(match_text), tag)
+        return [Offset(start_offset, start_offset + len(match_text), tag)
                 for match_text, start_offset in results if
                 self.__filter_fake_match(start=start_offset, end=start_offset + len(match_text), text=text)]
 

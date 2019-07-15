@@ -29,12 +29,12 @@ def test_xml_parser():
     assert len(r) == 27
 
     for i in r:
-        paragraph_text, extracted_text, offset = get_paragraph_with_entities(i)
+        paragraph_text, extracted_text, offsets = get_paragraph_with_entities(i)
         if len(extracted_text) > 0:
             item_text = extracted_text[0]
-            current_attribute = offset[0]
-            start = current_attribute[0]
-            end = current_attribute[1]
+            current_attribute = offsets[0]
+            start = current_attribute.start
+            end = current_attribute.end
             assert item_text == paragraph_text[start:end]
 
 

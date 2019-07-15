@@ -18,6 +18,7 @@
 from match_text.match_header import MatchValuesFromHeaders
 from match_text_unsafe.find_header_values import parse_xml_header
 from resources.config_provider import get_config_default
+from xml_extractions.extract_node_values import Offset
 
 
 def test_match_headers_content():
@@ -31,4 +32,4 @@ def test_match_headers_content():
 
     text1 = "C'est Catherine ***REMOVED*** qui est responsable de ces faits avec M. LEON ***REMOVED***"
 
-    assert matcher_partie_pp.get_matches(text1, "PERS") == [(6, 29, "PERS")]
+    assert matcher_partie_pp.get_matches(text1, "PERS") == [Offset(6, 29, "PERS")]

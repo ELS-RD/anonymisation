@@ -14,13 +14,15 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from misc.extract_first_last_name import get_first_last_name
 from modify_text.modify_strings import remove_org_type
+from xml_extractions.extract_node_values import Offset
 
 
-def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int) -> list:
+def get_all_name_variation(texts: List[str], offsets: List[List[Offset]], threshold_span_size: int) ->  List[List[Offset]]:
     """
     Search for any variation of known entities
     :param texts: original text
@@ -32,10 +34,10 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
     pm_text_span = list()
     for current_offsets, text in zip(offsets, texts):
         for offset in current_offsets:
-            start_offset, end_offset, type_name = offset
-            text_span = text[start_offset:end_offset].strip()
+            # start_offset, end_offset, type_name = offset
+            text_span = text[offset.start:offset.end].strip()
             if len(text_span) > 0:
-                if type_name == "PERS":
+                if offset.type == "PERS":
                     pp_text_span.append(text_span)
                     first_name, last_name = get_first_last_name(text_span)
                     first_name = first_name.strip()
@@ -46,7 +48,7 @@ def get_all_name_variation(texts: list, offsets: list, threshold_span_size: int)
                     if len(last_name) > threshold_span_size:
                         pp_text_span.append(last_name)
 
-                if type_name == "ORGANIZATION":
+                if offset.type == "ORGANIZATION":
                     pm_text_span.append(text_span)
                     short_org_name = remove_org_type(text_span).strip()
                     if (len(short_org_name) > 0) and (short_org_name != text_span):
