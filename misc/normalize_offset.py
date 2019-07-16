@@ -55,15 +55,14 @@ def normalize_offsets(offsets: List[Offset], min_offset_size: int = 2) -> List[O
 
         # delete short offsets (1 - 2 chars)
         if current_offset.end - current_offset.start <= min_offset_size:
-            current_offset = previous_offset
+            current_offset = None
+
         previous_offset = current_offset
 
     if previous_offset is not None:
         previous_offset.type = remove_tag_priority_info(previous_offset.type)
         offset_to_keep.append(previous_offset)
 
-    # TODO remove and change code above
-    # offset_to_keep = remove_duplicates(offset_to_keep)
     return offset_to_keep
 
 
