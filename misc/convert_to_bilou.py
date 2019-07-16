@@ -48,7 +48,7 @@ def convert_unknown_bilou(doc: Doc, offsets: List[Offset]) -> GoldParse:
     :param offsets: discovered offsets
     :return: tuple of docs and BILOU annotations
     """
-    tupple_offset = [(offset.start, offset.end, offset.type) for offset in offsets]
+    tupple_offset = [offset.to_tuple() for offset in offsets]
     bilou_annotations = convert_bilou_with_missing_action(doc=doc, offsets=tupple_offset)
     return GoldParse(doc, entities=bilou_annotations)
 

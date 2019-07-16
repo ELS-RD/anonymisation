@@ -124,8 +124,10 @@ def load_content(paths) -> List[Tuple[str, List[Offset]]]:
     print("files", file_used)
     return results
 
+
 def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
-    return [(offset.start, offset.end, offset.type) for offset in offsets]
+    return [offset.to_tuple() for offset in offsets]
+
 
 config_training = get_config_default()
 eval_dataset_path = config_training["eval_path"]

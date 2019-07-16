@@ -16,10 +16,11 @@
 #  under the License.
 
 from match_text_unsafe.build_dict_from_recognized_entities import FrequentEntities
+from xml_extractions.extract_node_values import Offset
 
 
 def test_frequent_entities():
     freq_entities = {"benesty": "LAWYER", "jessica": "PERS"}
     frequent_entities_matcher = FrequentEntities.test_builder(content=freq_entities)
     text = "Me Benesty rencontre son client Jessica."
-    assert frequent_entities_matcher.get_matches(text=text) == [(3, 10, "LAWYER"), (32, 39, "PERS")]
+    assert frequent_entities_matcher.get_matches(text=text) == [Offset(3, 10, "LAWYER"), Offset(32, 39, "PERS")]

@@ -14,6 +14,7 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import Dict
 
 from spacy.tokens.doc import Doc
 
@@ -25,7 +26,7 @@ class EntityTypename:
     __entity_type_dict = dict()
 
     @staticmethod
-    def __get_default_dict_value() -> dict:
+    def __get_default_dict_value() -> Dict[str, int]:
         """
         Build a new 0 count dict for each type of token
         :return: 0 count dict

@@ -16,11 +16,12 @@
 #  under the License.
 
 import os
+from typing import Dict
 
 from xml_extractions.common_xml_parser_function import read_xml
 
 
-def parse_xml_header(path: str):
+def parse_xml_header(path: str) -> Dict[str, Dict[str, list]]:
     """
     Extract some values from Jurica XML headers
     :param path: path to the Jurica XML file
@@ -90,7 +91,7 @@ def parse_xml_header(path: str):
     return headers_content
 
 
-def parse_xml_headers(folder_path: str) -> dict:
+def parse_xml_headers(folder_path: str) -> Dict[str, Dict[str, list]]:
     """
     Extract some values from all files from a provided folder using :func:`parse_xml_header`.
     :param folder_path: path where the XML files are stored

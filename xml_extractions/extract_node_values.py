@@ -29,6 +29,9 @@ class Offset:
     end: int
     type: str
 
+    def to_tuple(self) -> Tuple[int, int, str]:
+        return self.start, self.end, self.type
+
 
 @dataclass
 class Paragraph:

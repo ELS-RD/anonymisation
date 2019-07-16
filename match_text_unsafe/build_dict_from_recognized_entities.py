@@ -17,11 +17,12 @@
 
 import pickle
 import warnings
-from typing import List
+from typing import List, Dict, Tuple
 
 from match_text_unsafe.match_acora import AcoraMatcher
 from ner.model_factory import entity_types
 from resources.config_provider import get_config_default
+from xml_extractions.extract_node_values import Offset
 
 config_training = get_config_default()
 training_set_export_path = config_training["training_set"]
@@ -51,7 +52,7 @@ class FrequentEntities(object):
                                         ignore_case=True)
 
     @classmethod
-    def test_builder(cls, content: dict):
+    def test_builder(cls, content: Dict[str, str]):
         """
         Build an instance of this object for tests.
         In particular, don't try to read saved data
@@ -68,7 +69,7 @@ class FrequentEntities(object):
         return instance
 
     @staticmethod
-    def __read_frequent_entities(path_trainset: str, threshold_occurrences: int, type_name_to_not_load: List[str]) -> dict:
+    def __read_frequent_entities(path_trainset: str, threshold_occurrences: int, type_name_to_not_load: List[str]) -> Dict[str, str]:
         """
         Analyze recognized entities and return those over a defined threshold in a dict entity -> type_name
         """
@@ -76,7 +77,7 @@ class FrequentEntities(object):
             with open(path_trainset, 'rb') as f:
                 data = pickle.load(file=f)
 
-            def get_default_dict_value() -> dict:
+            def get_default_dict_value() -> Dict[str, set]:
                 default_dict_value = dict([(token, set()) for token in entity_types])
                 # default_dict_value['general_count'] = 0
                 return default_dict_value
@@ -85,8 +86,8 @@ class FrequentEntities(object):
 
             for case_id, text, entities in data:
                 for start_offset, end_offset, type_name in entities:
-                    entity_span = text[start_offset:end_offset].lower()
-                    current_count = exhaustive_dict.get(entity_span, get_default_dict_value())
+                    entity_span: str = text[start_offset:end_offset].lower()
+                    current_count: Dict[str, set] = exhaustive_dict.get(entity_span, get_default_dict_value())
                     current_count[type_name].add(case_id)
                     exhaustive_dict[entity_span] = current_count
 
@@ -113,7 +114,7 @@ class FrequentEntities(object):
             warnings.warn("Empty dict of frequent entities", Warning)
             return dict()
 
-    def get_matches(self, text: str) -> list:
+    def get_matches(self, text: str) -> List[Offset]:
         """
         Find matches of frequent entities in the provided text
         :param text: original text
@@ -134,6 +135,6 @@ class FrequentEntities(object):
 
             if first_char_ok and last_char_ok:
                 type_name = self.frequent_entities_dict[entity_span.lower()]
-                entities.append((start_offset, end_offset, type_name))
+                entities.append(Offset(start_offset, end_offset, type_name))
 
         return entities

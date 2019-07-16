@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 credit_card_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                                           r"\b"
@@ -25,7 +28,7 @@ credit_card_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                                   flags=regex.VERSION1)
 
 
-def get_credit_card_number(text: str) -> list:
+def get_credit_card_number(text: str) -> List[Offset]:
     """
     Retrieve list of offsets related to credit cards.
     Check the checksum code to avoid most of false positives
@@ -36,7 +39,7 @@ def get_credit_card_number(text: str) -> list:
     if pattern is not None:
         number_as_string = text[pattern.start():pattern.end()]
         if validate(number_as_string):
-            return [(pattern.start(), pattern.end(), "CREDIT_CARD")]
+            return [Offset(pattern.start(), pattern.end(), "CREDIT_CARD")]
     return []
 
 

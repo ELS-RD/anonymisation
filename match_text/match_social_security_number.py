@@ -14,8 +14,11 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
 
 import regex
+
+from xml_extractions.extract_node_values import Offset
 
 security_social_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                                               r"\b"
@@ -31,7 +34,7 @@ security_social_regex = regex.compile(pattern=r"(?<!\d[[:punct:] ]*)"
                                       flags=regex.VERSION1 | regex.IGNORECASE)
 
 
-def get_social_security_number(text: str) -> list:
+def get_social_security_number(text: str) -> List[Offset]:
     """
     Get social security ID number offsets following pattern described in:
     http://fr.wikipedia.org/wiki/Num%C3%A9ro_de_s%C3%A9curit%C3%A9_sociale_en_France#Signification_des_chiffres_du_NIR
@@ -43,7 +46,7 @@ def get_social_security_number(text: str) -> list:
     if pattern is not None:
         number_as_string = text[pattern.start():pattern.end()]
         if check_social_number_key(number_as_string):
-            return [(pattern.start(), pattern.end(), "SOCIAL_SECURITY_NUMBER")]
+            return [Offset(pattern.start(), pattern.end(), "SOCIAL_SECURITY_NUMBER")]
 
     return []
 

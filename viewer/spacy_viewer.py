@@ -47,7 +47,7 @@ def convert_offsets_to_spacy_docs(doc_annotated: List[Tuple[str, str, List[Offse
     return docs
 
 
-def view_spacy_docs(docs: List[Doc], port: int):
+def view_spacy_docs(docs: List[Doc], port: int) -> None:
     """
     Launch a server to View entities
     :param docs: spacy doc with entities ready

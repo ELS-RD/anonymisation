@@ -14,8 +14,10 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List, Dict
 
 from match_text_unsafe.match_acora import AcoraMatcher
+from xml_extractions.extract_node_values import Offset
 
 
 class MatchValuesFromHeaders:
@@ -28,7 +30,7 @@ class MatchValuesFromHeaders:
     current_header = dict()
     threshold_size = 0
 
-    def __init__(self, current_header: dict, threshold_size: int):
+    def __init__(self, current_header: Dict[str, list], threshold_size: int):
         """
         Build a matcher of values from headers
         :param current_header: : original dict build from values from headers
@@ -44,7 +46,7 @@ class MatchValuesFromHeaders:
         self.matcher_conseiller = self.get_matcher_of_conseiller_from_headers()
         self.matcher_clerks = self.get_matcher_of_clerks_from_headers()
 
-    def get_matched_entities(self, current_paragraph: str) -> list:
+    def get_matched_entities(self, current_paragraph: str) -> List[Offset]:
         current_doc_offsets = self.matcher_partie_pp.get_matches(text=current_paragraph, tag="PERS")
         current_doc_offsets += self.matcher_partie_pm.get_matches(text=current_paragraph, tag="ORGANIZATION")
         current_doc_offsets += self.matcher_lawyers.get_matches(text=current_paragraph, tag="LAWYER")
