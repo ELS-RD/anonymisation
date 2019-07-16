@@ -75,9 +75,10 @@ def spacy_evaluate(model, samples: List[Tuple[str, List[Offset]]]) -> None:
     """
     s = Scorer()
 
-    for input_, annot in samples:
+    for input_, offsets in samples:
         doc_gold_text = model.make_doc(input_)
-        gold = GoldParse(doc_gold_text, entities=annot)
+        offset_tuples = convert_to_tuple(offsets)
+        gold = GoldParse(doc_gold_text, entities=offset_tuples)
         pred_value = model(input_)
         s.score(pred_value, gold)
 
@@ -123,6 +124,8 @@ def load_content(paths) -> List[Tuple[str, List[Offset]]]:
     print("files", file_used)
     return results
 
+def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
+    return [(offset.start, offset.end, offset.type) for offset in offsets]
 
 config_training = get_config_default()
 eval_dataset_path = config_training["eval_path"]
@@ -157,7 +160,7 @@ print("total nb entities", sum([len(item) for item in content_to_rate]))
 # compute_score_per_entity(model=ner_model, classes=entity_types, content=content_to_rate_test, print_errors=False)
 spacy_evaluate(ner_model, content_to_rate_test)
 
-train_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=gold_offsets))
+train_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
               for current_line, gold_offsets in content_to_rate]
 
 for epoch in range(20):
