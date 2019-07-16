@@ -19,6 +19,7 @@ from typing import List
 
 import regex
 
+from misc.normalize_offset import remove_duplicates
 from xml_extractions.extract_node_values import Offset
 
 places_pattern = (r"rue|chemin|boulevard|bd\.?|bld|av(\.|e)?|avenue|allée|quai|lieudit|"
@@ -142,11 +143,3 @@ def clean_address_offsets(texts: List[str], offsets: List[List[Offset]]) -> List
         result_offsets.append(cleaned_offsets)
     return result_offsets
 
-
-def remove_duplicates(data):
-    """
-    Remove duplicates from the data (normally a list).
-    The data must be sortable and have an equality operator
-    """
-    data = sorted(data)
-    return [k for k, v in groupby(data)]

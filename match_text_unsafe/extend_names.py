@@ -20,7 +20,7 @@ from typing import List
 
 import regex
 
-from match_text.match_address import remove_duplicates
+from misc.normalize_offset import remove_duplicates
 from xml_extractions.extract_node_values import Offset
 
 translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))  # map punctuation to space

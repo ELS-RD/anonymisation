@@ -50,6 +50,8 @@ def test_normalize_offsets():
     assert normalize_offsets(data13) == [Offset(1, 10, "ORGANIZATION")]
     data14 = [Offset(21, 33, "DATE"), Offset(35, 55, "PERS")]
     assert normalize_offsets(data14) == data14
+    data15 = [Offset(start=21, end=37, type='DATE'), Offset(start=45, end=47, type='ORGANIZATION')]
+    assert normalize_offsets(data15) == [Offset(21, 37, "DATE")]
 
 
 def test_remove_spaces():
