@@ -82,8 +82,15 @@ extract_com_1:
 extract_com_2:
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/doc_courts/tc_tesseract_selection -o ./resources/doc_courts/spacy_tc_2_tesseract_selection -m ./resources/model -k 100; \
+	python entities_sample_extractor.py -i ./resources/doc_courts/tc_1_tesseract_selection -o ./resources/doc_courts/spacy_tc_1_tesseract_selection -m ./resources/model -k 100; \
 	)
+
+extract_com_3:
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python entities_sample_extractor.py -i ./resources/doc_courts/tc_2_tesseract_selection -o ./resources/doc_courts/spacy_tc_2_tesseract_selection -m ./resources/model -k 100; \
+	)
+
 
 extract_ca:
 	( \
