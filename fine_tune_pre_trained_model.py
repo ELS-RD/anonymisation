@@ -24,8 +24,7 @@ from spacy.gold import GoldParse
 from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
 from spacy.util import minibatch, compounding
-from thinc.neural.ops import NumpyOps
-from thinc.neural.optimizers import Optimizer, Adam
+from thinc.neural.optimizers import Optimizer
 
 from ner.model_factory import get_empty_model
 from xml_extractions.extract_node_values import Offset
@@ -119,9 +118,25 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     for text, offsets in dev:
         doc_gold_text = model.make_doc(text)
         offset_tuples = convert_to_tuple(offsets)
-        gold = GoldParse(doc_gold_text, entities=offset_tuples)
+        gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
         pred_value: Doc = model(text)
-        # print(pred_value.text, pred_value.ents)
+
+        # pred_ents = [Offset(pred.start_char, pred.end_char, pred.label_) for pred in pred_value.ents]
+        # if pred_ents != offsets:
+        #     predictions_to_print = [text[o.start:o.end] + " - " + o.type for o in pred_ents if (o not in offsets) and o.type == "PERS"]
+        #     # gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets if (o not in pred_ents) and o.type == "PERS"]
+        #     gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets if ('.' in text[o.start:o.end]) and (o.type == "PERS")]
+        #     gold_all = [text[o.start:o.end] + " - " + o.type for o in offsets]
+        #     totally_absent = sum([1 for item in predictions_to_print if item not in gold_all]) == 0
+        #
+        #     if (len(gold_to_print) > 0):
+        #         print("---------")
+        #         print(pred_ents, "|", offsets)
+        #         print("pred:", predictions_to_print)
+        #         print("gold:", gold_to_print)
+        #         print(text)
+        #         print("---------")
+
         s.score(pred_value, gold)
 
     entities = list(s.ents_per_type.items())
@@ -142,26 +157,30 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     print(f"-----\n")
 
 
-def load_content(paths: List[str], dataset_path: str) -> List[Tuple[str, List[Offset]]]:
+def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
     results: List[Tuple[str, List[Offset]]] = list()
     file_used: List[str] = list()
-    for file_path in paths:
-        file_path = os.path.join(dataset_path, file_path)
-        if file_path.endswith('.txt'):
-            file_used.append(file_path)
-            with open(file_path, 'r') as f:
-                content_case = [item.strip() for item in f.readlines()]
-            path_annotations = file_path.replace('.txt', '.ent')
-            with open(path_annotations, 'r') as f:
-                annotations = [item.strip() for item in f.readlines()]
+    for txt_path in txt_paths:
+        if not txt_path.endswith('.txt'):
+            raise Exception(f"wrong file in the selection (not .txt): {txt_path}")
+        file_used.append(txt_path)
+        with open(txt_path, 'r') as f:
+            # strip to remove \n
+            content_case = [item.strip() for item in f.readlines()]
+        path_annotations = txt_path.replace('.txt', '.ent')
+        with open(path_annotations, 'r') as f:
+            # strip to remove \n
+            annotations = [item.strip() for item in f.readlines()]
 
-            assert len(content_case) > 0
-            assert len(content_case) == len(annotations)
+        assert len(content_case) > 0
+        assert len(content_case) == len(annotations)
 
-            for line_case, line_annotations in zip(content_case, annotations):
-                gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
-                if len(gold_offsets) > 0:
-                    results.append((line_case, gold_offsets))
+        for line_case, line_annotations in zip(content_case, annotations):
+            gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
+            if len(gold_offsets) > 0:
+                results.append((line_case, gold_offsets))
+
+    # TODO MERGE LINES IF LOWER AT THE END FOLLOWED BY LOWER AT THE BEGINNING
     # print("nb files", len(file_used))
     # print("files", file_used)
     return results
@@ -176,10 +195,29 @@ def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
 
 def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> None:
 
-    ner_model = get_empty_model(load_labels_for_training=True)
-    ner_model = ner_model.from_disk(path=model_path)  # config_training["model_dir_path"]
+    nlp = get_empty_model(load_labels_for_training=True)
+    nlp = nlp.from_disk(path=model_path)
+    ner = nlp.get_pipe("ner")
+    ner.model.learn_rate = 0.00001
 
-    all_annotated_files: List[str] = [filename for filename in os.listdir(data_folder) if filename.endswith(".txt")]
+    # nlp = spacy.blank('fr')
+    # nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
+    # ner: EntityRecognizer = nlp.create_pipe('ner')
+    # add labels
+    # if load_labels_for_training:
+    # entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
+    #                 # "SOCIAL_SECURITY_NUMBER",
+    #                 "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
+    #                 "ADDRESS", "COURT", "DATE", "RG",
+    #                 "BAR", "UNKNOWN"]
+    # for token_type in entity_types:
+    #     ner.add_label(token_type)
+    # nlp.add_pipe(ner, last=True)
+
+    # nlp.begin_training()
+
+    all_annotated_files: List[str] = [os.path.join(data_folder, filename)
+                                      for filename in os.listdir(data_folder) if filename.endswith(".txt")]
     random.shuffle(all_annotated_files)
 
     # ner_model.begin_training()
@@ -190,34 +228,35 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
 
     train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
 
-    content_to_rate: List[Tuple[str, List[Offset]]] = load_content(paths=train_file_names,
-                                                                   dataset_path=data_folder)
-    content_to_rate_test = load_content(paths=dev_file_names,
-                                        dataset_path=data_folder)
+    content_to_rate: List[Tuple[str, List[Offset]]] = load_content(txt_paths=train_file_names)
+    content_to_rate_test = load_content(txt_paths=dev_file_names)
 
-    print("total nb entities", sum([len(item) for item in content_to_rate]))
+    print("nb PERS entities", sum([1
+                                   for text, offsets in content_to_rate
+                                   for offset in offsets
+                                   if offset.type == "PERS"]))
 
     # spacy_evaluate(ner_model, content_to_rate_test)
 
-    train_data = [(current_line, GoldParse(ner_model.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
+    train_data = [(current_line, GoldParse(nlp.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
                   for current_line, gold_offsets in content_to_rate]
+    optimizer: Optimizer = nlp.resume_training()
 
     for epoch in range(nb_epochs):
-        optimizer: Optimizer = ner_model.entity.create_optimizer()
         random.shuffle(train_data)
         losses = dict()
         batches = minibatch(train_data, size=compounding(4., 16., 1.001))
         for batch in batches:
             texts, manual_annotations = zip(*batch)
-            ner_model.update(
+            nlp.update(
                 texts,
                 manual_annotations,
                 drop=0.3,
                 losses=losses,
                 sgd=optimizer)
-        print(f"Epoch {epoch + 1}\n")
-        spacy_evaluate(ner_model, content_to_rate_test)
-        # print(losses)
+        print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
+        spacy_evaluate(model=nlp,
+                       dev=content_to_rate_test)
 
 
 if __name__ == '__main__':
@@ -226,9 +265,3 @@ if __name__ == '__main__':
          model_path=args.model_dir,
          dev_size=float(args.dev_size),
          nb_epochs=int(args.epoch))
-
-    # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
-    # model_path = "./resources/model/"
-    # dev_size = 0.2
-
-# python fine_tune_pre_trained_model.py -m ./resources/model/ -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 20
