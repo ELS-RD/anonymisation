@@ -18,7 +18,7 @@
 import os
 import random
 from argparse import Namespace, ArgumentParser
-from typing import Tuple, List
+from typing import Tuple, List, Union, Optional
 
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
@@ -119,18 +119,26 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
         doc_gold_text = model.make_doc(text)
         offset_tuples = convert_to_tuple(offsets)
         gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
+        # count_ent_gold = sum([1 for item in gold.ner if item != "O"])
         pred_value: Doc = model(text)
+        # if count_ent_gold != len(offsets):
+        #     gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets]
+        #
+        #     print("---------")
+        #     print("gold:", gold.ner)
+        #     print("gold from offset:", gold_to_print)
+        #     print(text)
+        #     print("---------")
 
         # pred_ents = [Offset(pred.start_char, pred.end_char, pred.label_) for pred in pred_value.ents]
         # if pred_ents != offsets:
-        #     predictions_to_print = [text[o.start:o.end] + " - " + o.type for o in pred_ents if (o not in offsets) and o.type == "PERS"]
-        #     # gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets if (o not in pred_ents) and o.type == "PERS"]
-        #     gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets if ('.' in text[o.start:o.end]) and (o.type == "PERS")]
-        #     gold_all = [text[o.start:o.end] + " - " + o.type for o in offsets]
-        #     totally_absent = sum([1 for item in predictions_to_print if item not in gold_all]) == 0
+        #     predictions_to_print = ["[" + text[o.start:o.end] + "] - " + o.type for o in pred_ents if (o not in offsets) and o.type == "PERS"]
+        #     gold_to_print = [text[o.start:o.end] for o in offsets if (o.type == "PERS")]
+        #     contains_space = sum([1 for t in gold_to_print for c in t if not c.isalpha() and not c.isspace()]) > 0
         #
-        #     if (len(gold_to_print) > 0):
+        #     if (len(gold_to_print) > 0) and contains_space:
         #         print("---------")
+        #         print([c for t in gold_to_print for c in t if not c.isalpha() and not c.isspace()])
         #         print(pred_ents, "|", offsets)
         #         print("pred:", predictions_to_print)
         #         print("gold:", gold_to_print)
@@ -157,7 +165,41 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     print(f"-----\n")
 
 
+def recompose_paragraphs(paragraphs: List[Tuple[str, List[Offset]]]) -> List[Tuple[str, List[Offset]]]:
+    results = list()
+    precedent_paragraph_not_finished = False
+    precedent_paragraph: Optional[str] = None
+    precedent_offsets = list()
+    for index, (current_paragraph, current_offsets) in enumerate(paragraphs):
+        current_start_lower_char = current_paragraph[0].islower()
+
+        if current_start_lower_char and precedent_paragraph_not_finished:
+            precedent_offsets += [Offset(o.start + len(precedent_paragraph), o.end + len(precedent_paragraph), o.type)
+                                  for o in current_offsets]
+            precedent_paragraph += " " + current_paragraph
+
+        else:
+            if precedent_paragraph is not None:
+                results.append((precedent_paragraph, precedent_offsets))
+            precedent_paragraph = current_paragraph
+            precedent_offsets = current_offsets
+
+        last_char_precedent_paragraph = precedent_paragraph[-1]
+        precedent_paragraph_not_finished = (last_char_precedent_paragraph.isalnum() or
+                                            (last_char_precedent_paragraph is ","))
+
+        if index == len(paragraphs) - 1 and precedent_paragraph is not None:
+            results.append((precedent_paragraph, precedent_offsets))
+
+    return results
+
+
 def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
+    """
+    Parse text and offsets files
+    :param txt_paths: paths to the text files, offset files are guessed
+    :return: parsed information
+    """
     results: List[Tuple[str, List[Offset]]] = list()
     file_used: List[str] = list()
     for txt_path in txt_paths:
@@ -179,10 +221,9 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
             if len(gold_offsets) > 0:
                 results.append((line_case, gold_offsets))
-
-    # TODO MERGE LINES IF LOWER AT THE END FOLLOWED BY LOWER AT THE BEGINNING
-    # print("nb files", len(file_used))
-    # print("files", file_used)
+    print(len(results))
+    results = recompose_paragraphs(results)
+    print(len(results))
     return results
 
 
@@ -194,11 +235,10 @@ def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
 
 
 def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> None:
-
     nlp = get_empty_model(load_labels_for_training=True)
     nlp = nlp.from_disk(path=model_path)
-    ner = nlp.get_pipe("ner")
-    ner.model.learn_rate = 0.00001
+    # ner = nlp.get_pipe("ner")
+    # ner.model.learn_rate = 0.0001
 
     # nlp = spacy.blank('fr')
     # nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
@@ -228,7 +268,7 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
 
     train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
 
-    content_to_rate: List[Tuple[str, List[Offset]]] = load_content(txt_paths=train_file_names)
+    content_to_rate = load_content(txt_paths=train_file_names)
     content_to_rate_test = load_content(txt_paths=dev_file_names)
 
     print("nb PERS entities", sum([1
@@ -236,7 +276,7 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
                                    for offset in offsets
                                    if offset.type == "PERS"]))
 
-    # spacy_evaluate(ner_model, content_to_rate_test)
+    spacy_evaluate(nlp, content_to_rate_test)
 
     train_data = [(current_line, GoldParse(nlp.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
                   for current_line, gold_offsets in content_to_rate]
