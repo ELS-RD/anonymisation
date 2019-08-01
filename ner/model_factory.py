@@ -19,6 +19,7 @@ import spacy
 
 # Managed type of tokens
 from spacy.lang.fr import French
+from spacy.tokenizer import Tokenizer
 
 entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
                 # "SOCIAL_SECURITY_NUMBER",
@@ -47,7 +48,20 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     """
     # Important to setup the right language because it impacts the tokenizer, sentences split, ...
     nlp = spacy.blank('fr')
-    nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
+
+    infix_re = spacy.util.compile_infix_regex(
+        nlp.Defaults.infixes + [r':', r'\\(', r"\\)", r"(?<=[\W\d_])-|-(?=[\W\d_])"])
+    prefix_re = spacy.util.compile_prefix_regex(tuple(list(nlp.Defaults.prefixes) + [r"-"]))
+    suffix_re = spacy.util.compile_suffix_regex(nlp.Defaults.suffixes)
+
+    tok = Tokenizer(nlp.vocab,
+                    prefix_search=prefix_re.search,
+                    suffix_search=suffix_re.search,
+                    infix_finditer=infix_re.finditer,
+                    token_match=None)
+    nlp.tokenizer = tok
+
+    # nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
     ner = nlp.create_pipe('ner')
     # add labels
     if load_labels_for_training:
@@ -55,7 +69,5 @@ def get_empty_model(load_labels_for_training: bool) -> French:
             ner.add_label(token_type)
 
     nlp.add_pipe(ner, last=True)
-    # infixes = nlp.Defaults.infixes + [r':', r"(?<=[\W\d_])-|-(?=[\W\d_])"]
-    # infixes_regex = spacy.util.compile_infix_regex(infixes)
-    # nlp.tokenizer.infix_finditer = infixes_regex.finditer
+
     return nlp

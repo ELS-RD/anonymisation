@@ -14,7 +14,8 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-
+import spacy
+from spacy.gold import GoldParse
 from spacy.tokens.doc import Doc
 
 from match_text_unsafe.build_entity_dictionary import EntityTypename
@@ -45,3 +46,25 @@ def test_build_entity_dict():
     entity_typename = EntityTypename()
     entity_typename.add_spacy_entities(doc)
     assert entity_typename.get_dict() == {'est': 'UNKNOWN'}
+
+
+def test_tokenizer():
+    doc: Doc = pytest.nlp.make_doc("Ceci est un test.")
+    offsets = [(0, 4, "PERS"), (9, 11, "PERS")]
+    gold: GoldParse = GoldParse(doc, entities=offsets)
+    word_extracted = [doc.char_span(o[0], o[1]) for o in offsets]
+    count_ent = sum([1 for item in gold.ner if item != "O"])
+    assert count_ent == len(word_extracted)
+
+    offsets = [(0, 4, "PERS"), (9, 12, "PERS")]
+    gold: GoldParse = GoldParse(doc, entities=offsets)
+    word_extracted = [doc.char_span(o[0], o[1]) for o in offsets if doc.char_span(o[0], o[1]) is not None]
+    count_ent = sum([1 for item in gold.ner if item != "O"])
+    assert count_ent > len(word_extracted)
+
+
+def test_new_tokenizer():
+    assert len(pytest.nlp.make_doc("ceci est un test")) == 4
+    assert len(pytest.nlp.make_doc("ceci est un -test")) == 5
+    assert len(pytest.nlp.make_doc("ceci est un te-st")) == 6
+    assert len(pytest.nlp.make_doc("ceci est un l'test")) == 5

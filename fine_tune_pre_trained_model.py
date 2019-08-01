@@ -20,6 +20,7 @@ import random
 from argparse import Namespace, ArgumentParser
 from typing import Tuple, List, Union, Optional
 
+import spacy
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
@@ -47,7 +48,7 @@ def parse_args() -> Namespace:
         '-m', '--model-dir',
         help="Model directory",
         action="store", dest="model_dir",
-        required=True
+        required=False
     )
     parser.add_argument(
         '-i', '--input-files-dir',
@@ -118,8 +119,18 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     for text, offsets in dev:
         doc_gold_text = model.make_doc(text)
         offset_tuples = convert_to_tuple(offsets)
+
+        word_extracted = [doc_gold_text.char_span(o[0], o[1]) for o in offset_tuples]
+        # TODO convert to assert when fixed
+        if None in word_extracted:
+            print("---------")
+            print(offsets)
+            print(word_extracted)
+            print(text)
+            print("---------")
+
         gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
-        # count_ent_gold = sum([1 for item in gold.ner if item != "O"])
+
         pred_value: Doc = model(text)
         # if count_ent_gold != len(offsets):
         #     gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets]
@@ -236,31 +247,17 @@ def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
 
 def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
-    nlp = nlp.from_disk(path=model_path)
-    # ner = nlp.get_pipe("ner")
-    # ner.model.learn_rate = 0.0001
-
-    # nlp = spacy.blank('fr')
-    # nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
-    # ner: EntityRecognizer = nlp.create_pipe('ner')
-    # add labels
-    # if load_labels_for_training:
-    # entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
-    #                 # "SOCIAL_SECURITY_NUMBER",
-    #                 "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
-    #                 "ADDRESS", "COURT", "DATE", "RG",
-    #                 "BAR", "UNKNOWN"]
-    # for token_type in entity_types:
-    #     ner.add_label(token_type)
-    # nlp.add_pipe(ner, last=True)
-
-    # nlp.begin_training()
+    if model_path is not None:
+        nlp = nlp.from_disk(path=model_path)
+        nlp.begin_training()
+        # ner = nlp.get_pipe("ner")
+        # ner.model.learn_rate = 0.0001
+    else:
+        nlp.begin_training()
 
     all_annotated_files: List[str] = [os.path.join(data_folder, filename)
                                       for filename in os.listdir(data_folder) if filename.endswith(".txt")]
     random.shuffle(all_annotated_files)
-
-    # ner_model.begin_training()
 
     nb_doc_dev_set: int = int(len(all_annotated_files) * dev_size)
 
@@ -276,7 +273,9 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
                                    for offset in offsets
                                    if offset.type == "PERS"]))
 
-    spacy_evaluate(nlp, content_to_rate_test)
+    if model_path is not None:
+        print("evaluation without fine tuning")
+        spacy_evaluate(nlp, content_to_rate_test)
 
     train_data = [(current_line, GoldParse(nlp.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
                   for current_line, gold_offsets in content_to_rate]

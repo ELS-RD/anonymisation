@@ -63,7 +63,7 @@ fine_tune:
 # print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python fine_tune_pre_trained_model.py -m ./resources/model/ -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 1; \
+	python fine_tune_pre_trained_model.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 50; \
 	)
 
 test:
@@ -73,33 +73,15 @@ test:
 	pytest; \
 	)
 
-extract_com_1:
+extract_com:
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/doc_courts/txt -o ./resources/doc_courts/spacy_output -m ./resources/model -k 100; \
-	)
-
-extract_com_2:
-	( \
-	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/doc_courts/tc_1_tesseract_selection -o ./resources/doc_courts/spacy_tc_1_tesseract_selection -m ./resources/model -k 100; \
-	)
-
-extract_com_3:
-	( \
-	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/doc_courts/tc_2_tesseract_selection -o ./resources/doc_courts/spacy_tc_2_tesseract_selection -m ./resources/model -k 100; \
-	)
-
-extract_com_4:
-	( \
-	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/doc_courts/tc_3_tesseract_selection -o ./resources/doc_courts/spacy_tc_3_tesseract_selection -m ./resources/model -k 100; \
+	python entities_sample_extractor.py -i ./resources/doc_courts/tc_6_tesseract_selection -o ./resources/doc_courts/spacy_tc_6_tesseract_selection -m ./resources/model -k 200; \
 	)
 
 
 extract_ca:
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python entities_sample_extractor.py -i ./resources/training_data -o ../case_annotation/data_spacy_automatic_annotations -m ./resources/model -k 100; \
+	python entities_sample_extractor.py -i ./resources/training_data -o ../case_annotation/data_spacy_automatic_annotations -m ./resources/model -k 200; \
 	)
