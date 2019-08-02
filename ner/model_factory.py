@@ -49,17 +49,18 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     # Important to setup the right language because it impacts the tokenizer, sentences split, ...
     nlp = spacy.blank('fr')
 
-    infix_re = spacy.util.compile_infix_regex(
-        nlp.Defaults.infixes + [r':', r'\\(', r"\\)", r"(?<=[\W\d_])-|-(?=[\W\d_])"])
-    prefix_re = spacy.util.compile_prefix_regex(tuple(list(nlp.Defaults.prefixes) + [r"-"]))
-    suffix_re = spacy.util.compile_suffix_regex(nlp.Defaults.suffixes)
-
-    tok = Tokenizer(nlp.vocab,
-                    prefix_search=prefix_re.search,
-                    suffix_search=suffix_re.search,
-                    infix_finditer=infix_re.finditer,
-                    token_match=None)
-    nlp.tokenizer = tok
+    # extended_infix = [r':', r'\\(', r"\\)", r"-", r"\.", r"/"] + nlp.Defaults.infixes
+    # infix_re = spacy.util.compile_infix_regex(extended_infix)
+    # prefix_re = spacy.util.compile_prefix_regex(tuple(list(nlp.Defaults.prefixes) + [r"-", r"/", "'", "’"]))
+    # suffix_re = spacy.util.compile_suffix_regex(tuple(list(nlp.Defaults.suffixes) + [r"-", r"/", "'", "’", "\\",
+    #                                                                                  r"\."]))
+    #
+    # tok = Tokenizer(nlp.vocab,
+    #                 prefix_search=prefix_re.search,
+    #                 suffix_search=suffix_re.search,
+    #                 infix_finditer=infix_re.finditer,
+    #                 token_match=None)
+    # nlp.tokenizer = tok
 
     # nlp.add_pipe(prevent_sentence_boundary_detection, name='prevent-sbd', first=True)
     ner = nlp.create_pipe('ner')

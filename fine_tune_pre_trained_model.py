@@ -18,9 +18,8 @@
 import os
 import random
 from argparse import Namespace, ArgumentParser
-from typing import Tuple, List, Union, Optional
+from typing import Tuple, List, Optional, Dict
 
-import spacy
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
@@ -132,29 +131,6 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
         gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
 
         pred_value: Doc = model(text)
-        # if count_ent_gold != len(offsets):
-        #     gold_to_print = [text[o.start:o.end] + " - " + o.type for o in offsets]
-        #
-        #     print("---------")
-        #     print("gold:", gold.ner)
-        #     print("gold from offset:", gold_to_print)
-        #     print(text)
-        #     print("---------")
-
-        # pred_ents = [Offset(pred.start_char, pred.end_char, pred.label_) for pred in pred_value.ents]
-        # if pred_ents != offsets:
-        #     predictions_to_print = ["[" + text[o.start:o.end] + "] - " + o.type for o in pred_ents if (o not in offsets) and o.type == "PERS"]
-        #     gold_to_print = [text[o.start:o.end] for o in offsets if (o.type == "PERS")]
-        #     contains_space = sum([1 for t in gold_to_print for c in t if not c.isalpha() and not c.isspace()]) > 0
-        #
-        #     if (len(gold_to_print) > 0) and contains_space:
-        #         print("---------")
-        #         print([c for t in gold_to_print for c in t if not c.isalpha() and not c.isspace()])
-        #         print(pred_ents, "|", offsets)
-        #         print("pred:", predictions_to_print)
-        #         print("gold:", gold_to_print)
-        #         print(text)
-        #         print("---------")
 
         s.score(pred_value, gold)
 
@@ -218,8 +194,7 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             raise Exception(f"wrong file in the selection (not .txt): {txt_path}")
         file_used.append(txt_path)
         with open(txt_path, 'r') as f:
-            # strip to remove \n
-            content_case = [item.strip() for item in f.readlines()]
+            content_case = [item for item in f.readlines()]
         path_annotations = txt_path.replace('.txt', '.ent')
         with open(path_annotations, 'r') as f:
             # strip to remove \n
@@ -277,8 +252,11 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
         print("evaluation without fine tuning")
         spacy_evaluate(nlp, content_to_rate_test)
 
-    train_data = [(current_line, GoldParse(nlp.make_doc(current_line), entities=convert_to_tuple(gold_offsets)))
-                  for current_line, gold_offsets in content_to_rate]
+    train_data: List[Tuple[str, GoldParse]] = [(current_line,
+                                                GoldParse(nlp.make_doc(current_line),
+                                                          entities=convert_to_tuple(gold_offsets)))
+                                               for current_line, gold_offsets in content_to_rate]
+
     optimizer: Optimizer = nlp.resume_training()
 
     for epoch in range(nb_epochs):
@@ -286,7 +264,7 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
         losses = dict()
         batches = minibatch(train_data, size=compounding(4., 16., 1.001))
         for batch in batches:
-            texts, manual_annotations = zip(*batch)
+            texts, manual_annotations = zip(*batch)  # type: List[str], List[GoldParse]
             nlp.update(
                 texts,
                 manual_annotations,
