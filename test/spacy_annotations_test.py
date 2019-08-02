@@ -14,6 +14,8 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+from typing import List
+
 import spacy
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
@@ -22,6 +24,7 @@ from spacy.tokens.span import Span
 
 from match_text_unsafe.build_entity_dictionary import EntityTypename
 from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk, no_action_bilou
+from misc.normalize_offset import split_span
 from ner.model_factory import get_empty_model
 import pytest
 
@@ -69,7 +72,7 @@ def test_new_tokenizer():
     assert len(pytest.nlp.make_doc("ceci est un test")) == 4
     assert len(pytest.nlp.make_doc("ceci est un -test")) == 5
     assert len(pytest.nlp.make_doc("ceci est un te-st")) == 6
-    assert len(pytest.nlp.make_doc("ceci est un l'test")) == 5
+    assert len(pytest.nlp.make_doc("ceci est un l'test")) == 6
 
 
 def test_score():
@@ -87,3 +90,22 @@ def test_score():
     score: Scorer = Scorer()
     score.score(doc, expected_span)
     assert score.ents_per_type == dict([('PERS', {'p': 100.0, 'r': 100.0, 'f': 100.0})])
+
+
+def test_set_span():
+    s = "Le Président, Le Commis-Greffier, Jean-Paul I FFELLI Nelly DUBAS"
+    doc1: Doc = pytest.nlp.make_doc(s)
+    doc2: Doc = pytest.nlp.make_doc(s)
+    span1 = doc1.char_span(34, 58, "PERS")
+    span2 = doc2.char_span(34, 58, "PERS")
+    assert {span1.text}.symmetric_difference({span2.text}) == set()
+    assert len({span1}.symmetric_difference({span2})) > 0
+
+
+def test_span_to_spans():
+    s = "Le Président, Le Commis-Greffier, Jean-Paul I FFELLI Nelly DUBAS"
+    doc: Doc = pytest.nlp.make_doc(s)
+    span: Span = doc.char_span(34, 58, "PERS")
+    new_spans = split_span(doc, span)
+    assert len(span) == len(new_spans)
+    assert span.label_ == new_spans[0].label_

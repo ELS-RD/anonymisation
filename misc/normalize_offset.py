@@ -18,6 +18,8 @@ from itertools import groupby
 from typing import List, Tuple, Union
 
 import regex
+from spacy.tokens.doc import Doc
+from spacy.tokens.span import Span
 
 from xml_extractions.extract_node_values import Offset
 
@@ -156,3 +158,19 @@ def clean_offsets_from_unwanted_words(text: str, offsets: List[Offset]) -> List[
         else:
             result.append(offset)
     return result
+
+
+def split_span(doc: Doc, span: Span) -> List[Span]:
+    """
+    Split a span in multiple span (one token per span)
+    """
+    s = doc.text
+    new_spans = list()
+    label = span.label_
+    start_search = span.start_char
+    for word in span:
+        start = s.index(word.text, start_search, span.end_char)
+        end = start + len(word.text)
+        new_spans.append(doc.char_span(start, end, label))
+        start_search += len(word.text)
+    return new_spans

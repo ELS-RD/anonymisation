@@ -14,9 +14,10 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-
+import itertools
 import os
 import random
+import re
 from argparse import Namespace, ArgumentParser
 from typing import Tuple, List, Optional, Dict, Set
 
@@ -27,6 +28,7 @@ from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
 
+from misc.normalize_offset import split_span
 from ner.model_factory import get_empty_model
 from xml_extractions.extract_node_values import Offset
 
@@ -117,26 +119,29 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     s = Scorer()
 
     for text, offsets in dev:
-        doc_gold_text = model.make_doc(text)
+        doc = model.make_doc(text)
         offset_tuples = [offset.to_tuple() for offset in offsets]
-        expected_entities: Set[Span] = {doc_gold_text.char_span(o[0], o[1]) for o in offset_tuples}
-        # print(text)
-        # print(offsets)
+        expected_entities: List[Span] = [doc.char_span(o[0], o[1]) for o in offset_tuples]
         assert None not in expected_entities
-
-        gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
 
         predicted_entities: Doc = model(text)
 
-        if set(predicted_entities.ents) != expected_entities:
-            diff = set(predicted_entities.ents).difference(expected_entities)
+        expected_entities_text = [e.text for e in expected_entities]
+        predicted_entities_text = [e.text for e in predicted_entities.ents]
+        diff = set(expected_entities_text).symmetric_difference(set(predicted_entities_text))
+        if len(diff) > 0:
             print("------------")
             print(text)
             print("diff:", diff)
-            print("expected:", expected_entities)
-            print("offsets:", offset_tuples)
-            print("predicted:", list(predicted_entities.ents))
+            print("expected:", expected_entities_text)
+            print("predicted:", predicted_entities_text)
 
+        # if len(predicted_entities.ents) > 0:
+        #     ents = list(set(itertools.chain.from_iterable([split_span(predicted_entities, s)
+        #                                                    for s in predicted_entities.ents])))
+        #     predicted_entities.ents = [e for e in ents if e is not None]
+        gold: GoldParse = GoldParse(doc, entities=offset_tuples)
+        # gold.ner = [re.sub(r"^.-", 'U-', e) for e in gold.ner]
         s.score(predicted_entities, gold)
 
     entities = list(s.ents_per_type.items())
@@ -213,8 +218,8 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
             results.append((line_case, gold_offsets))
     print(len(results))
-    # results = recompose_paragraphs(results)  # TODO why this step is necessary?
-    print(len(results))
+    # results = recompose_paragraphs(results)
+    # print(len(results))
     return results
 
 

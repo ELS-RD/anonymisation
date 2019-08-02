@@ -48,12 +48,11 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     """
     # Important to setup the right language because it impacts the tokenizer, sentences split, ...
     nlp = spacy.blank('fr')
-
+    split_char = r"[ ,\\.()-/\\|:;'\"+=!’?_+]"
     extended_infix = [r':', r'\\(', r"\\)", r"-", r"\.", r"/"] + nlp.Defaults.infixes
     infix_re = spacy.util.compile_infix_regex(extended_infix)
-    prefix_re = spacy.util.compile_prefix_regex(tuple(list(nlp.Defaults.prefixes) + [r"-", r"/", "'", "’"]))
-    suffix_re = spacy.util.compile_suffix_regex(tuple(list(nlp.Defaults.suffixes) + [r"-", r"/", "'", "’", "\\",
-                                                                                     r"\."]))
+    prefix_re = spacy.util.compile_prefix_regex(tuple(list(nlp.Defaults.prefixes) + [split_char]))
+    suffix_re = spacy.util.compile_suffix_regex(tuple(list(nlp.Defaults.suffixes) + [split_char]))
 
     tok = Tokenizer(nlp.vocab,
                     prefix_search=prefix_re.search,
