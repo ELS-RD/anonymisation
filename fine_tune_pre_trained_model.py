@@ -18,11 +18,12 @@
 import os
 import random
 from argparse import Namespace, ArgumentParser
-from typing import Tuple, List, Optional, Dict
+from typing import Tuple, List, Optional, Dict, Set
 
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
+from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
 
@@ -117,22 +118,26 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 
     for text, offsets in dev:
         doc_gold_text = model.make_doc(text)
-        offset_tuples = convert_to_tuple(offsets)
-
-        word_extracted = [doc_gold_text.char_span(o[0], o[1]) for o in offset_tuples]
-        # TODO convert to assert when fixed
-        if None in word_extracted:
-            print("---------")
-            print(offsets)
-            print(word_extracted)
-            print(text)
-            print("---------")
+        offset_tuples = [offset.to_tuple() for offset in offsets]
+        expected_entities: Set[Span] = {doc_gold_text.char_span(o[0], o[1]) for o in offset_tuples}
+        # print(text)
+        # print(offsets)
+        assert None not in expected_entities
 
         gold: GoldParse = GoldParse(doc_gold_text, entities=offset_tuples)
 
-        pred_value: Doc = model(text)
+        predicted_entities: Doc = model(text)
 
-        s.score(pred_value, gold)
+        if set(predicted_entities.ents) != expected_entities:
+            diff = set(predicted_entities.ents).difference(expected_entities)
+            print("------------")
+            print(text)
+            print("diff:", diff)
+            print("expected:", expected_entities)
+            print("offsets:", offset_tuples)
+            print("predicted:", list(predicted_entities.ents))
+
+        s.score(predicted_entities, gold)
 
     entities = list(s.ents_per_type.items())
     entities.sort(key=lambda tup: tup[0])
@@ -152,33 +157,33 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     print(f"-----\n")
 
 
-def recompose_paragraphs(paragraphs: List[Tuple[str, List[Offset]]]) -> List[Tuple[str, List[Offset]]]:
-    results = list()
-    precedent_paragraph_not_finished = False
-    precedent_paragraph: Optional[str] = None
-    precedent_offsets = list()
-    for index, (current_paragraph, current_offsets) in enumerate(paragraphs):
-        current_start_lower_char = current_paragraph[0].islower()
-
-        if current_start_lower_char and precedent_paragraph_not_finished:
-            precedent_offsets += [Offset(o.start + len(precedent_paragraph), o.end + len(precedent_paragraph), o.type)
-                                  for o in current_offsets]
-            precedent_paragraph += " " + current_paragraph
-
-        else:
-            if precedent_paragraph is not None:
-                results.append((precedent_paragraph, precedent_offsets))
-            precedent_paragraph = current_paragraph
-            precedent_offsets = current_offsets
-
-        last_char_precedent_paragraph = precedent_paragraph[-1]
-        precedent_paragraph_not_finished = (last_char_precedent_paragraph.isalnum() or
-                                            (last_char_precedent_paragraph is ","))
-
-        if index == len(paragraphs) - 1 and precedent_paragraph is not None:
-            results.append((precedent_paragraph, precedent_offsets))
-
-    return results
+# def recompose_paragraphs(paragraphs: List[Tuple[str, List[Offset]]]) -> List[Tuple[str, List[Offset]]]:
+#     results = list()
+#     precedent_paragraph_not_finished = False
+#     precedent_paragraph: Optional[str] = None
+#     precedent_offsets = list()
+#     for index, (current_paragraph, current_offsets) in enumerate(paragraphs):
+#         current_start_lower_char = current_paragraph[0].islower()
+#
+#         if current_start_lower_char and precedent_paragraph_not_finished:
+#             precedent_offsets += [Offset(o.start + len(precedent_paragraph), o.end + len(precedent_paragraph), o.type)
+#                                   for o in current_offsets]
+#             precedent_paragraph += " " + current_paragraph
+#
+#         else:
+#             if precedent_paragraph is not None:
+#                 results.append((precedent_paragraph, precedent_offsets))
+#             precedent_paragraph = current_paragraph
+#             precedent_offsets = current_offsets
+#
+#         last_char_precedent_paragraph = precedent_paragraph[-1]
+#         precedent_paragraph_not_finished = (last_char_precedent_paragraph.isalnum() or
+#                                             (last_char_precedent_paragraph is ","))
+#
+#         if index == len(paragraphs) - 1 and precedent_paragraph is not None:
+#             results.append((precedent_paragraph, precedent_offsets))
+#
+#     return results
 
 
 def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
@@ -194,7 +199,8 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             raise Exception(f"wrong file in the selection (not .txt): {txt_path}")
         file_used.append(txt_path)
         with open(txt_path, 'r') as f:
-            content_case = [item for item in f.readlines()]
+            # remove \n only
+            content_case = [item[:-1] for item in f.readlines() if item[-1] is "\n"]
         path_annotations = txt_path.replace('.txt', '.ent')
         with open(path_annotations, 'r') as f:
             # strip to remove \n
@@ -205,22 +211,14 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
 
         for line_case, line_annotations in zip(content_case, annotations):
             gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
-            if len(gold_offsets) > 0:
-                results.append((line_case, gold_offsets))
+            results.append((line_case, gold_offsets))
     print(len(results))
-    results = recompose_paragraphs(results)
+    # results = recompose_paragraphs(results)  # TODO why this step is necessary?
     print(len(results))
     return results
 
 
-def convert_to_tuple(offsets: List[Offset]) -> List[Tuple[int, int, str]]:
-    """
-    Convert List of offsets to the Tupple format (may be useful as input to Spacy)
-    """
-    return [offset.to_tuple() for offset in offsets]
-
-
-def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> None:
+def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
     if model_path is not None:
         nlp = nlp.from_disk(path=model_path)
@@ -254,7 +252,7 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
 
     train_data: List[Tuple[str, GoldParse]] = [(current_line,
                                                 GoldParse(nlp.make_doc(current_line),
-                                                          entities=convert_to_tuple(gold_offsets)))
+                                                          entities=[offset.to_tuple() for offset in gold_offsets]))
                                                for current_line, gold_offsets in content_to_rate]
 
     optimizer: Optimizer = nlp.resume_training()
@@ -276,9 +274,14 @@ def main(data_folder: str, model_path: str, dev_size: float, nb_epochs: int) -> 
                        dev=content_to_rate_test)
 
 
-if __name__ == '__main__':
-    args = parse_args()
-    main(data_folder=args.input_dir,
-         model_path=args.model_dir,
-         dev_size=float(args.dev_size),
-         nb_epochs=int(args.epoch))
+# if __name__ == '__main__':
+#     args = parse_args()
+#     main(data_folder=args.input_dir,
+#          model_path=args.model_dir,
+#          dev_size=float(args.dev_size),
+#          nb_epochs=int(args.epoch))
+
+main(data_folder="../case_annotation/data/tc/spacy_manual_annotations",
+     model_path=None,
+     dev_size=0.2,
+     nb_epochs=10)

@@ -16,7 +16,9 @@
 #  under the License.
 import spacy
 from spacy.gold import GoldParse
+from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
+from spacy.tokens.span import Span
 
 from match_text_unsafe.build_entity_dictionary import EntityTypename
 from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk, no_action_bilou
@@ -68,3 +70,20 @@ def test_new_tokenizer():
     assert len(pytest.nlp.make_doc("ceci est un -test")) == 5
     assert len(pytest.nlp.make_doc("ceci est un te-st")) == 6
     assert len(pytest.nlp.make_doc("ceci est un l'test")) == 5
+
+
+def test_score():
+    s = "Le Président, Le Commis-Greffier, Jean-Paul I FFELLI Nelly DUBAS"
+    doc: Doc = pytest.nlp.make_doc(s)
+    expected_span: GoldParse = GoldParse(doc, entities=[(34, 64, "PERS")])
+    predicted_span = doc.char_span(34, 58, "PERS")
+    doc.ents = [predicted_span]
+    score: Scorer = Scorer()
+    score.score(doc, expected_span)
+    assert score.ents_per_type == dict([('PERS', {'p': 0.0, 'r': 0.0, 'f': 0.0})])
+
+    predicted_span = doc.char_span(34, 64, "PERS")
+    doc.ents = [predicted_span]
+    score: Scorer = Scorer()
+    score.score(doc, expected_span)
+    assert score.ents_per_type == dict([('PERS', {'p': 100.0, 'r': 100.0, 'f': 100.0})])
