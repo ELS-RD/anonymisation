@@ -14,12 +14,10 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-import itertools
 import os
 import random
-import re
 from argparse import Namespace, ArgumentParser
-from typing import Tuple, List, Optional, Dict, Set
+from typing import Tuple, List, Optional
 
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
@@ -28,7 +26,6 @@ from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
 
-from misc.normalize_offset import split_span
 from ner.model_factory import get_empty_model
 from xml_extractions.extract_node_values import Offset
 
@@ -129,20 +126,19 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 
         expected_entities_text = [e.text for e in expected_entities]
         predicted_entities_text = [e.text for e in predicted_entities.ents]
-        diff = set(expected_entities_text).symmetric_difference(set(predicted_entities_text))
+        # diff = set(expected_entities_text).symmetric_difference(set(predicted_entities_text))
+        diff = list()
+        for p in predicted_entities_text:
+            if not any([(p in e) or (e in p) for e in expected_entities_text]):
+                diff.append(p)
+
         if len(diff) > 0:
             print("------------")
-            print(text)
-            print("diff:", diff)
-            print("expected:", expected_entities_text)
-            print("predicted:", predicted_entities_text)
+            print(f"missing: {diff} in [{text}]")
+            # print("expected:", expected_entities_text)
+            # print("predicted:", predicted_entities_text)
 
-        # if len(predicted_entities.ents) > 0:
-        #     ents = list(set(itertools.chain.from_iterable([split_span(predicted_entities, s)
-        #                                                    for s in predicted_entities.ents])))
-        #     predicted_entities.ents = [e for e in ents if e is not None]
         gold: GoldParse = GoldParse(doc, entities=offset_tuples)
-        # gold.ner = [re.sub(r"^.-", 'U-', e) for e in gold.ner]
         s.score(predicted_entities, gold)
 
     entities = list(s.ents_per_type.items())
