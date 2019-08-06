@@ -122,7 +122,8 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
         doc = model.make_doc(text)
         offset_tuples = [offset.to_tuple() for offset in offsets]
         expected_entities: List[Span] = [doc.char_span(o[0], o[1]) for o in offset_tuples]
-        assert None not in expected_entities
+        if None in expected_entities:
+            raise Exception(f"entity parsing failed: [{expected_entities}], for offsets [{offset_tuples}] in [{text}]")
 
         predicted_entities: Doc = model(text)
 

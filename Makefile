@@ -63,7 +63,7 @@ fine_tune:
 # print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python fine_tune_pre_trained_model.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 50; \
+	python fine_tune_pre_trained_model.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 2; \
 	)
 
 test:
