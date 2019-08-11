@@ -59,11 +59,18 @@ list_differences:
 	python3 display_errors.py; \
 	)
 
-fine_tune:
-# print differences between entities found by Spacy and rule based system
+fine_tune_tc:
+# train a model from manual annotations
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python fine_tune_pre_trained_model.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 2; \
+	python fine_tune_pre_trained_model.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 1; \
+	)
+
+fine_tune_ca:
+# train a model from manual annotations
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python fine_tune_pre_trained_model.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -m ./resources/model -s 0.2 -e 5; \
 	)
 
 test:

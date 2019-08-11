@@ -26,7 +26,8 @@ from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
 
-from ner.model_factory import get_empty_model
+from misc.import_annotations import load_content
+from ner.model_factory import get_empty_model, get_tokenizer
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
@@ -71,41 +72,6 @@ def parse_args() -> Namespace:
     return parser.parse_args()
 
 
-def parse_offsets(text: str) -> Offset:
-    """
-    Convert to the right offset format
-    :param text: original line
-    :return: a tuple containing the offset
-    """
-    item = text.split(' ')
-    return Offset(int(item[0]), int(item[1]), item[2])
-
-
-def extract_offsets(text: str, offsets: List[Offset]) -> List[str]:
-    """
-    Extract a span from a line according to provided offsets
-    :param text: original text
-    :param offsets: list of tuples containing the positional information and a class of entity
-    :return: a list of tokens
-    """
-    return [text[offset.start:offset.end] for offset in offsets]
-
-
-def convert_offset_to_words(line: str, offsets: List[Offset], selected_type: str) -> List[str]:
-    """
-    Convert offsets to word tokens
-    :param line: original string
-    :param offsets: list of offsets
-    :param selected_type: the offset type to keep for this extraction
-    :return: a list of words
-    """
-    offset = [item for item in offsets if item.type == selected_type]
-    tokens = extract_offsets(text=line, offsets=offset)
-    words = [token.split(" ") for token in tokens]
-    words = [word for sublist in words for word in sublist]
-    return words
-
-
 def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
     """
     Compute entity global scores according to Spacy
@@ -126,17 +92,19 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 
         expected_entities_text = [e.text for e in expected_entities]
         predicted_entities_text = [e.text for e in predicted_entities.ents]
-        # diff = set(expected_entities_text).symmetric_difference(set(predicted_entities_text))
-        diff = list()
-        for p in predicted_entities_text:
-            if not any([(p in e) or (e in p) for e in expected_entities_text]):
-                diff.append(p)
+        diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
+        diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
+        # diff = list()
+        # for p in predicted_entities_text:
+        #     if not any([(p in e) or (e in p) for e in expected_entities_text]):
+        #         diff.append(p)
 
-        if len(diff) > 0:
+        if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
             print("------------")
-            print(f"missing: {diff} in [{text}]")
-            # print("expected:", expected_entities_text)
-            # print("predicted:", predicted_entities_text)
+            print(f"source: [{text}]")
+            print(f"expected missing: [{diff_expected}]")
+            print(f"predicted missing: [{diff_predicted}]")
+            print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
 
         gold: GoldParse = GoldParse(doc, entities=offset_tuples)
         s.score(predicted_entities, gold)
@@ -188,42 +156,11 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 #     return results
 
 
-def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
-    """
-    Parse text and offsets files
-    :param txt_paths: paths to the text files, offset files are guessed
-    :return: parsed information
-    """
-    results: List[Tuple[str, List[Offset]]] = list()
-    file_used: List[str] = list()
-    for txt_path in txt_paths:
-        if not txt_path.endswith('.txt'):
-            raise Exception(f"wrong file in the selection (not .txt): {txt_path}")
-        file_used.append(txt_path)
-        with open(txt_path, 'r') as f:
-            # remove \n only
-            content_case = [item[:-1] for item in f.readlines() if item[-1] is "\n"]
-        path_annotations = txt_path.replace('.txt', '.ent')
-        with open(path_annotations, 'r') as f:
-            # strip to remove \n
-            annotations = [item.strip() for item in f.readlines()]
-
-        assert len(content_case) > 0
-        assert len(content_case) == len(annotations)
-
-        for line_case, line_annotations in zip(content_case, annotations):
-            gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
-            results.append((line_case, gold_offsets))
-    print(len(results))
-    # results = recompose_paragraphs(results)
-    # print(len(results))
-    return results
-
-
 def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
     if model_path is not None:
         nlp = nlp.from_disk(path=model_path)
+        nlp.tokenizer = get_tokenizer(nlp)  # replace tokenizer
         nlp.begin_training()
         # ner = nlp.get_pipe("ner")
         # ner.model.learn_rate = 0.0001
@@ -248,9 +185,9 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
                                    for offset in offsets
                                    if offset.type == "PERS"]))
 
-    if model_path is not None:
-        print("evaluation without fine tuning")
-        spacy_evaluate(nlp, content_to_rate_test)
+    # if model_path is not None:
+    #     print("evaluation without fine tuning")
+    #     spacy_evaluate(nlp, content_to_rate_test)
 
     train_data: List[Tuple[str, GoldParse]] = [(current_line,
                                                 GoldParse(nlp.make_doc(current_line),
@@ -268,22 +205,18 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
             nlp.update(
                 texts,
                 manual_annotations,
-                drop=0.3,
+                # drop=0.3,
                 losses=losses,
                 sgd=optimizer)
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
         spacy_evaluate(model=nlp,
-                       dev=content_to_rate_test)
+                       dev=content_to_rate_test)  # content_to_rate +
 
 
-# if __name__ == '__main__':
-#     args = parse_args()
-#     main(data_folder=args.input_dir,
-#          model_path=args.model_dir,
-#          dev_size=float(args.dev_size),
-#          nb_epochs=int(args.epoch))
+if __name__ == '__main__':
+    args = parse_args()
+    main(data_folder=args.input_dir,
+         model_path=args.model_dir,
+         dev_size=float(args.dev_size),
+         nb_epochs=int(args.epoch))
 
-main(data_folder="../case_annotation/data/tc/spacy_manual_annotations",
-     model_path=None,
-     dev_size=0.2,
-     nb_epochs=10)

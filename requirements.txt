@@ -6,3 +6,4 @@ lxml
 pytest
 # textacy
 regex
+flair
