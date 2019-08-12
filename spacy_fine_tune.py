@@ -26,61 +26,13 @@ from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
 
+from misc.command_line import train_parse_args
 from misc.import_annotations import load_content
 from ner.model_factory import get_empty_model, get_tokenizer
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
 random.seed(123)
-
-
-def parse_args() -> Namespace:
-    """
-    Parse command line arguments.
-
-    :returns: a namespace with all the set parameters
-    """
-
-    parser = ArgumentParser(
-        description='Annotate a sample of the given files in the input directory'
-    )
-    parser.add_argument(
-        '-m', '--model-dir',
-        help="Model directory",
-        action="store",
-        dest="model_dir",
-        required=False
-    )
-    parser.add_argument(
-        '-i', '--input-files-dir',
-        help="Input files directory",
-        action="store",
-        dest="input_dir",
-        required=True
-    )
-    parser.add_argument(
-        '-s', '--dev-set-size',
-        help="Percentage of random docs to put in dev set",
-        action="store",
-        dest="dev_size",
-        required=True
-    )
-    parser.add_argument(
-        '-e', '--epochs',
-        help="Number of epochs",
-        action="store",
-        dest="epoch",
-        required=True
-    )
-
-    parser.add_argument(
-        '-v', '--verbose',
-        help="print differences between expected and predicted span",
-        action="store_true",
-        dest="print_diff"
-    )
-
-    return parser.parse_args()
 
 
 def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool) -> None:
@@ -217,7 +169,6 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
             nlp.update(
                 texts,
                 manual_annotations,
-                # drop=0.3,
                 losses=losses,
                 sgd=optimizer)
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
@@ -227,10 +178,9 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
 
 
 if __name__ == '__main__':
-    args = parse_args()
+    args = train_parse_args()
     main(data_folder=args.input_dir,
          model_path=args.model_dir,
          dev_size=float(args.dev_size),
          nb_epochs=int(args.epoch),
          print_diff=args.print_diff)
-
