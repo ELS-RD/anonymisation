@@ -198,3 +198,6 @@ venv.bak/
 .idea
 
 *.html
+
+/resources/taggers
+/resources/*.zip

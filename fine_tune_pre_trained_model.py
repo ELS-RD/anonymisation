@@ -47,32 +47,43 @@ def parse_args() -> Namespace:
     parser.add_argument(
         '-m', '--model-dir',
         help="Model directory",
-        action="store", dest="model_dir",
+        action="store",
+        dest="model_dir",
         required=False
     )
     parser.add_argument(
         '-i', '--input-files-dir',
         help="Input files directory",
-        action="store", dest="input_dir",
+        action="store",
+        dest="input_dir",
         required=True
     )
     parser.add_argument(
         '-s', '--dev-set-size',
         help="Percentage of random docs to put in dev set",
-        action="store", dest="dev_size",
+        action="store",
+        dest="dev_size",
         required=True
     )
     parser.add_argument(
         '-e', '--epochs',
         help="Number of epochs",
-        action="store", dest="epoch",
+        action="store",
+        dest="epoch",
         required=True
+    )
+
+    parser.add_argument(
+        '-v', '--verbose',
+        help="print differences between expected and predicted span",
+        action="store_true",
+        dest="print_diff"
     )
 
     return parser.parse_args()
 
 
-def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
+def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool) -> None:
     """
     Compute entity global scores according to Spacy
     :param model: Spacy NER model
@@ -90,24 +101,25 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 
         predicted_entities: Doc = model(text)
 
-        expected_entities_text = [e.text for e in expected_entities]
-        predicted_entities_text = [e.text for e in predicted_entities.ents]
-        diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
-        diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
-        # diff = list()
-        # for p in predicted_entities_text:
-        #     if not any([(p in e) or (e in p) for e in expected_entities_text]):
-        #         diff.append(p)
-
-        if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
-            print("------------")
-            print(f"source: [{text}]")
-            print(f"expected missing: [{diff_expected}]")
-            print(f"predicted missing: [{diff_predicted}]")
-            print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
-
         gold: GoldParse = GoldParse(doc, entities=offset_tuples)
         s.score(predicted_entities, gold)
+
+        if print_diff:
+            expected_entities_text = [e.text for e in expected_entities]
+            predicted_entities_text = [e.text for e in predicted_entities.ents]
+            diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
+            diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
+            # diff = list()
+            # for p in predicted_entities_text:
+            #     if not any([(p in e) or (e in p) for e in expected_entities_text]):
+            #         diff.append(p)
+
+            if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
+                print("------------")
+                print(f"source: [{text}]")
+                print(f"expected missing: [{diff_expected}]")
+                print(f"predicted missing: [{diff_predicted}]")
+                print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
 
     entities = list(s.ents_per_type.items())
     entities.sort(key=lambda tup: tup[0])
@@ -156,7 +168,7 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]]) -> None:
 #     return results
 
 
-def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int) -> None:
+def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int, print_diff: bool) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
     if model_path is not None:
         nlp = nlp.from_disk(path=model_path)
@@ -185,9 +197,9 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
                                    for offset in offsets
                                    if offset.type == "PERS"]))
 
-    # if model_path is not None:
-    #     print("evaluation without fine tuning")
-    #     spacy_evaluate(nlp, content_to_rate_test)
+    if model_path is not None:
+        print("evaluation without fine tuning")
+        spacy_evaluate(nlp, content_to_rate_test, print_diff)
 
     train_data: List[Tuple[str, GoldParse]] = [(current_line,
                                                 GoldParse(nlp.make_doc(current_line),
@@ -210,7 +222,8 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
                 sgd=optimizer)
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
         spacy_evaluate(model=nlp,
-                       dev=content_to_rate_test)  # content_to_rate +
+                       dev=content_to_rate_test,
+                       print_diff=print_diff)  # content_to_rate +
 
 
 if __name__ == '__main__':
@@ -218,5 +231,6 @@ if __name__ == '__main__':
     main(data_folder=args.input_dir,
          model_path=args.model_dir,
          dev_size=float(args.dev_size),
-         nb_epochs=int(args.epoch))
+         nb_epochs=int(args.epoch),
+         print_diff=args.print_diff)
 

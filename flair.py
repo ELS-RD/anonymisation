@@ -20,20 +20,19 @@ import tempfile
 from typing import List, Tuple
 
 import spacy
+from flair.data import Corpus, Sentence
+from flair.datasets import ColumnCorpus
 from flair.embeddings import StackedEmbeddings, TokenEmbeddings, WordEmbeddings, FlairEmbeddings, CharacterEmbeddings
+from flair.models import SequenceTagger
+from flair.trainers import ModelTrainer
+from flair.visual.training_curves import Plotter
 from spacy.gold import GoldParse
 from spacy.lang.fr import French
-from spacy.tokens import Span
 from spacy.tokens.doc import Doc
 
 from misc.import_annotations import load_content
 from ner.model_factory import get_tokenizer
 from xml_extractions.extract_node_values import Offset
-from flair.data import Corpus, Sentence
-from flair.datasets import ColumnCorpus
-from flair.trainers import ModelTrainer
-from flair.visual.training_curves import Plotter
-from flair.models import SequenceTagger
 
 # reproducibility
 random.seed(123)
@@ -90,8 +89,8 @@ dev_path = export_data_set(nlp, dev_file_names)
 corpus: Corpus = ColumnCorpus(data_folder="/tmp",
                               column_format={0: 'text', 1: 'ner'},
                               train_file=os.path.basename(train_path),
-                              test_file=os.path.basename(dev_path),
-                              dev_file=os.path.basename(dev_path))
+                              dev_file=os.path.basename(dev_path),
+                              test_file=None)
 
 print(corpus.train[0].to_tagged_string('ner'))
 
@@ -111,33 +110,28 @@ embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
 tagger: SequenceTagger = SequenceTagger(hidden_size=256,
                                         embeddings=embeddings,
                                         tag_dictionary=tag_dictionary,
-                                        tag_type='ner',
-                                        use_crf=True)
+                                        tag_type='ner')
 
 trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
 trainer.train('resources/taggers/example-ner',
               learning_rate=0.1,
-              mini_batch_size=100,
               checkpoint=True,
-              patience=10,
-              max_epochs=100)
-
+              patience=5,
+              max_epochs=30)
 
 plotter = Plotter()
 plotter.plot_training_curves('resources/taggers/example-ner/loss.tsv')
 plotter.plot_weights('resources/taggers/example-ner/weights.txt')
 
-
 tagger = SequenceTagger.load('resources/taggers/example-ner/final-model.pt')
 
-sentence = Sentence("Le préposé Michael Benesty est en train de jeuner .")
+sentence: Sentence = Sentence("Le préposé Michael Benesty est en train de jeuner .")
 tagger.predict(sentence)
 
-doc = nlp(sentence.to_original_text())
-
-for span in sentence.get_spans('ner'):
-    idx = [token.idx for token in span.tokens]
-    span = Span(doc, idx[0]-1, idx[-1], label='PERS')  # Create a span in Spacy
-    doc.ents = list(doc.ents) + [span]  # add span to doc.ents
-
+# doc = nlp(sentence.to_original_text())
+#
+# for span in sentence.get_spans('ner'):
+#     idx = [token.idx for token in span.tokens]
+#     span = Span(doc, idx[0]-1, idx[-1], label='PERS')  # Create a span in Spacy
+#     doc.ents = list(doc.ents) + [span]  # add span to doc.ents
