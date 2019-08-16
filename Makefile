@@ -61,32 +61,36 @@ list_differences:
 
 spacy_fine_tune_tc:
 # train a model from manual annotations
+	date
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python spacy_fine_tune.py -i ../case_annotation/data/tc/spacy_manual_annotations -s 0.2 -e 3; \
 	)
 
-spacy_fine_tune_ca:
-# train a model from manual annotations
-	( \
-	$(SOURCE_VIRT_ENV); \
-	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -m ./resources/model -s 0.2 -e 3; \
-	)
-
 flair_train_tc:
 # train a model from manual annotations
+	date
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python train_flair.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2 -e 20; \
 	)
 
-flair_train_ca:
+spacy_fine_tune_ca:
 # train a model from manual annotations
+# -m ./resources/model
+	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python train_flair.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 10; \
+	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -s 0.2 -e 5; \
 	)
 
+flair_train_ca:
+# train a model from manual annotations
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python train_flair.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 100; \
+	)
 
 test:
 # run unit tests
@@ -100,7 +104,6 @@ extract_com:
 	$(SOURCE_VIRT_ENV); \
 	python entities_sample_extractor.py -i ./resources/doc_courts/tc_6_tesseract_selection -o ./resources/doc_courts/spacy_tc_6_tesseract_selection -m ./resources/model -k 200; \
 	)
-
 
 extract_ca:
 	( \

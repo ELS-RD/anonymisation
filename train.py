@@ -18,7 +18,7 @@ import os
 import pickle
 import sys
 from random import seed
-from typing import List
+from typing import List, Optional
 
 from tqdm import tqdm
 
@@ -94,7 +94,7 @@ case_header_content = parse_xml_headers(folder_path=xml_train_path)
 
 current_case_paragraphs = list()
 current_case_offsets = list()
-previous_case_id = None
+previous_case_id: Optional[str] = None
 current_item_header = None
 headers_matcher = None
 rg_matcher = None
@@ -252,7 +252,7 @@ with tqdm(total=len(case_header_content), unit=" paragraphs", desc="Generate NER
             # init element specific to the current legal case
             current_case_paragraphs.clear()
             current_case_offsets.clear()
-            previous_case_id: str = paragraph.case_id
+            previous_case_id = paragraph.case_id
             current_item_header = case_header_content[paragraph.case_id]
 
             headers_matcher = MatchValuesFromHeaders(current_header=current_item_header, threshold_size=3)

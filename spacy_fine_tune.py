@@ -16,7 +16,6 @@
 #  under the License.
 import os
 import random
-from argparse import Namespace, ArgumentParser
 from typing import Tuple, List, Optional
 
 from spacy.gold import GoldParse
@@ -44,7 +43,7 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
     """
     s = Scorer()
 
-    for text, offsets in dev:
+    for index, (text, offsets) in enumerate(dev):
         doc = model.make_doc(text)
         offset_tuples = [offset.to_tuple() for offset in offsets]
         expected_entities: List[Span] = [doc.char_span(o[0], o[1]) for o in offset_tuples]
@@ -57,18 +56,28 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
         s.score(predicted_entities, gold)
 
         if print_diff:
-            expected_entities_text = [e.text for e in expected_entities]
-            predicted_entities_text = [e.text for e in predicted_entities.ents]
-            diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
-            diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
+            expected_entities_text = {e.text for e in expected_entities if e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
+            predicted_entities_text = {e.text for e in predicted_entities.ents if e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
+            # diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
+            # diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
             # diff = list()
             # for p in predicted_entities_text:
             #     if not any([(p in e) or (e in p) for e in expected_entities_text]):
             #         diff.append(p)
 
-            if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
+            # if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
+            #     print("------------")
+            #     print(f"source: [{text}]")
+            #     print(f"expected missing: [{diff_expected}]")
+            #     print(f"predicted missing: [{diff_predicted}]")
+            #     print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
+
+            diff_expected = expected_entities_text.difference(predicted_entities_text)
+            diff_predicted = predicted_entities_text.difference(expected_entities_text)
+
+            if (len(diff_predicted) > 0):  # (len(diff_expected) > 0) or
                 print("------------")
-                print(f"source: [{text}]")
+                print(f"source {index}: [{text}]")
                 print(f"expected missing: [{diff_expected}]")
                 print(f"predicted missing: [{diff_predicted}]")
                 print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
@@ -169,6 +178,7 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
             nlp.update(
                 texts,
                 manual_annotations,
+                drop=0.5,
                 losses=losses,
                 sgd=optimizer)
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")

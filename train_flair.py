@@ -17,10 +17,12 @@
 import os
 import random
 import tempfile
-from argparse import Namespace, ArgumentParser
+import time
 from typing import List, Tuple
 
+import flair
 import spacy
+import torch
 from flair.data import Corpus, Sentence
 from flair.datasets import ColumnCorpus
 from flair.embeddings import StackedEmbeddings, TokenEmbeddings, WordEmbeddings, FlairEmbeddings
@@ -36,7 +38,7 @@ from ner.model_factory import get_tokenizer
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
-random.seed(123)
+random.seed(456)
 
 
 def convert_to_flair_format(model: French, data: List[Tuple[str, List[Offset]]]) -> List[str]:
@@ -68,7 +70,6 @@ def export_data_set(model: French, data_file_names: List[str]) -> str:
 
 
 def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, print_diff: bool) -> None:
-
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
@@ -111,33 +112,40 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, p
 
     trainer.train(model_folder,
                   learning_rate=0.1,
-                  checkpoint=True,
+                  checkpoint=False,
                   patience=3,
                   max_epochs=nb_epochs)
 
-    # doc = nlp(sentence.to_original_text())
-    #
-    # for span in sentence.get_spans('ner'):
-    #     idx = [token.idx for token in span.tokens]
-    #     span = Span(doc, idx[0]-1, idx[-1], label='PERS')  # Create a span in Spacy
-    #     doc.ents = list(doc.ents) + [span]  # add span to doc.ents
-
     if print_diff:
-        tagger = SequenceTagger.load(model_folder + 'final-model.pt')
+        flair.device = torch.device('cpu')
+        torch.set_num_threads(1)
+
+        tagger = SequenceTagger.load(model_folder + 'best-model.pt')
+        test_results, _ = tagger.evaluate(corpus.test)
+        print(test_results.detailed_results)
+
+        sentences_predict = [Sentence(s.to_tokenized_string()) for s in corpus.train + corpus.test]
+
+        start = time.time()
+        _ = tagger.predict(sentences_predict, 50)
+        print(time.time() - start)
+
         # corpus.train +
-        for index, sentence in enumerate(corpus.train + corpus.test):  # type: int, Sentence
-            text = sentence.to_tokenized_string()
-            sentence.get_spans('ner')
-            expected_entities_text = {s.text for s in sentence.get_spans('ner')}
-            sentence_predict: Sentence = Sentence(text)
-            tagger.predict(sentence_predict)
-            predicted_entities_text = {s.text for s in sentence_predict.get_spans('ner')}
+        for index, (sentence_original, sentence_predict) \
+                in enumerate(zip(corpus.train + corpus.test, sentences_predict)):  # type: int, (Sentence, Sentence)
+            sentence_original.get_spans('ner')
+            expected_entities_text = {f"{s.text} {s.tag}"
+                                      for s in sentence_original.get_spans('ner')
+                                      if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"]}
+            predicted_entities_text = {f"{s.text} {s.tag}"
+                                       for s in sentence_predict.get_spans('ner')
+                                       if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"]}
             diff_expected = expected_entities_text.difference(predicted_entities_text)
             diff_predicted = predicted_entities_text.difference(expected_entities_text)
 
-            if (len(diff_expected) > 0) or (len(diff_predicted) > 0):
+            if (len(diff_predicted) > 0):  # (len(diff_expected) > 0) or
                 print("------------")
-                print(f"source {index}: [{text}]")
+                print(f"source {index}: [{sentence_original.to_plain_string()}]")
                 print(f"expected missing: [{diff_expected}]")
                 print(f"predicted missing: [{diff_predicted}]")
                 print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
@@ -151,3 +159,10 @@ if __name__ == '__main__':
          nb_epochs=int(args.epoch),
          print_diff=args.print_diff)
 
+# data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
+# model_folder = "resources/flair_ner/tc/"
+# dev_size = 0.2
+
+# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
+# model_folder = "resources/flair_ner/ca/"
+# dev_size = 0.2
