@@ -23,6 +23,7 @@ from typing import List, Tuple
 import flair
 import spacy
 import torch
+from attr import dataclass
 from flair.data import Corpus, Sentence
 from flair.datasets import ColumnCorpus
 from flair.embeddings import StackedEmbeddings, TokenEmbeddings, WordEmbeddings, FlairEmbeddings
@@ -117,10 +118,10 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, p
                   max_epochs=nb_epochs)
 
     if print_diff:
-        flair.device = torch.device('cpu')
-        torch.set_num_threads(1)
+        # flair.device = torch.device('cpu')
+        # torch.set_num_threads(1)
 
-        tagger = SequenceTagger.load(model_folder + 'best-model.pt')
+        tagger: SequenceTagger = SequenceTagger.load(model_folder + 'best-model.pt')
         test_results, _ = tagger.evaluate(corpus.test)
         print(test_results.detailed_results)
 
@@ -166,3 +167,29 @@ if __name__ == '__main__':
 # data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/ca/"
 # dev_size = 0.2
+
+
+def parse_texts(spacy_model: French, flair_model: ModelTrainer, texts: List[str], batch_size=32) -> Tuple[List[List[Offset]],  List[Sentence]]:
+    sentences = list()
+    docs = list()
+    for text in texts:
+        doc: spacy.tokens.doc.Doc = spacy_model(text)
+        docs.append(doc)
+        sentence = Sentence(' '.join([w.text for w in doc]))
+        sentences.append(sentence)
+    # start = time.time()
+    _ = flair_model.predict(sentences, batch_size)
+    # print(time.time() - start)
+
+    offsets: List[List[Offset]] = list()
+    for doc, sentence in zip(docs, sentences):
+        current_line_offsets = list()
+        for entity in sentences[0].get_spans('ner'):
+            # flair indexes starts at 1 but Spacy is 0 based
+            indexes = [t.idx - 1 for t in entity.tokens]
+            start = doc[indexes[0]].idx
+            end = doc[indexes[-1]].idx + len(doc[indexes[-1]].text)
+            current_line_offsets.append(Offset(start, end, entity.tag))
+        offsets.append(current_line_offsets)
+
+    return offsets, sentences
