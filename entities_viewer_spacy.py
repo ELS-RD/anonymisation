@@ -16,7 +16,9 @@
 #  under the License.
 
 import warnings
+from typing import List
 
+from spacy.tokens.doc import Doc
 from tqdm import tqdm
 
 from match_text_unsafe.build_entity_dictionary import EntityTypename
@@ -39,9 +41,9 @@ nlp = nlp.from_disk(model_dir_path)
 DEV_DATA = get_paragraph_from_file(xml_dev_path,
                                    keep_paragraph_without_annotation=True)
 
-all_docs_to_view = list()
+all_docs_to_view: List[Doc] = list()
 # last_case_spans = dict()
-last_case_docs = list()
+last_case_docs: List[Doc] = list()
 former_case_id = None
 entity_typename_builder = EntityTypename()
 
@@ -55,7 +57,7 @@ with tqdm(total=len(DEV_DATA[:number_of_paragraph_to_display]), unit=" paragraph
             last_case_docs.clear()
             entity_typename_builder.clear()
             former_case_id = case_id
-        spacy_doc = nlp(original_text)
+        spacy_doc: Doc = nlp(original_text)
         # doc.user_data['title'] = case_id
         last_case_docs.append(spacy_doc)
         # entities_span = [(ent.text.lower(), ent.label_) for ent in spacy_doc.ents]

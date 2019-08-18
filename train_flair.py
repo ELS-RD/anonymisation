@@ -20,10 +20,7 @@ import tempfile
 import time
 from typing import List, Tuple
 
-import flair
 import spacy
-import torch
-from attr import dataclass
 from flair.data import Corpus, Sentence
 from flair.datasets import ColumnCorpus
 from flair.embeddings import StackedEmbeddings, TokenEmbeddings, WordEmbeddings, FlairEmbeddings
@@ -36,10 +33,11 @@ from spacy.tokens.doc import Doc
 from misc.command_line import train_parse_args
 from misc.import_annotations import load_content
 from ner.model_factory import get_tokenizer
+from viewer.flair_viewer import render_ner_html
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
-random.seed(456)
+random.seed(1230)
 
 
 def convert_to_flair_format(model: French, data: List[Tuple[str, List[Offset]]]) -> List[str]:
@@ -112,9 +110,6 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, p
     trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
     trainer.train(model_folder,
-                  learning_rate=0.1,
-                  checkpoint=False,
-                  patience=3,
                   max_epochs=nb_epochs)
 
     if print_diff:
@@ -130,6 +125,26 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, p
         start = time.time()
         _ = tagger.predict(sentences_predict, 50)
         print(time.time() - start)
+
+        colors = {"PERS": "#ff9933",  # orange
+                  "PHONE_NUMBER": "#ff9933",
+                  "LICENCE_PLATE": "#ff9933",
+                  # "SOCIAL_SECURITY_NUMBER": "#ff9933",
+                  "ADDRESS": "#ff99cc",  # pink
+                  "ORGANIZATION": "#00ccff",  # blue
+                  "LAWYER": "#ccffcc",  # light green
+                  "JUDGE_CLERK": "#ccccff",  # purple
+                  "COURT": "#ccffff",  # light blue
+                  "RG": "#99ff99",  # green
+                  "DATE": "#ffcc99",  # salmon
+                  "BAR": "#ffe699",  # light yellow
+                  "UNKNOWN": "#ff0000"}  # red
+
+        options = {"labels": {i: i for i in list(colors.keys())}, "colors": colors}
+
+        page_html = render_ner_html(sentences_predict, settings=options)
+        with open("sentence.html", "w") as writer:
+            writer.write(page_html)
 
         # corpus.train +
         for index, (sentence_original, sentence_predict) \
@@ -160,14 +175,6 @@ if __name__ == '__main__':
          nb_epochs=int(args.epoch),
          print_diff=args.print_diff)
 
-# data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/tc/"
-# dev_size = 0.2
-
-# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/ca/"
-# dev_size = 0.2
-
 
 def parse_texts(spacy_model: French, flair_model: ModelTrainer, texts: List[str], batch_size=32) -> Tuple[List[List[Offset]],  List[Sentence]]:
     sentences = list()
@@ -193,3 +200,12 @@ def parse_texts(spacy_model: French, flair_model: ModelTrainer, texts: List[str]
         offsets.append(current_line_offsets)
 
     return offsets, sentences
+
+
+# data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
+# model_folder = "resources/flair_ner/tc/"
+# dev_size = 0.2
+
+# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
+# model_folder = "resources/flair_ner/ca/"
+# dev_size = 0.2

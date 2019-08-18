@@ -81,7 +81,7 @@ Our rule based system only managed `PERS`, `ADDRESS` and `RG` types.
     * `BAR`: bar where lawyers are registered *(not done by `skill cartridges`)*, **source**: rules + other occurrences
 * Courts:
     * `COURT`: names of French courts, **source**: rules + other occurrences
-    * `JUDGE_CLERKS`: judges and court clerks, **source**: rules + other occurrences
+    * `JUDGE_CLERK`: judges and court clerks, **source**: rules + other occurrences
 * Miscellaneous:
     * `ADDRESS`: addresses *(badly done by `skill cartridges`)*, **source**: rules + other occurrences + dictionary
         * there is no way to always guess if the address owner is a `PERS` or an `ORGANIZATION`, therefore this aspect is not managed

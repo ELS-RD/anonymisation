@@ -31,7 +31,7 @@ from ner.model_factory import get_empty_model, get_tokenizer
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
-random.seed(123)
+random.seed(1230)
 
 
 def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool) -> None:
