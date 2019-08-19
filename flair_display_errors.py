@@ -29,7 +29,6 @@ from spacy.tokens.doc import Doc
 from misc.command_line import train_parse_args
 from misc.import_annotations import prepare_flair_train_test_corpus
 from ner.model_factory import get_tokenizer
-from viewer.flair_viewer import render_ner_html
 from xml_extractions.extract_node_values import Offset
 
 # CPU
@@ -57,27 +56,6 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     _ = tagger.predict(sentences_predict, 50)
     print(time.time() - start)
 
-    colors = {"PERS": "#ff9933",  # orange
-              "PHONE_NUMBER": "#ff9933",
-              "LICENCE_PLATE": "#ff9933",
-              # "SOCIAL_SECURITY_NUMBER": "#ff9933",
-              "ADDRESS": "#ff99cc",  # pink
-              "ORGANIZATION": "#00ccff",  # blue
-              "LAWYER": "#ccffcc",  # light green
-              "JUDGE_CLERK": "#ccccff",  # purple
-              "COURT": "#ccffff",  # light blue
-              "RG": "#99ff99",  # green
-              "DATE": "#ffcc99",  # salmon
-              "BAR": "#ffe699",  # light yellow
-              "UNKNOWN": "#ff0000"}  # red
-
-    options = {"labels": {i: i for i in list(colors.keys())}, "colors": colors}
-
-    page_html = render_ner_html(sentences_predict, settings=options)
-    with open("sentence.html", "w") as writer:
-        writer.write(page_html)
-
-    # corpus.train +
     for index, (sentence_original, sentence_predict) \
             in enumerate(zip(corpus.train + corpus.test, sentences_predict)):  # type: int, (Sentence, Sentence)
         sentence_original.get_spans('ner')

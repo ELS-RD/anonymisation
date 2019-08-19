@@ -43,7 +43,7 @@ def train_parse_args(train: bool) -> Namespace:
     )
     parser.add_argument(
         '-s', '--dev-set-size',
-        help="Percentage of random docs to put in dev set",
+        help="Size of dev set",
         action="store",
         dest="dev_size",
         required=True

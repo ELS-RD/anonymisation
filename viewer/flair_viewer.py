@@ -18,6 +18,20 @@ import html
 from typing import Union, List
 from flair.data import Sentence
 
+colors = {"PERS": "#ff9933",  # orange
+          "PHONE_NUMBER": "#ff9933",
+          "LICENCE_PLATE": "#ff9933",
+          # "SOCIAL_SECURITY_NUMBER": "#ff9933",
+          "ADDRESS": "#ff99cc",  # pink
+          "ORGANIZATION": "#00ccff",  # blue
+          "LAWYER": "#ccffcc",  # light green
+          "JUDGE_CLERK": "#ccccff",  # purple
+          "COURT": "#ccffff",  # light blue
+          "RG": "#99ff99",  # green
+          "DATE": "#ffcc99",  # salmon
+          "BAR": "#ffe699",  # light yellow
+          "UNKNOWN": "#ff0000"}  # red
+
 TAGGED_ENTITY = '''
 <mark class="entity" style="background: {color}; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 3; border-radius: 0.35em; box-decoration-break: clone; -webkit-box-decoration-break: clone">
     {entity}
