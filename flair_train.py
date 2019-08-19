@@ -110,7 +110,9 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int, p
     trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
     trainer.train(model_folder,
-                  max_epochs=nb_epochs)
+                  max_epochs=nb_epochs,
+                  embeddings_in_memory=False,
+                  checkpoint=True)
 
     if print_diff:
         # flair.device = torch.device('cpu')

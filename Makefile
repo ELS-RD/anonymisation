@@ -28,7 +28,7 @@ export_frequent_entities:
 # export the dataset to be used in a second pass, like for freq entities finding
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 train.py export_dataset; \
+	python3 spacy_train.py export_dataset; \
 	)
 
 display_dataset:
@@ -42,21 +42,21 @@ show_spacy_entities:
 # launch a server to display entities found by Spacy
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 entities_viewer_spacy.py; \
+	python3 spacy_entities_viewer.py; \
 	)
 
 show_rule_based_entities:
 # launch a server to display entities found by rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 entities_viewer_rule_based.py; \
+	python3 rule_based_entities_viewer.py; \
 	)
 
 list_differences:
 # print differences between entities found by Spacy and rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 display_errors.py; \
+	python3 temis_display_errors.py; \
 	)
 
 spacy_fine_tune_tc:
@@ -81,7 +81,7 @@ spacy_fine_tune_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -s 0.2 -e 5; \
+	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -s 0.2 -e 20 -m ./resources/model; \
 	)
 
 flair_train_ca:
@@ -89,7 +89,7 @@ flair_train_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python train_flair.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 100; \
+	python flair_train.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 100; \
 	)
 
 test:
