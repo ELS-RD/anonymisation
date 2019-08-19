@@ -75,6 +75,14 @@ flair_train_tc:
 	python train_flair.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2 -e 20; \
 	)
 
+flair_display_errors_tc:
+# display prediction errors
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python flair_display_errors.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2; \
+	)
+
 spacy_fine_tune_ca:
 # train a model from manual annotations
 # -m ./resources/model
@@ -90,6 +98,14 @@ flair_train_ca:
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python flair_train.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 100; \
+	)
+
+flair_display_errors_ca:
+# display prediction errors
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python flair_display_errors.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2; \
 	)
 
 test:

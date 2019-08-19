@@ -17,7 +17,7 @@
 from argparse import Namespace, ArgumentParser
 
 
-def train_parse_args() -> Namespace:
+def train_parse_args(train: bool) -> Namespace:
     """
     Parse command line arguments.
 
@@ -48,19 +48,14 @@ def train_parse_args() -> Namespace:
         dest="dev_size",
         required=True
     )
-    parser.add_argument(
-        '-e', '--epochs',
-        help="Number of epochs",
-        action="store",
-        dest="epoch",
-        required=True
-    )
 
-    parser.add_argument(
-        '-v', '--verbose',
-        help="print differences between expected and predicted span",
-        action="store_true",
-        dest="print_diff"
-    )
+    if train:
+        parser.add_argument(
+            '-e', '--epochs',
+            help="Number of epochs",
+            action="store",
+            dest="epoch",
+            required=True
+        )
 
     return parser.parse_args()

@@ -14,7 +14,12 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+import tempfile
 from typing import List, Tuple
+
+from spacy.gold import GoldParse
+from spacy.lang.fr import French
+from spacy.tokens.doc import Doc
 
 from xml_extractions.extract_node_values import Offset
 
@@ -57,3 +62,31 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             results.append((line_case, gold_offsets))
 
     return results
+
+
+def convert_to_flair_format(model: French, data: List[Tuple[str, List[Offset]]]) -> List[str]:
+    result: List[str] = list()
+    for text, offsets in data:
+        doc: Doc = model(text)
+        offset_tuples = [offset.to_tuple() for offset in offsets]
+        gold_annotations = GoldParse(doc, entities=offset_tuples)
+        annotations: List[str] = gold_annotations.ner
+        assert len(annotations) == len(doc)
+        # Flair uses BIOES and Spacy BILUO
+        # BILUO for Begin, Inside, Last, Unit, Out
+        # BIOES for Begin, Inside, Outside, End, Single
+        annotations = [a.replace('L-', 'E-') for a in annotations]
+        annotations = [a.replace('U-', 'S-') for a in annotations]
+        result += [f"{word} {tag}\n" for word, tag in zip(doc, annotations)]
+        result.append('\n')
+    return result
+
+
+def export_data_set_flair_format(model: French, data_file_names: List[str]) -> str:
+    data = load_content(txt_paths=data_file_names)
+    data_flair_format = convert_to_flair_format(model, data)
+    f = tempfile.NamedTemporaryFile(delete=False, mode="w")
+    tmp_path = f.name
+    f.writelines(data_flair_format)
+    f.close()
+    return tmp_path
