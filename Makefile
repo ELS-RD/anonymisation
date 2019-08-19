@@ -72,7 +72,7 @@ flair_train_tc:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python train_flair.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2 -e 20; \
+	python flair_train.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2 -e 100; \
 	)
 
 flair_display_errors_tc:

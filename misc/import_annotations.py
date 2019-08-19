@@ -14,11 +14,15 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+import os
+import random
 import tempfile
 from typing import List, Tuple
 
+from flair.data import Corpus
+from flair.datasets import ColumnCorpus
 from spacy.gold import GoldParse
-from spacy.lang.fr import French
+from spacy.language import Language
 from spacy.tokens.doc import Doc
 
 from xml_extractions.extract_node_values import Offset
@@ -64,10 +68,10 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
     return results
 
 
-def convert_to_flair_format(model: French, data: List[Tuple[str, List[Offset]]]) -> List[str]:
+def convert_to_flair_format(spacy_model: Language, data: List[Tuple[str, List[Offset]]]) -> List[str]:
     result: List[str] = list()
     for text, offsets in data:
-        doc: Doc = model(text)
+        doc: Doc = spacy_model(text)
         offset_tuples = [offset.to_tuple() for offset in offsets]
         gold_annotations = GoldParse(doc, entities=offset_tuples)
         annotations: List[str] = gold_annotations.ner
@@ -82,11 +86,34 @@ def convert_to_flair_format(model: French, data: List[Tuple[str, List[Offset]]])
     return result
 
 
-def export_data_set_flair_format(model: French, data_file_names: List[str]) -> str:
+def export_data_set_flair_format(spacy_model: Language, data_file_names: List[str]) -> str:
     data = load_content(txt_paths=data_file_names)
-    data_flair_format = convert_to_flair_format(model, data)
+    data_flair_format = convert_to_flair_format(spacy_model, data)
     f = tempfile.NamedTemporaryFile(delete=False, mode="w")
     tmp_path = f.name
     f.writelines(data_flair_format)
     f.close()
     return tmp_path
+
+
+def prepare_flair_train_test_corpus(spacy_model: Language, data_folder: str, dev_size: float) -> Corpus:
+
+    all_annotated_files: List[str] = [os.path.join(data_folder, filename)
+                                      for filename in os.listdir(data_folder) if filename.endswith(".txt")]
+    random.shuffle(all_annotated_files)
+
+    nb_doc_dev_set: int = int(len(all_annotated_files) * dev_size)
+
+    dev_file_names = all_annotated_files[0:nb_doc_dev_set]
+
+    train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
+
+    train_path = export_data_set_flair_format(spacy_model, train_file_names)
+    dev_path = export_data_set_flair_format(spacy_model, dev_file_names)
+
+    corpus: Corpus = ColumnCorpus(data_folder="/tmp",
+                                  column_format={0: 'text', 1: 'ner'},
+                                  train_file=os.path.basename(train_path),
+                                  dev_file=os.path.basename(dev_path),
+                                  test_file=os.path.basename(dev_path))
+    return corpus
