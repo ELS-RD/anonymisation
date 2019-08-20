@@ -42,14 +42,14 @@ show_spacy_entities:
 # launch a server to display entities found by Spacy
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 spacy_entities_viewer.py; \
+	python3 spacy_generate_html.py; \
 	)
 
 show_rule_based_entities:
 # launch a server to display entities found by rule based system
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python3 rule_based_entities_viewer.py; \
+	python3 rule_based_generate_html.py; \
 	)
 
 list_differences:

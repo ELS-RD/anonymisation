@@ -111,7 +111,7 @@ def prepare_flair_train_test_corpus(spacy_model: Language, data_folder: str, dev
     train_path = export_data_set_flair_format(spacy_model, train_file_names)
     dev_path = export_data_set_flair_format(spacy_model, dev_file_names)
 
-    corpus: Corpus = ColumnCorpus(data_folder="/tmp",
+    corpus: Corpus = ColumnCorpus(data_folder=tempfile.gettempdir(),
                                   column_format={0: 'text', 1: 'ner'},
                                   train_file=os.path.basename(train_path),
                                   dev_file=os.path.basename(dev_path),

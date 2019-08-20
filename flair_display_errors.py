@@ -39,6 +39,32 @@ from xml_extractions.extract_node_values import Offset
 random.seed(1230)
 
 
+def parse_texts(spacy_model: Language, flair_model: ModelTrainer, texts: List[str], batch_size=32) -> Tuple[List[List[Offset]],  List[Sentence]]:
+    sentences = list()
+    docs = list()
+    for text in texts:
+        doc: spacy.tokens.doc.Doc = spacy_model(text)
+        docs.append(doc)
+        sentence = Sentence(' '.join([w.text for w in doc]))
+        sentences.append(sentence)
+    start = time.time()
+    _ = flair_model.predict(sentences, batch_size)
+    print(time.time() - start)
+
+    offsets: List[List[Offset]] = list()
+    for doc, sentence in zip(docs, sentences):
+        current_line_offsets = list()
+        for entity in sentences[0].get_spans('ner'):
+            # flair indexes starts at 1 but Spacy is 0 based
+            indexes = [t.idx - 1 for t in entity.tokens]
+            start = doc[indexes[0]].idx
+            end = doc[indexes[-1]].idx + len(doc[indexes[-1]].text)
+            current_line_offsets.append(Offset(start, end, entity.tag))
+        offsets.append(current_line_offsets)
+
+    return offsets, sentences
+
+
 def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
@@ -81,32 +107,6 @@ if __name__ == '__main__':
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
          dev_size=float(args.dev_size))
-
-
-def parse_texts(spacy_model: Language, flair_model: ModelTrainer, texts: List[str], batch_size=32) -> Tuple[List[List[Offset]],  List[Sentence]]:
-    sentences = list()
-    docs = list()
-    for text in texts:
-        doc: spacy.tokens.doc.Doc = spacy_model(text)
-        docs.append(doc)
-        sentence = Sentence(' '.join([w.text for w in doc]))
-        sentences.append(sentence)
-    # start = time.time()
-    _ = flair_model.predict(sentences, batch_size)
-    # print(time.time() - start)
-
-    offsets: List[List[Offset]] = list()
-    for doc, sentence in zip(docs, sentences):
-        current_line_offsets = list()
-        for entity in sentences[0].get_spans('ner'):
-            # flair indexes starts at 1 but Spacy is 0 based
-            indexes = [t.idx - 1 for t in entity.tokens]
-            start = doc[indexes[0]].idx
-            end = doc[indexes[-1]].idx + len(doc[indexes[-1]].text)
-            current_line_offsets.append(Offset(start, end, entity.tag))
-        offsets.append(current_line_offsets)
-
-    return offsets, sentences
 
 
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
