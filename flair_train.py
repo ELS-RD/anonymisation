@@ -41,8 +41,8 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     embedding_types: List[TokenEmbeddings] = [
         WordEmbeddings('fr'),
-        FlairEmbeddings('fr-forward'),
-        FlairEmbeddings('fr-backward'),
+        FlairEmbeddings('resources/flair_ner/lm/ca_forward/best-lm.pt'),
+        FlairEmbeddings('resources/flair_ner/lm/ca_backward/best-lm.pt'),
     ]
 
     embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)

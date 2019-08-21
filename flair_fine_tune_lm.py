@@ -30,10 +30,9 @@ from xml_extractions.extract_node_values import get_paragraph_from_file
 random.seed(123)
 
 
-def chunks(l: List, n: int) -> Iterable[Tuple[int, List]]:
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield i, l[i:i + n]
+def chunks(content: List, n: int) -> Iterable[Tuple[int, List]]:
+    for i in range(0, len(content), n):
+        yield i / n, content[i:i + n]
 
 
 config_training = get_config_default()
@@ -52,8 +51,8 @@ with tqdm(total=len(xml_files), unit=" xml", desc="extract text from XML") as pr
                 all_paragraphs += [p.text for p in paragraphs]
         progress_bar.update()
 
-tmp_path = tempfile.TemporaryDirectory()
-print(f"tmp folder: {tmp_path}")
+tmp_path: tempfile.TemporaryDirectory = tempfile.TemporaryDirectory()
+print(f"tmp folder: {tmp_path.name}")
 
 os.mkdir(os.path.join(tmp_path.name, "train"))
 
@@ -62,10 +61,11 @@ limit_train = int(len(all_paragraphs) * 0.9)
 train_set = all_paragraphs[:limit_train]
 dev_set = all_paragraphs[limit_train:]
 
-for index, l in chunks(train_set, 100):
+print("write files")
+for index, l in chunks(train_set, 100000):
     filename = f"train_split_{index}"
     with open(os.path.join(tmp_path.name, "train", filename), 'w') as f:
-        f.writelines("\n".join(train_set))
+        f.writelines("\n".join(l))
 
 with open(os.path.join(tmp_path.name, "valid.txt"), 'w') as f:
     f.writelines("\n".join(dev_set))
@@ -73,7 +73,30 @@ with open(os.path.join(tmp_path.name, "valid.txt"), 'w') as f:
 with open(os.path.join(tmp_path.name, "test.txt"), 'w') as f:
     f.writelines("\n".join(dev_set))
 
-print("load model")
+print("load original model")
+language_model = FlairEmbeddings('fr-backward').lm
+is_forward_lm = language_model.is_forward_lm
+dictionary: Dictionary = language_model.dictionary
+
+print("load corpus")
+corpus = TextCorpus(tmp_path.name,
+                    dictionary,
+                    is_forward_lm,
+                    character_level=True)
+
+print("start training")
+trainer = LanguageModelTrainer(language_model, corpus)
+
+trainer.train('resources/flair_ner/lm/ca_backward',
+              sequence_length=100,
+              mini_batch_size=100,
+              learning_rate=20,
+              patience=10,
+              max_epochs=5,
+              checkpoint=True)
+
+
+print("load original model")
 language_model = FlairEmbeddings('fr-forward').lm
 is_forward_lm = language_model.is_forward_lm
 dictionary: Dictionary = language_model.dictionary
