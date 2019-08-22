@@ -41,8 +41,10 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     embedding_types: List[TokenEmbeddings] = [
         WordEmbeddings('fr'),
-        FlairEmbeddings('resources/flair_ner/lm/ca_forward/best-lm.pt'),
-        FlairEmbeddings('resources/flair_ner/lm/ca_backward/best-lm.pt'),
+        FlairEmbeddings('fr-forward'),
+        FlairEmbeddings('fr-backward'),
+        # FlairEmbeddings('resources/flair_ner/lm/ca_forward/best-lm.pt'),
+        # FlairEmbeddings('resources/flair_ner/lm/ca_backward/best-lm.pt'),
     ]
 
     embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
@@ -56,8 +58,8 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     trainer.train(model_folder,
                   max_epochs=nb_epochs,
-                  embeddings_in_memory=False,
-                  checkpoint=True)
+                  embeddings_storage_mode="cpu",
+                  checkpoint=False)
 
 
 if __name__ == '__main__':
@@ -66,7 +68,6 @@ if __name__ == '__main__':
          model_folder=args.model_dir,
          dev_size=float(args.dev_size),
          nb_epochs=int(args.epoch))
-
 
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/tc/"

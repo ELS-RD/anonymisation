@@ -53,8 +53,7 @@ for filename in os.listdir(xml_train_path):
 
 start_time = time.time()
 _ = tagger.predict(generated_paragraphs, 100)
-elapsed_time = time.time() - start_time
-print(elapsed_time)  # 91 mn
+print(time.time() - start_time)
 
 text_lines: List[str] = list()
 offset_lines: List[str] = list()

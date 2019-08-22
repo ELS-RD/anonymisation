@@ -108,6 +108,14 @@ flair_display_errors_ca:
 	python flair_display_errors.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2; \
 	)
 
+flair_generate_html_ca:
+# display prediction errors
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python flair_generate_html.py -i resources/training_data -m resources/flair_ner/ca -s 2000; \
+	)
+
 test:
 # run unit tests
 	( \

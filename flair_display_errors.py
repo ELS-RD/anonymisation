@@ -20,7 +20,8 @@ import time
 from typing import List, Tuple
 
 import spacy
-from flair.data import Corpus, Sentence
+from flair.data import Corpus, Sentence, FlairDataset
+from flair.datasets import DataLoader
 from flair.models import SequenceTagger
 from flair.trainers import ModelTrainer
 from spacy.language import Language
@@ -73,13 +74,14 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
 
     model_path = os.path.join(model_folder, 'best-model.pt')
     tagger: SequenceTagger = SequenceTagger.load(model_path)
-    test_results, _ = tagger.evaluate(corpus.test)
+
+    test_results, _ = tagger.evaluate(DataLoader(corpus.test, batch_size=50, num_workers=10))
     print(test_results.detailed_results)
 
-    sentences_predict = [Sentence(s.to_tokenized_string()) for s in corpus.train + corpus.test]
+    sentences_predict: List[Sentence] = corpus.train.sentences + corpus.test.sentences
 
     start = time.time()
-    _ = tagger.predict(sentences_predict, 50)
+    _ = tagger.predict(sentences_predict, mini_batch_size=50, verbose=True, embedding_storage_mode="gpu")
     print(time.time() - start)
 
     for index, (sentence_original, sentence_predict) \

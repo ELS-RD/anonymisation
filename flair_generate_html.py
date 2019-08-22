@@ -15,62 +15,69 @@
 #  specific language governing permissions and limitations
 #  under the License.
 import os
-import random
 import time
 from typing import List
 
 import spacy
 from flair.data import Sentence
 from flair.models import SequenceTagger
+from flair.visual import Visualizer
+from spacy.language import Language
 from spacy.tokens.doc import Doc
+from tqdm import tqdm
 
 from misc.command_line import train_parse_args
 from ner.model_factory import get_tokenizer
-from viewer.flair_viewer import render_ner_html, colors
+from viewer.flair_viewer import colors
 from xml_extractions.extract_node_values import get_paragraph_from_file, Paragraph
 
 
-def main(data_folder: str, model_folder: str, top_n: float) -> None:
-    nlp = spacy.blank('fr')
+def main(data_folder: str, model_folder: str, top_n: int) -> None:
+    print(f"keep only top {top_n} examples")
+    nlp: Language = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
+    filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".xml")]
+
     sentences: List[Sentence] = list()
-    for filename in os.listdir(data_folder):
-        if filename.endswith(".xml"):
-            current_path = os.path.join(data_folder, filename)
-            paragraphs: List[Paragraph] = get_paragraph_from_file(path=current_path,
+    with tqdm(total=len(filenames), unit=" XML", desc="Parsing XML") as progress_bar:
+        for filename in filenames:
+            paragraphs: List[Paragraph] = get_paragraph_from_file(path=os.path.join(data_folder, filename),
                                                                   keep_paragraph_without_annotation=True)
             if len(paragraphs) > top_n:
-                for paragraph in random.sample(paragraphs, top_n):  # type: Paragraph
+                for paragraph in paragraphs[:top_n]:
                     if len(paragraph.text) > 0:
-                        doc: Doc = nlp(paragraph.text)
+                        doc: Doc = nlp.make_doc(paragraph.text)
                         s = Sentence(' '.join([w.text for w in doc]))
                         sentences.append(s)
+            progress_bar.update()
+    if len(sentences) == 0:
+        raise Exception("No example loaded, causes: no cases in provided path or sample size is to high")
 
-    model_path = os.path.join(model_folder, 'best-model.pt')
-    tagger: SequenceTagger = SequenceTagger.load(model_path)
+    tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, 'best-model.pt'))
 
     start = time.time()
-    _ = tagger.predict(sentences, 50)
+    _ = tagger.predict(sentences=sentences, mini_batch_size=50, verbose=True, all_tag_prob=True)
     print(time.time() - start)
 
     options = {"labels": {i: i for i in list(colors.keys())}, "colors": colors}
 
-    page_html = render_ner_html(sentences, settings=options)
+    page_html = Visualizer.render_ner_html(sentences, settings=options)
     with open("sentence.html", "w") as writer:
         writer.write(page_html)
 
 
 if __name__ == '__main__':
     args = train_parse_args(train=False)
+    assert int(args.dev_size) >= 1
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
-         top_n=float(args.dev_size))
+         top_n=int(args.dev_size))
 
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/tc/"
-# dev_size = 0.2
+# top_n = 2000
 
-# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/ca/"
-# dev_size = 0.2
+data_folder = "resources/training_data"
+model_folder = "resources/flair_ner/ca/"
+top_n = 200
