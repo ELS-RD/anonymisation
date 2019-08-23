@@ -15,15 +15,13 @@
 #  specific language governing permissions and limitations
 #  under the License.
 import os
-import time
 from typing import List
 
 import spacy
-from flair.data import Sentence
+from flair.data import Sentence, build_spacy_tokenizer
 from flair.models import SequenceTagger
 from flair.visual import Visualizer
 from spacy.language import Language
-from spacy.tokens.doc import Doc
 from tqdm import tqdm
 
 from misc.command_line import train_parse_args
@@ -33,12 +31,11 @@ from xml_extractions.extract_node_values import get_paragraph_from_file, Paragra
 
 
 def main(data_folder: str, model_folder: str, top_n: int) -> None:
-    print(f"keep only top {top_n} examples")
+    print(f"keep only top {top_n} examples per file")
     nlp: Language = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
-
+    tokenizer = build_spacy_tokenizer(nlp)
     filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".xml")]
-
     sentences: List[Sentence] = list()
     with tqdm(total=len(filenames), unit=" XML", desc="Parsing XML") as progress_bar:
         for filename in filenames:
@@ -47,22 +44,23 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
             if len(paragraphs) > top_n:
                 for paragraph in paragraphs[:top_n]:
                     if len(paragraph.text) > 0:
-                        doc: Doc = nlp.make_doc(paragraph.text)
-                        s = Sentence(' '.join([w.text for w in doc]))
+                        s = Sentence(text=paragraph.text, tokenizer=tokenizer)
                         sentences.append(s)
             progress_bar.update()
     if len(sentences) == 0:
         raise Exception("No example loaded, causes: no cases in provided path or sample size is to high")
 
     tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, 'best-model.pt'))
-
-    start = time.time()
-    _ = tagger.predict(sentences=sentences, mini_batch_size=50, verbose=True, all_tag_prob=True)
-    print(time.time() - start)
+    _ = tagger.predict(sentences=sentences,
+                       mini_batch_size=32,
+                       verbose=True,
+                       all_tag_prob=False,
+                       embedding_storage_mode="cpu")
 
     options = {"labels": {i: i for i in list(colors.keys())}, "colors": colors}
-
+    print("prepare html")
     page_html = Visualizer.render_ner_html(sentences, settings=options)
+    print("write html")
     with open("sentence.html", "w") as writer:
         writer.write(page_html)
 
@@ -78,6 +76,6 @@ if __name__ == '__main__':
 # model_folder = "resources/flair_ner/tc/"
 # top_n = 2000
 
-data_folder = "resources/training_data"
-model_folder = "resources/flair_ner/ca/"
-top_n = 200
+# data_folder = "resources/training_data"
+# model_folder = "resources/flair_ner/ca/"
+# top_n = 50

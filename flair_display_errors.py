@@ -14,23 +14,18 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
+import copy
 import os
 import random
-import time
-from typing import List, Tuple
 
 import spacy
-from flair.data import Corpus, Sentence, FlairDataset
+from flair.data import Corpus, Sentence
 from flair.datasets import DataLoader
 from flair.models import SequenceTagger
-from flair.trainers import ModelTrainer
-from spacy.language import Language
-from spacy.tokens.doc import Doc
 
 from misc.command_line import train_parse_args
 from misc.import_annotations import prepare_flair_train_test_corpus
 from ner.model_factory import get_tokenizer
-from xml_extractions.extract_node_values import Offset
 
 # CPU
 # flair.device = torch.device('cpu')
@@ -40,59 +35,41 @@ from xml_extractions.extract_node_values import Offset
 random.seed(1230)
 
 
-def parse_texts(spacy_model: Language, flair_model: ModelTrainer, texts: List[str], batch_size=32) -> Tuple[List[List[Offset]],  List[Sentence]]:
-    sentences = list()
-    docs = list()
-    for text in texts:
-        doc: spacy.tokens.doc.Doc = spacy_model(text)
-        docs.append(doc)
-        sentence = Sentence(' '.join([w.text for w in doc]))
-        sentences.append(sentence)
-    start = time.time()
-    _ = flair_model.predict(sentences, batch_size)
-    print(time.time() - start)
-
-    offsets: List[List[Offset]] = list()
-    for doc, sentence in zip(docs, sentences):
-        current_line_offsets = list()
-        for entity in sentences[0].get_spans('ner'):
-            # flair indexes starts at 1 but Spacy is 0 based
-            indexes = [t.idx - 1 for t in entity.tokens]
-            start = doc[indexes[0]].idx
-            end = doc[indexes[-1]].idx + len(doc[indexes[-1]].text)
-            current_line_offsets.append(Offset(start, end, entity.tag))
-        offsets.append(current_line_offsets)
-
-    return offsets, sentences
-
-
 def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
     corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size)
 
-    model_path = os.path.join(model_folder, 'best-model.pt')
-    tagger: SequenceTagger = SequenceTagger.load(model_path)
+    tagger: SequenceTagger = SequenceTagger.load(model=os.path.join(model_folder, 'best-model.pt'))
 
-    test_results, _ = tagger.evaluate(DataLoader(corpus.test, batch_size=50, num_workers=10))
+    test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32, num_workers=10),
+                                      embeddings_storage_mode="cpu")
     print(test_results.detailed_results)
 
-    sentences_predict: List[Sentence] = corpus.train.sentences + corpus.test.sentences
+    sentences_original = (corpus.train.sentences + corpus.test.sentences)
+    sentences_predict = copy.deepcopy(sentences_original)
+    # clean tokens in case there is a bug
+    for s in sentences_predict:
+        for t in s:
+            t.tags = {}
 
-    start = time.time()
-    _ = tagger.predict(sentences_predict, mini_batch_size=50, verbose=True, embedding_storage_mode="gpu")
-    print(time.time() - start)
+    _ = tagger.predict(sentences=sentences_predict,
+                       mini_batch_size=32,
+                       embedding_storage_mode="cpu",
+                       all_tag_prob=False,
+                       verbose=True)
 
     for index, (sentence_original, sentence_predict) \
-            in enumerate(zip(corpus.train + corpus.test, sentences_predict)):  # type: int, (Sentence, Sentence)
-        sentence_original.get_spans('ner')
+            in enumerate(zip(sentences_original, sentences_predict)):  # type: int, (Sentence, Sentence)
+
         expected_entities_text = {f"{s.text} {s.tag}"
                                   for s in sentence_original.get_spans('ner')
                                   if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"]}
         predicted_entities_text = {f"{s.text} {s.tag}"
                                    for s in sentence_predict.get_spans('ner')
-                                   if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"]}
+                                   if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"] if s.score > 0.8}
+
         diff_expected = expected_entities_text.difference(predicted_entities_text)
         diff_predicted = predicted_entities_text.difference(expected_entities_text)
 
@@ -110,11 +87,10 @@ if __name__ == '__main__':
          model_folder=args.model_dir,
          dev_size=float(args.dev_size))
 
-
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/tc/"
 # dev_size = 0.2
 
-# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/ca/"
-# dev_size = 0.2
+data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
+model_folder = "resources/flair_ner/ca/"
+dev_size = 0.2
