@@ -20,7 +20,7 @@ from typing import List
 import spacy
 from flair.data import Sentence, build_spacy_tokenizer
 from flair.models import SequenceTagger
-from flair.visual import Visualizer
+from flair.visual.ner_html import render_ner_html
 from spacy.language import Language
 from tqdm import tqdm
 
@@ -57,9 +57,8 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
                        all_tag_prob=False,
                        embedding_storage_mode="cpu")
 
-    options = {"labels": {i: i for i in list(colors.keys())}, "colors": colors}
     print("prepare html")
-    page_html = Visualizer.render_ner_html(sentences, settings=options)
+    page_html = render_ner_html(sentences, colors=colors)
     print("write html")
     with open("sentence.html", "w") as writer:
         writer.write(page_html)

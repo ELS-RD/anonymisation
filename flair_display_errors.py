@@ -60,15 +60,15 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
                        all_tag_prob=False,
                        verbose=True)
 
+    entities_to_keep = ["PERS", "ADDRESS", "ORGANIZATION", "JUDGE_CLERK", "LAWYER"]
     for index, (sentence_original, sentence_predict) \
             in enumerate(zip(sentences_original, sentences_predict)):  # type: int, (Sentence, Sentence)
-
         expected_entities_text = {f"{s.text} {s.tag}"
                                   for s in sentence_original.get_spans('ner')
-                                  if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"]}
+                                  if s.tag in entities_to_keep}
         predicted_entities_text = {f"{s.text} {s.tag}"
                                    for s in sentence_predict.get_spans('ner')
-                                   if s.tag in ["PERS", "ADDRESS", "ORGANIZATION"] if s.score > 0.8}
+                                   if s.tag in entities_to_keep if s.score > 0.8}
 
         diff_expected = expected_entities_text.difference(predicted_entities_text)
         diff_predicted = predicted_entities_text.difference(expected_entities_text)
@@ -91,6 +91,6 @@ if __name__ == '__main__':
 # model_folder = "resources/flair_ner/tc/"
 # dev_size = 0.2
 
-data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-model_folder = "resources/flair_ner/ca/"
-dev_size = 0.2
+# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
+# model_folder = "resources/flair_ner/ca/"
+# dev_size = 0.2

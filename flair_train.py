@@ -51,6 +51,7 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     tagger: SequenceTagger = SequenceTagger(hidden_size=256,
                                             embeddings=embeddings,
+                                            use_crf=True,
                                             tag_dictionary=tag_dictionary,
                                             tag_type='ner')
 
