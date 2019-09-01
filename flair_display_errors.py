@@ -27,10 +27,6 @@ from misc.command_line import train_parse_args
 from misc.import_annotations import prepare_flair_train_test_corpus
 from ner.model_factory import get_tokenizer
 
-# CPU
-# flair.device = torch.device('cpu')
-# torch.set_num_threads(1)
-
 # reproducibility
 random.seed(1230)
 
@@ -57,7 +53,6 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     _ = tagger.predict(sentences=sentences_predict,
                        mini_batch_size=32,
                        embedding_storage_mode="cpu",
-                       all_tag_prob=False,
                        verbose=True)
 
     entities_to_keep = ["PERS", "ADDRESS", "ORGANIZATION", "JUDGE_CLERK", "LAWYER"]

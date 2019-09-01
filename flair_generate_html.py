@@ -54,7 +54,6 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
     _ = tagger.predict(sentences=sentences,
                        mini_batch_size=32,
                        verbose=True,
-                       all_tag_prob=False,
                        embedding_storage_mode="cpu")
 
     print("prepare html")
