@@ -85,7 +85,6 @@ flair_display_errors_tc:
 
 spacy_fine_tune_ca:
 # train a model from manual annotations
-# -m ./resources/model
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \

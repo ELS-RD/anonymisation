@@ -56,8 +56,10 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
         s.score(predicted_entities, gold)
 
         if print_diff:
-            expected_entities_text = {e.text for e in expected_entities if e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
-            predicted_entities_text = {e.text for e in predicted_entities.ents if e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
+            expected_entities_text = {e.text for e in expected_entities if
+                                      e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
+            predicted_entities_text = {e.text for e in predicted_entities.ents if
+                                       e.label_ in ["PERS", "ADDRESS", "ORGANIZATION"]}
             # diff_expected = set(expected_entities_text).difference(set(predicted_entities_text))
             # diff_predicted = set(predicted_entities_text).difference(set(expected_entities_text))
             # diff = list()
@@ -100,35 +102,6 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
     print(f"-----\n")
 
 
-# def recompose_paragraphs(paragraphs: List[Tuple[str, List[Offset]]]) -> List[Tuple[str, List[Offset]]]:
-#     results = list()
-#     precedent_paragraph_not_finished = False
-#     precedent_paragraph: Optional[str] = None
-#     precedent_offsets = list()
-#     for index, (current_paragraph, current_offsets) in enumerate(paragraphs):
-#         current_start_lower_char = current_paragraph[0].islower()
-#
-#         if current_start_lower_char and precedent_paragraph_not_finished:
-#             precedent_offsets += [Offset(o.start + len(precedent_paragraph), o.end + len(precedent_paragraph), o.type)
-#                                   for o in current_offsets]
-#             precedent_paragraph += " " + current_paragraph
-#
-#         else:
-#             if precedent_paragraph is not None:
-#                 results.append((precedent_paragraph, precedent_offsets))
-#             precedent_paragraph = current_paragraph
-#             precedent_offsets = current_offsets
-#
-#         last_char_precedent_paragraph = precedent_paragraph[-1]
-#         precedent_paragraph_not_finished = (last_char_precedent_paragraph.isalnum() or
-#                                             (last_char_precedent_paragraph is ","))
-#
-#         if index == len(paragraphs) - 1 and precedent_paragraph is not None:
-#             results.append((precedent_paragraph, precedent_offsets))
-#
-#     return results
-
-
 def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int, print_diff: bool) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
     if model_path is not None:
@@ -138,6 +111,7 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
         # ner = nlp.get_pipe("ner")
         # ner.model.learn_rate = 0.0001
     else:
+        nlp.tokenizer = get_tokenizer(nlp)  # replace tokenizer
         nlp.begin_training()
 
     all_annotated_files: List[str] = [os.path.join(data_folder, filename)
@@ -149,27 +123,37 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
     dev_file_names = all_annotated_files[0:nb_doc_dev_set]
 
     train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
+    # train_file_names = ["./resources/training_data/generated_annotations.txt"] + train_file_names
 
     content_to_rate = load_content(txt_paths=train_file_names)
     content_to_rate_test = load_content(txt_paths=dev_file_names)
 
-    print("nb PERS entities", sum([1
-                                   for text, offsets in content_to_rate
-                                   for offset in offsets
-                                   if offset.type == "PERS"]))
+    print(f"nb PERS entities {sum([1 for _, offsets in content_to_rate for o in offsets if o.type == 'PERS'])}")
 
     if model_path is not None:
         print("evaluation without fine tuning")
         spacy_evaluate(nlp, content_to_rate_test, print_diff)
 
-    train_data: List[Tuple[str, GoldParse]] = [(current_line,
-                                                GoldParse(nlp.make_doc(current_line),
-                                                          entities=[offset.to_tuple() for offset in gold_offsets]))
-                                               for current_line, gold_offsets in content_to_rate]
+    train_data: List[Tuple[str, GoldParse]] = list()
+    for current_line, gold_offsets in content_to_rate:
+        entities = []
+        space_error = False
+        for offset in gold_offsets:
+            text = current_line[offset.start:offset.end]
+            if text == text.strip():
+                entities.append(offset.to_tuple())
+            else:
+                space_error = True
+                break
+        if space_error:
+            continue
+        gold = GoldParse(nlp.make_doc(current_line), entities=entities)
+        train_data.append((current_line, gold))
 
     optimizer: Optimizer = nlp.resume_training()
 
     for epoch in range(nb_epochs):
+        print(f"------- {epoch}  -------")
         random.shuffle(train_data)
         losses = dict()
         batches = minibatch(train_data, size=compounding(4., 16., 1.001))
@@ -184,13 +168,19 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
         spacy_evaluate(model=nlp,
                        dev=content_to_rate_test,
-                       print_diff=print_diff)  # content_to_rate +
+                       print_diff=print_diff)
 
 
 if __name__ == '__main__':
-    args = train_parse_args()
+    args = train_parse_args(train=True)
     main(data_folder=args.input_dir,
          model_path=args.model_dir,
          dev_size=float(args.dev_size),
          nb_epochs=int(args.epoch),
-         print_diff=args.print_diff)
+         print_diff=False)
+
+# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
+# model_path = "./resources/model"
+# dev_size = 0.2
+# nb_epochs = 1
+# print_diff = False
