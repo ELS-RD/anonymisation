@@ -24,6 +24,7 @@ from spacy.tokens.doc import Doc
 from spacy.tokens.span import Span
 from spacy.util import minibatch, compounding
 from thinc.neural.optimizers import Optimizer
+from tqdm import tqdm
 
 from misc.command_line import train_parse_args
 from misc.import_annotations import load_content
@@ -32,6 +33,25 @@ from xml_extractions.extract_node_values import Offset
 
 # reproducibility
 random.seed(1230)
+
+
+def convert_batch_to_gold_dataset(model, batch: List[Tuple[str, List[Offset]]]):
+    train_data: List[Tuple[str, GoldParse]] = list()
+    for current_line, gold_offsets in batch:
+        entities = []
+        space_error = False
+        for offset in gold_offsets:
+            text = current_line[offset.start:offset.end]
+            if text == text.strip():
+                entities.append(offset.to_tuple())
+            else:
+                space_error = True
+                break
+        if space_error:
+            continue
+        gold = GoldParse(model.make_doc(current_line), entities=entities)
+        train_data.append((current_line, gold))
+    return train_data
 
 
 def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool) -> None:
@@ -134,42 +154,35 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
         print("evaluation without fine tuning")
         spacy_evaluate(nlp, content_to_rate_test, print_diff)
 
-    train_data: List[Tuple[str, GoldParse]] = list()
-    for current_line, gold_offsets in content_to_rate:
-        entities = []
-        space_error = False
-        for offset in gold_offsets:
-            text = current_line[offset.start:offset.end]
-            if text == text.strip():
-                entities.append(offset.to_tuple())
-            else:
-                space_error = True
-                break
-        if space_error:
-            continue
-        gold = GoldParse(nlp.make_doc(current_line), entities=entities)
-        train_data.append((current_line, gold))
-
     optimizer: Optimizer = nlp.resume_training()
 
     for epoch in range(nb_epochs):
         print(f"------- {epoch}  -------")
-        random.shuffle(train_data)
+        random.shuffle(content_to_rate)
         losses = dict()
-        batches = minibatch(train_data, size=compounding(4., 16., 1.001))
-        for batch in batches:
-            texts, manual_annotations = zip(*batch)  # type: List[str], List[GoldParse]
-            nlp.update(
-                texts,
-                manual_annotations,
-                drop=0.5,
-                losses=losses,
-                sgd=optimizer)
+        batches = minibatch(content_to_rate, size=compounding(4., 16., 1.001))
+        for batch_id, batch in enumerate(tqdm(iterable=batches, unit=" batches", desc="Training")):
+            try:
+                batch_gold = convert_batch_to_gold_dataset(model=nlp, batch=batch)
+                texts, manual_annotations = zip(*batch_gold)  # type: List[str], List[GoldParse]
+                nlp.update(
+                    texts,
+                    manual_annotations,
+                    drop=0.5,
+                    losses=losses,
+                    sgd=optimizer)
+
+                if batch_id % 10000 == 0:
+                    spacy_evaluate(model=nlp,
+                                   dev=content_to_rate_test,
+                                   print_diff=print_diff)
+            except Exception as e:
+                print(f"got exception [{e}] on batch id {batch_id}")
+
         print(f"Epoch {epoch + 1}\nLoss: {losses}\n")
         spacy_evaluate(model=nlp,
                        dev=content_to_rate_test,
                        print_diff=print_diff)
-
 
 if __name__ == '__main__':
     args = train_parse_args(train=True)
