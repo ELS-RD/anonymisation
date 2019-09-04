@@ -52,7 +52,7 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
         file_used.append(txt_path)
         with open(txt_path, 'r') as f:
             # remove \n only
-            content_case = [item[:-1] for item in f.readlines() if item[-1] is "\n"]
+            content_case = [item[:-1] if item[-1] is "\n" else item for item in f.readlines()]
         path_annotations = txt_path.replace('.txt', '.ent')
         with open(path_annotations, 'r') as f:
             # strip to remove \n
