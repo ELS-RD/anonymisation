@@ -16,6 +16,7 @@
 #  under the License.
 import os
 import random
+from time import time
 from typing import Tuple, List, Optional
 
 from spacy.gold import GoldParse
@@ -32,7 +33,7 @@ from ner.model_factory import get_empty_model, get_tokenizer
 from xml_extractions.extract_node_values import Offset
 
 # reproducibility
-random.seed(1230)
+random.seed(5)
 
 
 def convert_batch_to_gold_dataset(model, batch: List[Tuple[str, List[Offset]]]):
@@ -62,16 +63,16 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
     :return: a dict of scores
     """
     s = Scorer()
-
+    total_time = 0
     for index, (text, offsets) in enumerate(dev):
         doc = model.make_doc(text)
         offset_tuples = [offset.to_tuple() for offset in offsets]
         expected_entities: List[Span] = [doc.char_span(o[0], o[1]) for o in offset_tuples]
         if None in expected_entities:
             raise Exception(f"entity parsing failed: [{expected_entities}], for offsets [{offset_tuples}] in [{text}]")
-
+        start = time()
         predicted_entities: Doc = model(text)
-
+        total_time += time() - start
         gold: GoldParse = GoldParse(doc, entities=offset_tuples)
         s.score(predicted_entities, gold)
 
@@ -103,7 +104,7 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
                 print(f"expected missing: [{diff_expected}]")
                 print(f"predicted missing: [{diff_predicted}]")
                 print(f"common: [{set(predicted_entities_text).intersection(set(expected_entities_text))}]")
-
+    print("total time", total_time)
     entities = list(s.ents_per_type.items())
     entities.sort(key=lambda tup: tup[0])
 
@@ -183,6 +184,7 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
         spacy_evaluate(model=nlp,
                        dev=content_to_rate_test,
                        print_diff=print_diff)
+
 
 if __name__ == '__main__':
     args = train_parse_args(train=True)

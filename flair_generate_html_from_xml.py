@@ -53,8 +53,7 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
     tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, 'best-model.pt'))
     _ = tagger.predict(sentences=sentences,
                        mini_batch_size=32,
-                       verbose=True,
-                       embedding_storage_mode="cpu")
+                       verbose=True)
 
     print("prepare html")
     page_html = render_ner_html(sentences, colors=colors)

@@ -18,6 +18,7 @@ import random
 from typing import List
 
 import spacy
+import torch
 from flair.data import Corpus
 from flair.embeddings import StackedEmbeddings, TokenEmbeddings, WordEmbeddings, FlairEmbeddings
 from flair.models import SequenceTagger
@@ -28,7 +29,7 @@ from misc.import_annotations import prepare_flair_train_test_corpus
 from ner.model_factory import get_tokenizer
 
 # reproducibility
-random.seed(1230)
+random.seed(5)
 
 
 def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -> None:
@@ -43,10 +44,9 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
         WordEmbeddings('fr'),
         FlairEmbeddings('fr-forward'),
         FlairEmbeddings('fr-backward'),
-        # FlairEmbeddings('resources/flair_ner/lm/ca_forward/best-lm.pt'),
-        # FlairEmbeddings('resources/flair_ner/lm/ca_backward/best-lm.pt'),
     ]
-
+    # torch.tensor().split()
+    # a.split()
     embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
 
     tagger: SequenceTagger = SequenceTagger(hidden_size=256,
@@ -59,7 +59,8 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     trainer.train(model_folder,
                   max_epochs=nb_epochs,
-                  embeddings_storage_mode="cpu",
+                  embeddings_storage_mode="gpu",
+                  use_amp=True,
                   checkpoint=False)
 
 

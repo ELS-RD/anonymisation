@@ -72,7 +72,8 @@ def convert_to_flair_format(spacy_model: Language, data: List[Tuple[str, List[Of
     result: List[str] = list()
     for text, offsets in data:
         doc: Doc = spacy_model(text)
-        offset_tuples = [offset.to_tuple() for offset in offsets]
+        # remove duplicated offsets
+        offset_tuples = list(set([offset.to_tuple() for offset in offsets]))
         gold_annotations = GoldParse(doc, entities=offset_tuples)
         annotations: List[str] = gold_annotations.ner
         assert len(annotations) == len(doc)

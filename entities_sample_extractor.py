@@ -36,7 +36,7 @@ from ner.model_factory import get_empty_model
 from xml_extractions.extract_node_values import Paragraph, get_paragraph_from_file, Case
 
 warnings.filterwarnings('ignore')
-random.seed(123)
+random.seed(5)
 
 
 def parse_args() -> Namespace:

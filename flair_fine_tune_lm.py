@@ -27,7 +27,7 @@ from tqdm import tqdm
 from resources.config_provider import get_config_default
 from xml_extractions.extract_node_values import get_paragraph_from_file
 
-random.seed(123)
+random.seed(5)
 
 
 def chunks(content: List, n: int) -> Iterable[Tuple[int, List]]:

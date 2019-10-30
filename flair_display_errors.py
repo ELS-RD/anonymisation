@@ -17,8 +17,11 @@
 import copy
 import os
 import random
+from operator import getitem
 
+import flair
 import spacy
+import torch
 from flair.data import Corpus, Sentence
 from flair.datasets import DataLoader
 from flair.models import SequenceTagger
@@ -28,7 +31,7 @@ from misc.import_annotations import prepare_flair_train_test_corpus
 from ner.model_factory import get_tokenizer
 
 # reproducibility
-random.seed(1230)
+random.seed(5)
 
 
 def main(data_folder: str, model_folder: str, dev_size: float) -> None:
@@ -36,12 +39,10 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     nlp.tokenizer = get_tokenizer(nlp)
 
     corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size)
-
+    flair.device = torch.device('cpu')  # (4mn 28)
     tagger: SequenceTagger = SequenceTagger.load(model=os.path.join(model_folder, 'best-model.pt'))
-
-    test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32, num_workers=10),
-                                      embeddings_storage_mode="cpu")
-    print(test_results.detailed_results)
+    # test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32))
+    # print(test_results.detailed_results)
 
     sentences_original = (corpus.train.sentences + corpus.test.sentences)
     sentences_predict = copy.deepcopy(sentences_original)
@@ -52,7 +53,7 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
 
     _ = tagger.predict(sentences=sentences_predict,
                        mini_batch_size=32,
-                       embedding_storage_mode="cpu",
+                       embedding_storage_mode="none",
                        verbose=True)
 
     entities_to_keep = ["PERS", "ADDRESS", "ORGANIZATION", "JUDGE_CLERK", "LAWYER"]
@@ -89,3 +90,7 @@ if __name__ == '__main__':
 # data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/ca/"
 # dev_size = 0.2
+#
+# main(data_folder=data_folder,
+#      model_folder=model_folder,
+#      dev_size=dev_size)
