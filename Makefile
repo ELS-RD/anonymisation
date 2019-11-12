@@ -88,7 +88,7 @@ spacy_fine_tune_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -s 0.2 -e 20 -m ./resources/model; \
+	python spacy_fine_tune.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations  -s 0.2 -e 20 -m ./resources/model -o ./resources/new_model; \
 	)
 
 flair_train_ca:

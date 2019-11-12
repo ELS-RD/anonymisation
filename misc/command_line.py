@@ -48,6 +48,13 @@ def train_parse_args(train: bool) -> Namespace:
         dest="dev_size",
         required=True
     )
+    parser.add_argument(
+        '-o', '--output-model-dir',
+        help="Directory where to save model",
+        action="store",
+        dest="output_model_dir",
+        required=False
+    )
 
     if train:
         parser.add_argument(

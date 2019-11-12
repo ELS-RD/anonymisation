@@ -123,7 +123,8 @@ def spacy_evaluate(model, dev: List[Tuple[str, List[Offset]]], print_diff: bool)
     print(f"-----\n")
 
 
-def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs: int, print_diff: bool) -> None:
+def main(data_folder: str, model_path: Optional[str], output_model: Optional[str], dev_size: float, nb_epochs: int,
+         print_diff: bool) -> None:
     nlp = get_empty_model(load_labels_for_training=True)
     if model_path is not None:
         nlp = nlp.from_disk(path=model_path)
@@ -185,11 +186,15 @@ def main(data_folder: str, model_path: Optional[str], dev_size: float, nb_epochs
                        dev=content_to_rate_test,
                        print_diff=print_diff)
 
+    if output_model is not None:
+        nlp.to_disk(output_model)
+
 
 if __name__ == '__main__':
     args = train_parse_args(train=True)
     main(data_folder=args.input_dir,
          model_path=args.model_dir,
+         output_model=args.output_model_dir,
          dev_size=float(args.dev_size),
          nb_epochs=int(args.epoch),
          print_diff=False)

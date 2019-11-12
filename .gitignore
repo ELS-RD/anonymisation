@@ -199,5 +199,7 @@ venv.bak/
 
 *.html
 
-/resources/flair_ner
-/resources/*.zip
+resources/flair_ner
+resources/*.zip
+resources/tc
+resources/new_model
