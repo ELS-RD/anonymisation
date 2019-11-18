@@ -57,8 +57,8 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
 
     trainer.train(model_folder,
                   max_epochs=nb_epochs,
+                  mini_batch_size=16,
                   embeddings_storage_mode="cpu",
-                  use_amp=False,
                   checkpoint=False)
 
 
