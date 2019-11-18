@@ -1,11 +1,11 @@
 # required by (\ SHELL COMMANDS \)
-SHELL:=/bin/bash
+SHELL:=/bin/sh
 
 # avoid collision with a file having the same name as a command listed here
 .PHONY: setup train show_spacy_entities show_rule_based_entities list_differences test
 
-VIRT_ENV_FOLDER = ~/.local/share/virtualenvs/anonymisation/venv
-SOURCE_VIRT_ENV = source $(VIRT_ENV_FOLDER)/bin/activate
+VIRT_ENV_FOLDER = ~/.local/share/virtualenvs/anonymisation
+SOURCE_VIRT_ENV = . $(VIRT_ENV_FOLDER)/bin/activate
 
 setup:
 # setup the virtualenv required by the project
@@ -113,6 +113,22 @@ flair_generate_html_ca:
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python flair_generate_html.py -i resources/training_data -m resources/flair_ner/ca -s 2000; \
+	)
+
+spacy_fine_tune_lux:
+# train a model from manual annotations
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python spacy_fine_tune.py -i ../luxano/output/trainset -s 0.2 -e 3; \
+	)
+
+flair_train_lux:
+# train a model from generated annotations
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python flair_train.py -i ../luxano/output/trainset -m resources/flair_ner/luxano -s 0.2 -e 100; \
 	)
 
 test:
