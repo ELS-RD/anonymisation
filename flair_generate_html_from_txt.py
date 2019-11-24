@@ -50,18 +50,13 @@ def main(data_folder: str, output_folder: str, model_folder: str) -> None:
                 output.write(page_html)
 
 
-# if __name__ == '__main__':
-#     args = train_parse_args(train=False)
-#     assert int(args.dev_size) >= 1
-#     main(data_folder=args.input_dir,
-#          model_folder=args.model_dir,
-#          top_n=int(args.dev_size))
+if __name__ == '__main__':
+    args = train_parse_args(train=False)
+    assert int(args.dev_size) >= 1
+    main(data_folder=args.input_dir,
+         model_folder=args.model_dir)
 
-data_folder = "resources/tc/txt"
-output_folder = "resources/tc/html"
-model_folder = "resources/flair_ner/tc/"
-top_n = 50
-
-# 1 thread
-# 2019-09-22 00:32:28,240 loading file resources/flair_ner/tc/best-model.pt
-# anonymize cases: 100%|██████████| 9172/9172 [20:28<00:00,  9.93 txt/s]
+# data_folder = "resources/tc/txt"
+# output_folder = "resources/tc/html"
+# model_folder = "resources/flair_ner/tc/"
+# top_n = 50

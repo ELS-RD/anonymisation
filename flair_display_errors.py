@@ -17,7 +17,6 @@
 import copy
 import os
 import random
-from operator import getitem
 
 import flair
 import spacy
@@ -39,10 +38,10 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
     nlp.tokenizer = get_tokenizer(nlp)
 
     corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size)
-    flair.device = torch.device('cpu')  # (4mn 28)
+    # flair.device = torch.device('cpu')  # (4mn 28)
     tagger: SequenceTagger = SequenceTagger.load(model=os.path.join(model_folder, 'best-model.pt'))
-    # test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32))
-    # print(test_results.detailed_results)
+    test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32))
+    print(test_results.detailed_results)
 
     sentences_original = (corpus.train.sentences + corpus.test.sentences)
     sentences_predict = copy.deepcopy(sentences_original)
@@ -82,15 +81,3 @@ if __name__ == '__main__':
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
          dev_size=float(args.dev_size))
-
-# data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/tc/"
-# dev_size = 0.2
-
-# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/ca/"
-# dev_size = 0.2
-#
-# main(data_folder=data_folder,
-#      model_folder=model_folder,
-#      dev_size=dev_size)

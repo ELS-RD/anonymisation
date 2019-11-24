@@ -58,7 +58,8 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
             # strip to remove \n
             annotations = [item.strip() for item in f.readlines()]
 
-        assert len(content_case) > 0
+        if len(content_case) == 0:
+            continue
         assert len(content_case) == len(annotations)
 
         for line_case, line_annotations in zip(content_case, annotations):

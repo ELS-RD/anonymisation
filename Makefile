@@ -145,7 +145,15 @@ flair_train_lux:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_train.py -i ../luxano/output/trainset -m resources/flair_ner/luxano -s 0.2 -e 20; \
+	python flair_train.py -i ../luxano/output/trainset -m resources/flair_ner/luxano -s 0.2 -e 10; \
+	)
+
+flair_display_errors_lux:
+# display prediction errors
+	date
+	( \
+	$(SOURCE_VIRT_ENV); \
+	python flair_display_errors.py -i ../luxano/output/trainset -m resources/flair_ner/luxano -s 0.2; \
 	)
 
 test:
