@@ -83,6 +83,7 @@ def convert_to_flair_format(spacy_model: Language, data: List[Tuple[str, List[Of
         # BIOES for Begin, Inside, Outside, End, Single
         annotations = [a.replace('L-', 'E-') for a in annotations]
         annotations = [a.replace('U-', 'S-') for a in annotations]
+        annotations = ["O" if a == "-" else a for a in annotations]  # replace unknown
         result += [f"{word} {tag}\n" for word, tag in zip(doc, annotations)]
         result.append('\n')
     return result
