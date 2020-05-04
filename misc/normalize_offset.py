@@ -15,11 +15,7 @@
 #  specific language governing permissions and limitations
 #  under the License.
 from itertools import groupby
-from typing import List, Tuple, Union
-
-import regex
-from spacy.tokens.doc import Doc
-from spacy.tokens.span import Span
+from typing import List, Union
 
 from xml_extractions.extract_node_values import Offset
 
@@ -42,17 +38,15 @@ def normalize_offsets(offsets: List[Offset], min_offset_size: int = 2) -> List[O
 
         # merge tags which appear as separated but are not really
         if (previous_offset is not None) and (previous_offset.end + 1 >= current_offset.start):
-            previous_offset.type = tag_priority(previous_offset.type, current_offset.type)
+            # previous_offset.type = tag_priority(previous_offset.type, current_offset.type)
             previous_offset.end = current_offset.end
 
         if (previous_offset is not None) and (previous_offset.end < current_offset.end):
-            previous_offset.type = remove_tag_priority_info(previous_offset.type)
             offset_to_keep.append(previous_offset)
 
         # keep longest tags when they are one on the other
         if (previous_offset is not None) and (previous_offset.end >= current_offset.end):
-
-            previous_offset.type = tag_priority(previous_offset.type, current_offset.type)
+            # previous_offset.type = tag_priority(previous_offset.type, current_offset.type)
             current_offset = previous_offset
 
         # delete short offsets (1 - 2 chars)
@@ -62,7 +56,6 @@ def normalize_offsets(offsets: List[Offset], min_offset_size: int = 2) -> List[O
         previous_offset = current_offset
 
     if previous_offset is not None:
-        previous_offset.type = remove_tag_priority_info(previous_offset.type)
         offset_to_keep.append(previous_offset)
 
     return offset_to_keep
@@ -75,102 +68,3 @@ def remove_duplicates(data):
     """
     data = sorted(data)
     return [k for k, v in groupby(data)]
-
-
-def tag_priority(previous_tag: str, current_tag: str) -> str:
-    """
-    Apply some rules to decide which tag to keep when merging 2 offsets
-    In particular manage tag priority indicated by _1 in tag label
-    :param previous_tag: tag as a string starting the earliest (start character of the offset)
-    :param current_tag: tag as a string
-    :return: the selected tag
-    """
-
-    if previous_tag[-2:] == "_1":
-        return previous_tag
-    elif current_tag[-2:] == "_1":
-        return current_tag
-    else:
-        # return the first seen tag otherwise
-        return previous_tag
-
-
-def remove_tag_priority_info(tag: str) -> str:
-    """
-    Remove the tag priority information
-    :param tag: original tag label
-    :return: tag without priority information
-    """
-    if tag[-2:] == "_1":
-        return tag[:-2]
-    return tag
-
-
-def remove_spaces_included_in_offsets(text: str, offsets: List[Offset]) -> List[Offset]:
-    """
-    If offset doesn't match a word boundary its type is removed by Spacy (unknown action)
-    This function removes spaces when at the start or the end of the offset, if any
-    More info -> https://spacy.io/usage/linguistic-features
-    Test code:
-    ----
-    import spacy
-    from spacy.gold import GoldParse
-    from spacy.tokens import Doc
-    nlp = spacy.blank('fr')
-    doc2 = nlp('Who is Chaka Khan popo?')
-    gold2 = GoldParse(doc2, entities=[(7, 18, 'PERSON')])
-    print(gold2.ner)
-    ----
-    :param text: original text
-    :param offsets: list of original offsets for this text
-    :return: list of new offsets fixed
-    """
-    result = list()
-    for offset in offsets:
-        if (offset.start >= 0) and (offset.end - 1 < len(text)) and (offset.start != offset.end):
-            new_start = offset.start + 1 if text[offset.start].isspace() else offset.start
-            # remove 1 because the closing offset is not included in the selection in Python
-            new_end = offset.end - 1 if text[offset.end - 1].isspace() else offset.end
-            result.append(Offset(new_start, new_end, offset.type))
-    return result
-
-
-pattern_to_remove = regex.compile("^\s*\\b((M|m)adame|(M|m)onsieur|Mme(\.)?|Me|société|M(\.)?)\\b\s*",
-                                  flags=regex.VERSION1)
-
-
-def clean_offsets_from_unwanted_words(text: str, offsets: List[Offset]) -> List[Offset]:
-    """
-    Remove some words which should not appear inside an offset (e.g.: Monsieur, Madame, etc.)
-    It is possible that sometimes the offset is empty because it only contains Madame for instance.
-    It has to be cleaned in a next step
-    :param text: original paragraph
-    :param offsets: list of already extracted offsets
-    :return: cleaned offsets
-    """
-    result = list()
-    for offset in offsets:
-        offset_text = text[offset.start:offset.end]
-        unwanted_text_found = pattern_to_remove.match(offset_text)
-        if unwanted_text_found is not None:
-            found_string = unwanted_text_found.captures()[0]
-            result.append(Offset(offset.start + len(found_string), offset.end, offset.type))
-        else:
-            result.append(offset)
-    return result
-
-
-def split_span(doc: Doc, span: Span) -> List[Span]:
-    """
-    Split a span in multiple span (one token per span)
-    """
-    s = doc.text
-    new_spans = list()
-    label = span.label_
-    start_search = span.start_char
-    for word in span:
-        start = s.index(word.text, start_search, span.end_char)
-        end = start + len(word.text)
-        new_spans.append(doc.char_span(start, end, label))
-        start_search += len(word.text)
-    return new_spans

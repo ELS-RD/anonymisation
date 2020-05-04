@@ -17,15 +17,33 @@
 
 import spacy
 
-# Managed type of tokens
 from spacy.lang.fr import French
 from spacy.tokenizer import Tokenizer
 
-entity_types = ["PERS", "PHONE_NUMBER", "LICENCE_PLATE",
-                # "SOCIAL_SECURITY_NUMBER",
-                "ORGANIZATION", "LAWYER", "JUDGE_CLERK",
-                "ADDRESS", "COURT", "DATE", "RG",
-                "BAR", "UNKNOWN"]
+colors = {"PERS": "#ff9933",  # orange
+          "PHONE_NUMBER": "#ff9933",
+          "LICENCE_PLATE": "#ff9933",
+          "MAIL": "#ff9933",
+          "NUMEROS": "#ff9933",
+          "ADDRESS": "#ff99cc",  # pink
+          "HOPITAL": "#ff99cc",
+          "RESIDENCE": "#ff99cc",
+          "ORGANIZATION": "#00ccff",  # blue
+          "ETABLISSEMENT": "#00ccff",
+          "MEDIA": "#00ccff",
+          "FONDS": "#00ccff",
+          "ETAT": "#00ccff",
+          "GROUPE": "#00ccff",
+          "LAWYER": "#ccffcc",  # light green
+          "JUDGE_CLERK": "#ccccff",  # purple
+          "PERSONNE_DE_JUSTICE": "#ccccff",
+          "COURT": "#ccffff",  # light blue
+          "RG": "#99ff99",  # green
+          "DATE": "#ffcc99",  # salmon
+          "SITE": "#ffcc99",
+          "BAR": "#ffe699",  # light yellow
+          "UNKNOWN": "#ff0000",  # red
+          }
 
 
 def prevent_sentence_boundary_detection(doc):
@@ -70,7 +88,7 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     ner = nlp.create_pipe('ner')
     # add labels
     if load_labels_for_training:
-        for token_type in entity_types:
+        for token_type in list(colors.keys()):
             ner.add_label(token_type)
 
     nlp.add_pipe(ner, last=True)

@@ -24,7 +24,6 @@ from flair.embeddings import FlairEmbeddings
 from flair.trainers.language_model_trainer import LanguageModelTrainer, TextCorpus
 from tqdm import tqdm
 
-from resources.config_provider import get_config_default
 from xml_extractions.extract_node_values import get_paragraph_from_file
 
 random.seed(5)
@@ -35,8 +34,7 @@ def chunks(content: List, n: int) -> Iterable[Tuple[int, List]]:
         yield i / n, content[i:i + n]
 
 
-config_training = get_config_default()
-xml_train_path = config_training["xml_train_path"]
+xml_train_path = "./resources/training_data/"
 
 all_paragraphs = list()
 generated_paragraphs: List[Sentence] = list()

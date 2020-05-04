@@ -25,8 +25,7 @@ from spacy.language import Language
 from tqdm import tqdm
 
 from misc.command_line import train_parse_args
-from ner.model_factory import get_tokenizer
-from viewer.flair_viewer import colors
+from ner.model_factory import get_tokenizer, colors
 from xml_extractions.extract_node_values import get_paragraph_from_file, Paragraph
 
 

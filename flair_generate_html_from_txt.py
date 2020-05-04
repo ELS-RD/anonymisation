@@ -15,19 +15,16 @@
 #  specific language governing permissions and limitations
 #  under the License.
 import os
-from typing import List
 
 import spacy
-from flair.data import Sentence, build_spacy_tokenizer
+from flair.data import build_spacy_tokenizer
 from flair.models import SequenceTagger
 from flair.visual.ner_html import render_ner_html
 from spacy.language import Language
 from tqdm import tqdm
 
 from misc.command_line import train_parse_args
-from ner.model_factory import get_tokenizer
-from viewer.flair_viewer import colors
-from xml_extractions.extract_node_values import get_paragraph_from_file, Paragraph
+from ner.model_factory import get_tokenizer, colors
 
 
 def main(data_folder: str, output_folder: str, model_folder: str) -> None:

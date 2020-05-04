@@ -14,20 +14,14 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-from typing import List
 
-import spacy
+import pytest
 from spacy.gold import GoldParse
 from spacy.scorer import Scorer
 from spacy.tokens.doc import Doc
-from spacy.tokens.span import Span
 
-from match_text_unsafe.build_entity_dictionary import EntityTypename
-from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk, no_action_bilou
-from misc.normalize_offset import split_span
+from misc.convert_to_bilou import convert_unknown_bilou, convert_unknown_bilou_bulk
 from ner.model_factory import get_empty_model
-import pytest
-
 from xml_extractions.extract_node_values import Offset
 
 pytest.nlp = get_empty_model(load_labels_for_training=True)
@@ -42,15 +36,6 @@ def test_bilou_conv():
     assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PERS', 'O', 'O', 'O']
     offset3 = [Offset(0, 4, "UNKNOWN")]
     assert convert_unknown_bilou(doc, offsets=offset3).ner == ['-', 'O', 'O', 'O', 'O']
-
-
-def test_build_entity_dict():
-    doc: Doc = pytest.nlp.make_doc("Ceci est un test.")
-    span_doc = doc.char_span(5, 8, label="UNKNOWN")
-    doc.ents = [span_doc]
-    entity_typename = EntityTypename()
-    entity_typename.add_spacy_entities(doc)
-    assert entity_typename.get_dict() == {'est': 'UNKNOWN'}
 
 
 def test_tokenizer():
@@ -100,12 +85,3 @@ def test_set_span():
     span2 = doc2.char_span(34, 58, "PERS")
     assert {span1.text}.symmetric_difference({span2.text}) == set()
     assert len({span1}.symmetric_difference({span2})) > 0
-
-
-def test_span_to_spans():
-    s = "Le Président, Le Commis-Greffier, Jean-Paul I FFELLI Nelly DUBAS"
-    doc: Doc = pytest.nlp.make_doc(s)
-    span: Span = doc.char_span(34, 58, "PERS")
-    new_spans = split_span(doc, span)
-    assert len(span) == len(new_spans)
-    assert span.label_ == new_spans[0].label_

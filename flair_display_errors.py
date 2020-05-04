@@ -17,10 +17,9 @@
 import copy
 import os
 import random
+from typing import List
 
-import flair
 import spacy
-import torch
 from flair.data import Corpus, Sentence
 from flair.datasets import DataLoader
 from flair.models import SequenceTagger
@@ -33,7 +32,7 @@ from ner.model_factory import get_tokenizer
 random.seed(5)
 
 
-def main(data_folder: str, model_folder: str, dev_size: float) -> None:
+def main(data_folder: str, model_folder: str, dev_size: float, entities_to_remove: List[str]) -> None:
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
@@ -55,20 +54,19 @@ def main(data_folder: str, model_folder: str, dev_size: float) -> None:
                        embedding_storage_mode="none",
                        verbose=True)
 
-    entities_to_keep = ["PERS", "ADDRESS", "ORGANIZATION", "JUDGE_CLERK", "LAWYER"]
     for index, (sentence_original, sentence_predict) \
             in enumerate(zip(sentences_original, sentences_predict)):  # type: int, (Sentence, Sentence)
         expected_entities_text = {f"{s.text} {s.tag}"
                                   for s in sentence_original.get_spans('ner')
-                                  if s.tag in entities_to_keep}
+                                  if s.tag not in entities_to_remove}
         predicted_entities_text = {f"{s.text} {s.tag}"
                                    for s in sentence_predict.get_spans('ner')
-                                   if s.tag in entities_to_keep if s.score > 0.8}
+                                   if s.tag not in entities_to_remove}
 
         diff_expected = expected_entities_text.difference(predicted_entities_text)
         diff_predicted = predicted_entities_text.difference(expected_entities_text)
 
-        if (len(diff_predicted) > 0):  # (len(diff_expected) > 0) or
+        if len(diff_predicted) > 0:  # (len(diff_expected) > 0) or
             print("------------")
             print(f"source {index}: [{sentence_original.to_plain_string()}]")
             print(f"expected missing: [{diff_expected}]")
@@ -80,4 +78,5 @@ if __name__ == '__main__':
     args = train_parse_args(train=False)
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
-         dev_size=float(args.dev_size))
+         dev_size=float(args.dev_size),
+         entities_to_remove=[])

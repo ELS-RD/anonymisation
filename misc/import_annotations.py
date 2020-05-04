@@ -25,6 +25,7 @@ from spacy.gold import GoldParse
 from spacy.language import Language
 from spacy.tokens.doc import Doc
 
+from misc.normalize_offset import normalize_offsets
 from xml_extractions.extract_node_values import Offset
 
 
@@ -52,7 +53,7 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
         file_used.append(txt_path)
         with open(txt_path, 'r') as f:
             # remove \n only
-            content_case = [item[:-1] if item[-1] is "\n" else item for item in f.readlines()]
+            content_case = [item[:-1] if item[-1] == "\n" else item for item in f.readlines()]
         path_annotations = txt_path.replace('.txt', '.ent')
         with open(path_annotations, 'r') as f:
             # strip to remove \n
@@ -74,6 +75,7 @@ def convert_to_flair_format(spacy_model: Language, data: List[Tuple[str, List[Of
     for text, offsets in data:
         doc: Doc = spacy_model(text)
         # remove duplicated offsets
+        offsets = normalize_offsets(offsets=offsets)
         offset_tuples = list(set([offset.to_tuple() for offset in offsets]))
         gold_annotations = GoldParse(doc, entities=offset_tuples)
         annotations: List[str] = gold_annotations.ner

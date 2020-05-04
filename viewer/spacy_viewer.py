@@ -19,8 +19,7 @@ from typing import List, Tuple
 from spacy import displacy
 from spacy.tokens.doc import Doc
 
-from ner.model_factory import get_empty_model
-from viewer.flair_viewer import colors
+from ner.model_factory import get_empty_model, colors
 from xml_extractions.extract_node_values import Offset
 
 
@@ -46,13 +45,3 @@ def convert_offsets_to_spacy_docs(doc_annotated: List[Tuple[str, str, List[Offse
         doc.ents = ents
         docs.append(doc)
     return docs
-
-
-def view_spacy_docs(docs: List[Doc], port: int) -> None:
-    """
-    Launch a server to View entities
-    :param docs: spacy doc with entities ready
-    :param port: port to use to serve the file
-    """
-    options = {"ents": None, "colors": colors}
-    displacy.serve(docs, style="ent", minify=True, port=port, options=options)
