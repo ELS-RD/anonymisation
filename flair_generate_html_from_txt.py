@@ -49,7 +49,7 @@ def main(data_folder: str, output_folder: str, model_folder: str) -> None:
 
 if __name__ == '__main__':
     args = train_parse_args(train=False)
-    assert int(args.dev_size) >= 1
+    assert args.dev_size >= 1
     main(data_folder=args.input_dir,
          model_folder=args.model_dir)
 

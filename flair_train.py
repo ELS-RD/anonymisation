@@ -15,7 +15,7 @@
 #  specific language governing permissions and limitations
 #  under the License.
 import random
-from typing import List
+from typing import List, Optional
 
 import spacy
 from flair.data import Corpus
@@ -31,11 +31,13 @@ from ner.model_factory import get_tokenizer
 random.seed(5)
 
 
-def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -> None:
+def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int,
+         nb_segment: Optional[int], segment: Optional[int]) -> None:
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
-    corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size)
+    corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size,
+                                                     nb_segment=nb_segment, segment=segment)
     tag_dictionary = corpus.make_tag_dictionary(tag_type='ner')
     print(tag_dictionary.idx2item)
 
@@ -53,26 +55,21 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int) -
                                             tag_dictionary=tag_dictionary,
                                             tag_type='ner')
 
-    trainer: ModelTrainer = ModelTrainer(tagger, corpus)
+    trainer: ModelTrainer = ModelTrainer(model=tagger, corpus=corpus, use_tensorboard=True)
 
     trainer.train(model_folder,
                   max_epochs=nb_epochs,
                   mini_batch_size=32,
                   embeddings_storage_mode="cpu",
-                  checkpoint=False)
+                  checkpoint=False,
+                  )
 
 
 if __name__ == '__main__':
     args = train_parse_args(train=True)
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
-         dev_size=float(args.dev_size),
-         nb_epochs=int(args.epoch))
-
-# data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/tc/"
-# dev_size = 0.2
-
-# data_folder = "../case_annotation/data/appeal_court/spacy_manual_annotations"
-# model_folder = "resources/flair_ner/ca/"
-# dev_size = 0.2
+         dev_size=args.dev_size,
+         nb_epochs=args.epoch,
+         nb_segment=args.nb_segment,
+         segment=args.segment)

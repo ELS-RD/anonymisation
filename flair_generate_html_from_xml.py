@@ -63,10 +63,10 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
 
 if __name__ == '__main__':
     args = train_parse_args(train=False)
-    assert int(args.dev_size) >= 1
+    assert args.dev_size >= 1
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
-         top_n=int(args.dev_size))
+         top_n=args.dev_size)
 
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/tc/"

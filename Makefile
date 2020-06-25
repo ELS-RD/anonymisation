@@ -38,7 +38,10 @@ flair_train_tc:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_train.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2 -e 40; \
+	python flair_train.py --input-files-dir ../case_annotation/data/tc/spacy_manual_annotations \
+	--model-dir resources/flair_ner/tc \
+	--dev-set-size 0.2 \
+	--epochs 40; \
 	)
 
 # display prediction errors
@@ -47,7 +50,9 @@ flair_display_errors_tc:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_display_errors.py -i ../case_annotation/data/tc/spacy_manual_annotations -m resources/flair_ner/tc -s 0.2; \
+	python flair_display_errors.py --input-files-dir ../case_annotation/data/tc/spacy_manual_annotations \
+	--model-dir resources/flair_ner/tc \
+	--dev-set-size 0.2; \
 	)
 
 # train a model from manual annotations
@@ -56,7 +61,10 @@ flair_train_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_train.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2 -e 100; \
+	python flair_train.py --input-files-dir ../case_annotation/data/appeal_court/spacy_manual_annotations \
+	--model-dir resources/flair_ner/ca \
+	--dev-set-size 0.2 \
+	--epochs 100; \
 	)
 
 # display prediction errors
@@ -65,7 +73,9 @@ flair_display_errors_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_display_errors.py -i ../case_annotation/data/appeal_court/spacy_manual_annotations -m resources/flair_ner/ca -s 0.2; \
+	python flair_display_errors.py --input-files-dir ../case_annotation/data/appeal_court/spacy_manual_annotations \
+	--model-dir resources/flair_ner/ca \
+	--dev-set-size 0.2; \
 	)
 
 # display prediction errors
@@ -74,7 +84,9 @@ flair_generate_html_ca:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_generate_html.py -i resources/training_data -m resources/flair_ner/ca -s 2000; \
+	python flair_generate_html.py --input-files-dir resources/training_data \
+	--model-dir resources/flair_ner/ca \
+	--dev-set-size 2000; \
 	)
 
 # train a model from generated annotations
@@ -83,10 +95,11 @@ flair_train_lux:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_train.py -i ../case_annotation/data/lux/spacy_manual_annotations \
-	-m resources/flair_ner/luxano \
-	-s 0.2 \
-	-e 40; \
+	python flair_train.py --input-files-dir ../case_annotation/data/lux/spacy_manual_annotations \
+	--model-dir resources/flair_ner/luxano_segment_4 \
+	--epochs 40 \
+	--nb_segment 5 \
+	--segment 4; \
 	)
 
 # display prediction errors
@@ -95,7 +108,11 @@ flair_display_errors_lux:
 	date
 	( \
 	$(SOURCE_VIRT_ENV); \
-	python flair_display_errors.py -i ../case_annotation/data/lux/spacy_manual_annotations -m resources/flair_ner/luxano -s 0.2; \
+	python flair_display_errors.py \
+	--input-files-dir ../case_annotation/data/lux/spacy_manual_annotations \
+	--model-dir resources/flair_ner/luxano_segment_4 \
+	--nb_segment 5 \
+	--segment 4; \
 	)
 
 # run unit tests

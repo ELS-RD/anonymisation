@@ -17,7 +17,7 @@
 import os
 import random
 import tempfile
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from flair.data import Corpus
 from flair.datasets import ColumnCorpus
@@ -27,7 +27,7 @@ from spacy.tokens.doc import Doc
 
 from misc.normalize_offset import normalize_offsets
 from xml_extractions.extract_node_values import Offset
-
+import numpy as np
 
 def parse_offsets(text: str) -> Offset:
     """
@@ -101,15 +101,20 @@ def export_data_set_flair_format(spacy_model: Language, data_file_names: List[st
     return tmp_path
 
 
-def prepare_flair_train_test_corpus(spacy_model: Language, data_folder: str, dev_size: float) -> Corpus:
+def prepare_flair_train_test_corpus(spacy_model: Language, data_folder: str, dev_size: float,
+                                    nb_segment: Optional[int], segment: Optional[int]) -> Corpus:
 
     all_annotated_files: List[str] = [os.path.join(data_folder, filename)
                                       for filename in os.listdir(data_folder) if filename.endswith(".txt")]
-    random.shuffle(all_annotated_files)
-
-    nb_doc_dev_set: int = int(len(all_annotated_files) * dev_size)
-
-    dev_file_names = all_annotated_files[0:nb_doc_dev_set]
+    if nb_segment is None and segment is None:
+        random.shuffle(all_annotated_files)
+        nb_doc_dev_set: int = int(len(all_annotated_files) * dev_size)
+        dev_file_names = all_annotated_files[0:nb_doc_dev_set]
+    else:
+        assert segment < nb_segment
+        all_segments = np.array_split(all_annotated_files, nb_segment)
+        dev_file_names = list(all_segments[segment])
+        print(dev_file_names)
 
     train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
 

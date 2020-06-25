@@ -17,7 +17,7 @@
 import copy
 import os
 import random
-from typing import List
+from typing import List, Optional
 
 import spacy
 from flair.data import Corpus, Sentence
@@ -32,11 +32,13 @@ from ner.model_factory import get_tokenizer
 random.seed(5)
 
 
-def main(data_folder: str, model_folder: str, dev_size: float, entities_to_remove: List[str]) -> None:
+def main(data_folder: str, model_folder: str, dev_size: float, entities_to_remove: List[str],
+         nb_segment: Optional[int], segment: Optional[int]) -> None:
     nlp = spacy.blank('fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
-    corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size)
+    corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size,
+                                                     nb_segment=nb_segment, segment=segment)
     # flair.device = torch.device('cpu')  # (4mn 28)
     tagger: SequenceTagger = SequenceTagger.load(model=os.path.join(model_folder, 'best-model.pt'))
     test_results, _ = tagger.evaluate(data_loader=DataLoader(corpus.test, batch_size=32))
@@ -78,5 +80,7 @@ if __name__ == '__main__':
     args = train_parse_args(train=False)
     main(data_folder=args.input_dir,
          model_folder=args.model_dir,
-         dev_size=float(args.dev_size),
-         entities_to_remove=[])
+         dev_size=args.dev_size,
+         entities_to_remove=[],
+         nb_segment=args.nb_segment,
+         segment=args.segment)

@@ -28,39 +28,48 @@ def train_parse_args(train: bool) -> Namespace:
         description='Annotate a sample of the given files in the input directory'
     )
     parser.add_argument(
-        '-m', '--model-dir',
+        '--model-dir',
         help="Model directory",
         action="store",
         dest="model_dir",
         required=False
     )
     parser.add_argument(
-        '-i', '--input-files-dir',
+        '--input-files-dir',
         help="Input files directory",
         action="store",
         dest="input_dir",
         required=True
     )
     parser.add_argument(
-        '-s', '--dev-set-size',
+        '--dev-set-size',
         help="Size of dev set",
         action="store",
         dest="dev_size",
-        required=True
+        type=float,
+        required=False
     )
     parser.add_argument(
-        '-o', '--output-model-dir',
-        help="Directory where to save model",
+        '--nb_segment',
+        help="Number of segment",
         action="store",
-        dest="output_model_dir",
+        type=int,
+        required=False
+    )
+    parser.add_argument(
+        '--segment',
+        help="Number of segment",
+        action="store",
+        type=int,
         required=False
     )
 
     if train:
         parser.add_argument(
-            '-e', '--epochs',
+            '--epochs',
             help="Number of epochs",
             action="store",
+            type=int,
             dest="epoch",
             required=True
         )
