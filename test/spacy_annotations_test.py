@@ -57,7 +57,7 @@ def test_new_tokenizer():
     assert len(pytest.nlp.make_doc("ceci est un test")) == 4
     assert len(pytest.nlp.make_doc("ceci est un -test")) == 5
     assert len(pytest.nlp.make_doc("ceci est un te-st")) == 6
-    assert len(pytest.nlp.make_doc("ceci est un l'test")) == 6
+    assert len(pytest.nlp.make_doc("ceci est un l'test")) == 5
 
 
 def test_score():
