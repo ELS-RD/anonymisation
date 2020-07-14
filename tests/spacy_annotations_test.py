@@ -30,12 +30,12 @@ pytest.nlp = get_empty_model(load_labels_for_training=True)
 def test_bilou_conv():
     doc: Doc = pytest.nlp.make_doc("Ceci est un test.")
     offset1 = [Offset(5, 8, "UNKNOWN")]
-    assert convert_unknown_bilou(doc, offsets=offset1).ner == ['O', '-', 'O', 'O', 'O']
-    assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ['O', '-', 'O', 'O', 'O']
+    assert convert_unknown_bilou(doc, offsets=offset1).ner == ["O", "-", "O", "O", "O"]
+    assert convert_unknown_bilou_bulk([doc], [offset1])[0].ner == ["O", "-", "O", "O", "O"]
     offset2 = [Offset(5, 8, "PERS")]
-    assert convert_unknown_bilou(doc, offsets=offset2).ner == ['O', 'U-PERS', 'O', 'O', 'O']
+    assert convert_unknown_bilou(doc, offsets=offset2).ner == ["O", "U-PERS", "O", "O", "O"]
     offset3 = [Offset(0, 4, "UNKNOWN")]
-    assert convert_unknown_bilou(doc, offsets=offset3).ner == ['-', 'O', 'O', 'O', 'O']
+    assert convert_unknown_bilou(doc, offsets=offset3).ner == ["-", "O", "O", "O", "O"]
 
 
 def test_tokenizer():
@@ -68,13 +68,13 @@ def test_score():
     doc.ents = [predicted_span]
     score: Scorer = Scorer()
     score.score(doc, expected_span)
-    assert score.ents_per_type == dict([('PERS', {'p': 0.0, 'r': 0.0, 'f': 0.0})])
+    assert score.ents_per_type == dict([("PERS", {"p": 0.0, "r": 0.0, "f": 0.0})])
 
     predicted_span = doc.char_span(34, 64, "PERS")
     doc.ents = [predicted_span]
     score: Scorer = Scorer()
     score.score(doc, expected_span)
-    assert score.ents_per_type == dict([('PERS', {'p': 100.0, 'r': 100.0, 'f': 100.0})])
+    assert score.ents_per_type == dict([("PERS", {"p": 100.0, "r": 100.0, "f": 100.0})])
 
 
 def test_set_span():

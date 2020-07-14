@@ -20,7 +20,7 @@ from xml_extractions.extract_node_values import get_paragraph_with_entities, rea
 
 def test_xml_parser():
     tree = read_xml(xml_path="./resources/test/test.xml")
-    r = tree.xpath('//TexteJuri/P')
+    r = tree.xpath("//TexteJuri/P")
 
     assert len(r) == 27
 
@@ -35,9 +35,11 @@ def test_xml_parser():
 
 
 def test_get_paragraph():
-    result_keep_no_annotation = get_paragraph_from_file(path="./resources/test/test.xml",
-                                                        keep_paragraph_without_annotation=True)
-    result_keep_with_annotation = get_paragraph_from_file(path="./resources/test/test.xml",
-                                                          keep_paragraph_without_annotation=False)
+    result_keep_no_annotation = get_paragraph_from_file(
+        path="./resources/test/test.xml", keep_paragraph_without_annotation=True
+    )
+    result_keep_with_annotation = get_paragraph_from_file(
+        path="./resources/test/test.xml", keep_paragraph_without_annotation=False
+    )
     assert len(result_keep_no_annotation) == 27
     assert len(result_keep_with_annotation) == 3

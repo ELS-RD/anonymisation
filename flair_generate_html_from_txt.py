@@ -20,38 +20,35 @@ import spacy
 from flair.data import build_spacy_tokenizer
 from flair.models import SequenceTagger
 from flair.visual.ner_html import render_ner_html
+from misc.command_line import train_parse_args
+from ner.model_factory import colors, get_tokenizer
 from spacy.language import Language
 from tqdm import tqdm
 
-from misc.command_line import train_parse_args
-from ner.model_factory import get_tokenizer, colors
-
 
 def main(data_folder: str, output_folder: str, model_folder: str) -> None:
-    nlp: Language = spacy.blank(name='fr')
+    nlp: Language = spacy.blank(name="fr")
     nlp.tokenizer = get_tokenizer(nlp)
     tokenizer = build_spacy_tokenizer(nlp)
     filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".txt")]
-    tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, 'best-model.pt'))
+    tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, "best-model.pt"))
 
     for filename in tqdm(iterable=filenames, unit=" txt", desc="anonymize cases"):
-        with open(os.path.join(data_folder, filename), 'r') as input_f:
-            sentences = tagger.predict(sentences=input_f.readlines(),
-                                       mini_batch_size=32,
-                                       verbose=False,
-                                       use_tokenizer=tokenizer)
-            case_name = filename.split('.')[0]
+        with open(os.path.join(data_folder, filename), "r") as input_f:
+            sentences = tagger.predict(
+                sentences=input_f.readlines(), mini_batch_size=32, verbose=False, use_tokenizer=tokenizer
+            )
+            case_name = filename.split(".")[0]
             page_html = render_ner_html(sentences, colors=colors, title=case_name)
 
             with open(os.path.join(output_folder, case_name + ".html"), "w") as output:
                 output.write(page_html)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = train_parse_args(train=False)
     assert args.dev_size >= 1
-    main(data_folder=args.input_dir,
-         model_folder=args.model_dir)
+    main(data_folder=args.input_dir, model_folder=args.model_dir)
 
 # data_folder = "resources/tc/txt"
 # output_folder = "resources/tc/html"

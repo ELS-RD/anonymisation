@@ -21,25 +21,25 @@ import spacy
 from flair.data import Sentence, build_spacy_tokenizer
 from flair.models import SequenceTagger
 from flair.visual.ner_html import render_ner_html
+from misc.command_line import train_parse_args
+from ner.model_factory import colors, get_tokenizer
 from spacy.language import Language
 from tqdm import tqdm
-
-from misc.command_line import train_parse_args
-from ner.model_factory import get_tokenizer, colors
-from xml_extractions.extract_node_values import get_paragraph_from_file, Paragraph
+from xml_extractions.extract_node_values import Paragraph, get_paragraph_from_file
 
 
 def main(data_folder: str, model_folder: str, top_n: int) -> None:
     print(f"keep only top {top_n} examples per file")
-    nlp: Language = spacy.blank(name='fr')
+    nlp: Language = spacy.blank(name="fr")
     nlp.tokenizer = get_tokenizer(nlp)
     tokenizer = build_spacy_tokenizer(nlp)
     filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".xml")]
     sentences: List[Sentence] = list()
     with tqdm(total=len(filenames), unit=" XML", desc="Parsing XML") as progress_bar:
         for filename in filenames:
-            paragraphs: List[Paragraph] = get_paragraph_from_file(path=os.path.join(data_folder, filename),
-                                                                  keep_paragraph_without_annotation=True)
+            paragraphs: List[Paragraph] = get_paragraph_from_file(
+                path=os.path.join(data_folder, filename), keep_paragraph_without_annotation=True
+            )
             if len(paragraphs) > top_n:
                 for paragraph in paragraphs[:top_n]:
                     if len(paragraph.text) > 0:
@@ -49,10 +49,8 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
     if len(sentences) == 0:
         raise Exception("No example loaded, causes: no cases in provided path or sample size is to high")
 
-    tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, 'best-model.pt'))
-    _ = tagger.predict(sentences=sentences,
-                       mini_batch_size=32,
-                       verbose=True)
+    tagger: SequenceTagger = SequenceTagger.load(os.path.join(model_folder, "best-model.pt"))
+    _ = tagger.predict(sentences=sentences, mini_batch_size=32, verbose=True)
 
     print("prepare html")
     page_html = render_ner_html(sentences, colors=colors)
@@ -61,12 +59,10 @@ def main(data_folder: str, model_folder: str, top_n: int) -> None:
         writer.write(page_html)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = train_parse_args(train=False)
     assert args.dev_size >= 1
-    main(data_folder=args.input_dir,
-         model_folder=args.model_dir,
-         top_n=args.dev_size)
+    main(data_folder=args.input_dir, model_folder=args.model_dir, top_n=args.dev_size)
 
 # data_folder = "../case_annotation/data/tc/spacy_manual_annotations"
 # model_folder = "resources/flair_ner/tc/"

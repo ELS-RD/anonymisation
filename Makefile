@@ -120,19 +120,19 @@ flair_display_errors_lux:
 test:
 	( \
 	$(SOURCE_VIRT_ENV); \
-	pytest; \
+	pytest tests; \
 	)
 
 
 # apply formating rule
 .PHONY: source_code_format
 source_code_format:
-	black --line-length 121 --target-version py37 tests src ./setup.py
-	isort --src tests src ./setup.py
+	black --line-length 121 --target-version py37 tests misc ner xml_extractions ./*.py
+	isort --src tests misc ner xml_extractions ./*.py
 
 # check that formating rule is respected
 .PHONY: source_code_check_format
 source_code_check_format:
-	black --check --line-length 121 --target-version py37 tests src ./setup.py
-	isort --check-only --src tests src ./setup.py
-	flake8 tests src ./setup.py
+	black --check --line-length 121 --target-version py37 tests misc ner xml_extractions ./*.py
+	isort --check-only --src tests misc ner xml_extractions ./*.py
+	flake8 tests misc ner xml_extractions ./*.py

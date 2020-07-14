@@ -14,7 +14,7 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-from argparse import Namespace, ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 
 def train_parse_args(train: bool) -> Namespace:
@@ -24,54 +24,18 @@ def train_parse_args(train: bool) -> Namespace:
     :returns: a namespace with all the set parameters
     """
 
-    parser = ArgumentParser(
-        description='Annotate a sample of the given files in the input directory'
+    parser = ArgumentParser(description="Annotate a sample of the given files in the input directory")
+    parser.add_argument("--model-dir", help="Model directory", action="store", dest="model_dir", required=False)
+    parser.add_argument(
+        "--input-files-dir", help="Input files directory", action="store", dest="input_dir", required=True
     )
     parser.add_argument(
-        '--model-dir',
-        help="Model directory",
-        action="store",
-        dest="model_dir",
-        required=False
+        "--dev-set-size", help="Size of dev set", action="store", dest="dev_size", type=float, required=False
     )
-    parser.add_argument(
-        '--input-files-dir',
-        help="Input files directory",
-        action="store",
-        dest="input_dir",
-        required=True
-    )
-    parser.add_argument(
-        '--dev-set-size',
-        help="Size of dev set",
-        action="store",
-        dest="dev_size",
-        type=float,
-        required=False
-    )
-    parser.add_argument(
-        '--nb_segment',
-        help="Number of segment",
-        action="store",
-        type=int,
-        required=False
-    )
-    parser.add_argument(
-        '--segment',
-        help="Number of segment",
-        action="store",
-        type=int,
-        required=False
-    )
+    parser.add_argument("--nb_segment", help="Number of segment", action="store", type=int, required=False)
+    parser.add_argument("--segment", help="Number of segment", action="store", type=int, required=False)
 
     if train:
-        parser.add_argument(
-            '--epochs',
-            help="Number of epochs",
-            action="store",
-            type=int,
-            dest="epoch",
-            required=True
-        )
+        parser.add_argument("--epochs", help="Number of epochs", action="store", type=int, dest="epoch", required=True)
 
     return parser.parse_args()

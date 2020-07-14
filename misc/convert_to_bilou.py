@@ -14,12 +14,12 @@
 #  KIND, either express or implied.  See the License for the
 #  specific language governing permissions and limitations
 #  under the License.
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
-from spacy.gold import biluo_tags_from_offsets, GoldParse
+from spacy.gold import GoldParse, biluo_tags_from_offsets
 from spacy.tokens.doc import Doc
-
 from xml_extractions.extract_node_values import Offset
+
 
 no_action_bilou = None
 unknown_type_name = "UNKNOWN"
@@ -35,8 +35,7 @@ def convert_bilou_with_missing_action(doc: Doc, offsets: List[Tuple[int, int, st
     :return: list of BILOU types
     """
     result = biluo_tags_from_offsets(doc, offsets)
-    return [no_action_bilou if unknown_type_name in action_bilou else action_bilou
-            for action_bilou in result]
+    return [no_action_bilou if unknown_type_name in action_bilou else action_bilou for action_bilou in result]
 
 
 def convert_unknown_bilou(doc: Doc, offsets: List[Offset]) -> GoldParse:
@@ -64,7 +63,6 @@ def convert_unknown_bilou_bulk(docs: List[Doc], offsets: List[List[Offset]]) -> 
     """
     list_of_gold_parse = list()
     for doc, current_offsets in zip(docs, offsets):
-        bilou_annotations = convert_unknown_bilou(doc=doc,
-                                                  offsets=current_offsets)
+        bilou_annotations = convert_unknown_bilou(doc=doc, offsets=current_offsets)
         list_of_gold_parse.append(bilou_annotations)
     return list_of_gold_parse

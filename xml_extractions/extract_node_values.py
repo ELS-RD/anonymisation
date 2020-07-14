@@ -15,12 +15,11 @@
 #  specific language governing permissions and limitations
 #  under the License.
 
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from attr import dataclass
 from lxml.etree import Element  # type: ignore
-
-from xml_extractions.common_xml_parser_function import replace_none, read_xml
+from xml_extractions.common_xml_parser_function import read_xml, replace_none
 
 
 @dataclass
@@ -82,8 +81,10 @@ def get_paragraph_with_entities(parent_node: Element) -> Tuple[str, List[str], L
         elif node.tag in ["Texte", "TexteAnonymise", "President", "Conseiller", "Greffier", "AvocatGeneral"]:
             pass
         else:
-            raise NotImplementedError(f"Unexpected type of node: [{node.tag}], node content is [{node.text}] and is "
-                                      f"part of [{node.getparent().text}]")
+            raise NotImplementedError(
+                f"Unexpected type of node: [{node.tag}], node content is [{node.text}] and is "
+                f"part of [{node.getparent().text}]"
+            )
     clean_content = list()
     extracted_text = list()
     offsets: List[Offset] = list()
@@ -95,17 +96,19 @@ def get_paragraph_with_entities(parent_node: Element) -> Tuple[str, List[str], L
 
         clean_content.append(current_text_item)
         if current_tag_item in ["PERS", "ADDRESS"]:
-            offsets.append(Offset(start=text_current_size,
-                                  end=text_current_size + current_item_text_size,
-                                  type=current_tag_item))
+            offsets.append(
+                Offset(start=text_current_size, end=text_current_size + current_item_text_size, type=current_tag_item)
+            )
             extracted_text.append(current_text_item)
         text_current_size += current_item_text_size + 1
 
-    paragraph_text = ' '.join(clean_content)
+    paragraph_text = " ".join(clean_content)
     return paragraph_text, extracted_text, offsets
 
 
-def get_paragraph_from_juri(case_id: str, juri_node: Element, keep_paragraph_without_annotation: bool) -> List[Paragraph]:
+def get_paragraph_from_juri(
+    case_id: str, juri_node: Element, keep_paragraph_without_annotation: bool
+) -> List[Paragraph]:
     """
     Extract paragraphs from node <Juri>
     :param case_id: xml
@@ -114,7 +117,7 @@ def get_paragraph_from_juri(case_id: str, juri_node: Element, keep_paragraph_wit
     :return: a list of tuple of (paragraph text, value inside node, offset)
     """
     result = list()
-    nodes = juri_node.xpath('./TexteJuri/P')
+    nodes = juri_node.xpath("./TexteJuri/P")
     for node in nodes:
         paragraph_text, extracted_text, offset = get_paragraph_with_entities(node)
         has_some_annotation = len(extracted_text) > 0
@@ -135,8 +138,7 @@ def get_paragraph_from_juri(case_id: str, juri_node: Element, keep_paragraph_wit
     return result
 
 
-def get_paragraph_from_file(path: str,
-                            keep_paragraph_without_annotation: bool) -> List[Paragraph]:
+def get_paragraph_from_file(path: str, keep_paragraph_without_annotation: bool) -> List[Paragraph]:
     """
     Read paragraph from a file
     :param path: path to the XML file
@@ -145,7 +147,7 @@ def get_paragraph_from_file(path: str,
     """
     result: List[Paragraph] = list()
     tree = read_xml(path)
-    nodes = tree.xpath('//Juri')
+    nodes = tree.xpath("//Juri")
     for node in nodes:
         case_id = node.get("id")
         result.extend(get_paragraph_from_juri(case_id, node, keep_paragraph_without_annotation))

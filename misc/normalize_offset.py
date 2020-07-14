@@ -37,9 +37,11 @@ def normalize_offsets(offsets: List[Offset], min_offset_size: int = 0) -> List[O
     for current_offset in sorted_offsets:
 
         # merge 2 tags of the same type which appear as separated but are not really
-        if (previous_offset is not None and
-                previous_offset.end + 1 >= current_offset.start and
-                previous_offset.type == current_offset.type):
+        if (
+            previous_offset is not None
+            and previous_offset.end + 1 >= current_offset.start
+            and previous_offset.type == current_offset.type
+        ):
             previous_offset.end = current_offset.end
 
         if (previous_offset is not None) and (previous_offset.end < current_offset.end):

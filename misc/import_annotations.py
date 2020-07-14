@@ -17,17 +17,16 @@
 import os
 import random
 import tempfile
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
+import numpy as np
 from flair.data import Corpus
 from flair.datasets import ColumnCorpus
+from misc.normalize_offset import normalize_offsets
 from spacy.gold import GoldParse
 from spacy.language import Language
 from spacy.tokens.doc import Doc
-
-from misc.normalize_offset import normalize_offsets
 from xml_extractions.extract_node_values import Offset
-import numpy as np
 
 
 def parse_offsets(text: str) -> Offset:
@@ -36,7 +35,7 @@ def parse_offsets(text: str) -> Offset:
     :param text: original line
     :return: a tuple containing the offset
     """
-    item = text.split(' ')
+    item = text.split(" ")
     return Offset(int(item[0]), int(item[1]), item[2])
 
 
@@ -49,14 +48,14 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
     results: List[Tuple[str, List[Offset]]] = list()
     file_used: List[str] = list()
     for txt_path in txt_paths:
-        if not txt_path.endswith('.txt'):
+        if not txt_path.endswith(".txt"):
             raise Exception(f"wrong file in the selection (not .txt): {txt_path}")
         file_used.append(txt_path)
-        with open(txt_path, 'r') as f:
+        with open(txt_path, "r") as f:
             # remove \n only
             content_case = [item[:-1] if item[-1] == "\n" else item for item in f.readlines()]
-        path_annotations = txt_path.replace('.txt', '.ent')
-        with open(path_annotations, 'r') as f:
+        path_annotations = txt_path.replace(".txt", ".ent")
+        with open(path_annotations, "r") as f:
             # strip to remove \n
             annotations = [item.strip() for item in f.readlines()]
 
@@ -65,7 +64,7 @@ def load_content(txt_paths: List[str]) -> List[Tuple[str, List[Offset]]]:
         assert len(content_case) == len(annotations)
 
         for line_case, line_annotations in zip(content_case, annotations):
-            gold_offsets = [parse_offsets(item) for item in line_annotations.split(',') if item != ""]
+            gold_offsets = [parse_offsets(item) for item in line_annotations.split(",") if item != ""]
             results.append((line_case, gold_offsets))
 
     return results
@@ -84,11 +83,11 @@ def convert_to_flair_format(spacy_model: Language, data: List[Tuple[str, List[Of
         # Flair uses BIOES and Spacy BILUO
         # BILUO for Begin, Inside, Last, Unit, Out
         # BIOES for Begin, Inside, Outside, End, Single
-        annotations = [a.replace('L-', 'E-') for a in annotations]
-        annotations = [a.replace('U-', 'S-') for a in annotations]
+        annotations = [a.replace("L-", "E-") for a in annotations]
+        annotations = [a.replace("U-", "S-") for a in annotations]
         annotations = ["O" if a == "-" else a for a in annotations]  # replace unknown
         result += [f"{word} {tag}\n" for word, tag in zip(doc, annotations)]
-        result.append('\n')
+        result.append("\n")
     return result
 
 
@@ -102,10 +101,12 @@ def export_data_set_flair_format(spacy_model: Language, data_file_names: List[st
     return tmp_path
 
 
-def prepare_flair_train_dev_corpus(spacy_model: Language, data_folder: str, dev_size: float,
-                                   nb_segment: Optional[int], segment: Optional[int]) -> Corpus:
-    all_annotated_files: List[str] = [os.path.join(data_folder, filename)
-                                      for filename in os.listdir(data_folder) if filename.endswith(".txt")]
+def prepare_flair_train_dev_corpus(
+    spacy_model: Language, data_folder: str, dev_size: float, nb_segment: Optional[int], segment: Optional[int]
+) -> Corpus:
+    all_annotated_files: List[str] = [
+        os.path.join(data_folder, filename) for filename in os.listdir(data_folder) if filename.endswith(".txt")
+    ]
     if nb_segment is None and segment is None:
         random.shuffle(all_annotated_files)
         nb_doc_dev_set: int = int(len(all_annotated_files) * dev_size)
@@ -121,9 +122,11 @@ def prepare_flair_train_dev_corpus(spacy_model: Language, data_folder: str, dev_
     train_path = export_data_set_flair_format(spacy_model, train_file_names)
     dev_path = export_data_set_flair_format(spacy_model, dev_file_names)
 
-    corpus: Corpus = ColumnCorpus(data_folder=tempfile.gettempdir(),
-                                  column_format={0: 'text', 1: 'ner'},
-                                  train_file=os.path.basename(train_path),
-                                  dev_file=os.path.basename(dev_path),
-                                  test_file=os.path.basename(dev_path))
+    corpus: Corpus = ColumnCorpus(
+        data_folder=tempfile.gettempdir(),
+        column_format={0: "text", 1: "ner"},
+        train_file=os.path.basename(train_path),
+        dev_file=os.path.basename(dev_path),
+        test_file=os.path.basename(dev_path),
+    )
     return corpus

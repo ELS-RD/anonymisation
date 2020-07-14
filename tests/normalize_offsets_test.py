@@ -21,8 +21,17 @@ from xml_extractions.extract_node_values import Offset
 
 
 def test_normalize_offsets():
-    data1 = [Offset(5, 10, "LAWYER"), Offset(18, 24, "ORGANIZATION"), Offset(22, 24, "ORGANIZATION"), Offset(120, 133, "LAWYER")]
-    assert normalize_offsets(data1) == [Offset(5, 10, "LAWYER"), Offset(18, 24, "ORGANIZATION"), Offset(120, 133, "LAWYER")]
+    data1 = [
+        Offset(5, 10, "LAWYER"),
+        Offset(18, 24, "ORGANIZATION"),
+        Offset(22, 24, "ORGANIZATION"),
+        Offset(120, 133, "LAWYER"),
+    ]
+    assert normalize_offsets(data1) == [
+        Offset(5, 10, "LAWYER"),
+        Offset(18, 24, "ORGANIZATION"),
+        Offset(120, 133, "LAWYER"),
+    ]
     data2 = [Offset(71, 75, "PERS"), Offset(76, 85, "PERS")]
     assert normalize_offsets(data2) == [Offset(71, 85, "PERS")]
     data3 = [Offset(5, 10, "LAWYER"), Offset(71, 75, "PERS"), Offset(76, 85, "PERS"), Offset(120, 133, "LAWYER")]
@@ -45,7 +54,7 @@ def test_normalize_offsets():
     assert normalize_offsets(data11) == [Offset(0, 34, "ORGANIZATION")]
     data14 = [Offset(21, 33, "DATE"), Offset(35, 55, "PERS")]
     assert normalize_offsets(data14) == data14
-    data15 = [Offset(start=21, end=37, type='DATE'), Offset(start=45, end=47, type='ORGANIZATION')]
+    data15 = [Offset(start=21, end=37, type="DATE"), Offset(start=45, end=47, type="ORGANIZATION")]
     assert normalize_offsets(data15, min_offset_size=2) == [Offset(21, 37, "DATE")]
     data16 = [Offset(1, 3, "PERS")]
     assert normalize_offsets(data9) == data16
