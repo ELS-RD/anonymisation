@@ -61,8 +61,8 @@ def prevent_sentence_boundary_detection(doc):
 
 
 def get_tokenizer(model: French) -> Tokenizer:
-    split_char = r"[ ,\\.()-/\\|:;'\"+=!?_+#“’'‘]"
-    extended_infix = [r'[:\\(\\)-\./#"“’\'—'] + model.Defaults.infixes
+    split_char = r"[ ,\\.()-/\\|:;\"+=!?_+#“’'‘]"
+    extended_infix = [r'[:\\(\\)-\./#"“’\'—‘'] + model.Defaults.infixes
     infix_re = spacy.util.compile_infix_regex(extended_infix)
     prefix_re = spacy.util.compile_prefix_regex(tuple(list(model.Defaults.prefixes) + [split_char]))
     suffix_re = spacy.util.compile_suffix_regex(tuple(list(model.Defaults.suffixes) + [split_char]))
