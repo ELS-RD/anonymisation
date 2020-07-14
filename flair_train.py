@@ -55,10 +55,12 @@ def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int,
                                             tag_dictionary=tag_dictionary,
                                             tag_type='ner')
 
-    trainer: ModelTrainer = ModelTrainer(model=tagger, corpus=corpus, use_tensorboard=True)
+    trainer: ModelTrainer = ModelTrainer(model=tagger, corpus=corpus, use_tensorboard=False)
 
+    # TODO optimize LR https://github.com/flairNLP/flair/blob/master/resources/docs/TUTORIAL_8_MODEL_OPTIMIZATION.md
     trainer.train(model_folder,
                   max_epochs=nb_epochs,
+                  learning_rate=0.1,
                   mini_batch_size=32,
                   embeddings_storage_mode="cpu",
                   checkpoint=False,

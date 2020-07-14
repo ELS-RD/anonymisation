@@ -7,3 +7,6 @@ pytest
 regex
 flair
 tensorboard
+black
+isort
+flake8

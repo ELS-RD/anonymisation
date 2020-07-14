@@ -96,10 +96,10 @@ flair_train_lux:
 	( \
 	$(SOURCE_VIRT_ENV); \
 	python flair_train.py --input-files-dir ../case_annotation/data/lux/spacy_manual_annotations \
-	--model-dir resources/flair_ner/luxano_segment_4 \
+	--model-dir resources/flair_ner/luxano_segment_0 \
 	--epochs 40 \
 	--nb_segment 5 \
-	--segment 4; \
+	--segment 0; \
 	)
 
 # display prediction errors
@@ -122,3 +122,17 @@ test:
 	$(SOURCE_VIRT_ENV); \
 	pytest; \
 	)
+
+
+# apply formating rule
+.PHONY: source_code_format
+source_code_format:
+	black --line-length 121 --target-version py37 tests src ./setup.py
+	isort --src tests src ./setup.py
+
+# check that formating rule is respected
+.PHONY: source_code_check_format
+source_code_check_format:
+	black --check --line-length 121 --target-version py37 tests src ./setup.py
+	isort --check-only --src tests src ./setup.py
+	flake8 tests src ./setup.py
