@@ -110,9 +110,9 @@ flair_display_errors_lux:
 	$(SOURCE_VIRT_ENV); \
 	python flair_display_errors.py \
 	--input-files-dir ../case_annotation/data/lux/spacy_manual_annotations \
-	--model-dir resources/flair_ner/luxano_segment_4 \
+	--model-dir resources/flair_ner/luxano_segment_0 \
 	--nb_segment 5 \
-	--segment 4; \
+	--segment 0; \
 	)
 
 # run unit tests

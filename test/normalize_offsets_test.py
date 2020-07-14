@@ -38,7 +38,7 @@ def test_normalize_offsets():
     data8 = [Offset(1, 1, "PERS")]
     assert normalize_offsets(data8) == []
     data9 = [Offset(1, 3, "PERS")]
-    assert normalize_offsets(data9) == []
+    assert normalize_offsets(data9, min_offset_size=2) == []
     data10 = [Offset(1, 10, "PERS"), Offset(1, 10, "PERS"), Offset(3, 10, "PERS")]
     assert normalize_offsets(data10) == [Offset(1, 10, "PERS")]
     data11 = [Offset(0, 34, "ORGANIZATION"), Offset(0, 8, "ORGANIZATION")]
@@ -46,4 +46,12 @@ def test_normalize_offsets():
     data14 = [Offset(21, 33, "DATE"), Offset(35, 55, "PERS")]
     assert normalize_offsets(data14) == data14
     data15 = [Offset(start=21, end=37, type='DATE'), Offset(start=45, end=47, type='ORGANIZATION')]
-    assert normalize_offsets(data15) == [Offset(21, 37, "DATE")]
+    assert normalize_offsets(data15, min_offset_size=2) == [Offset(21, 37, "DATE")]
+    data16 = [Offset(1, 3, "PERS")]
+    assert normalize_offsets(data9) == data16
+    data17 = [Offset(1, 5, "PERS"), Offset(6, 10, "PERS")]
+    assert normalize_offsets(data17) == [Offset(1, 10, "PERS")]
+    data18 = [Offset(1, 5, "PERS"), Offset(6, 10, "ORGANIZATION")]
+    assert normalize_offsets(data18) == data18
+    data19 = [Offset(1, 5, "PERS"), Offset(7, 10, "ORGANIZATION")]
+    assert normalize_offsets(data19) == data19

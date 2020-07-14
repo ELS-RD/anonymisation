@@ -31,7 +31,7 @@ from xml_extractions.extract_node_values import get_paragraph_from_file, Paragra
 
 def main(data_folder: str, model_folder: str, top_n: int) -> None:
     print(f"keep only top {top_n} examples per file")
-    nlp: Language = spacy.blank('fr')
+    nlp: Language = spacy.blank(name='fr')
     nlp.tokenizer = get_tokenizer(nlp)
     tokenizer = build_spacy_tokenizer(nlp)
     filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".xml")]

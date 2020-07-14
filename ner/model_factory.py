@@ -80,7 +80,7 @@ def get_empty_model(load_labels_for_training: bool) -> French:
     :rtype: object
     """
     # Important to setup the right language because it impacts the tokenizer, sentences split, ...
-    nlp = spacy.blank('fr')
+    nlp = spacy.blank(name='fr')
 
     nlp.tokenizer = get_tokenizer(nlp)
 

@@ -20,7 +20,7 @@ from typing import List, Union
 from xml_extractions.extract_node_values import Offset
 
 
-def normalize_offsets(offsets: List[Offset], min_offset_size: int = 2) -> List[Offset]:
+def normalize_offsets(offsets: List[Offset], min_offset_size: int = 0) -> List[Offset]:
     """
     Normalize the provided list of offsets by merging or removing some of them
     Takes care of priority included in the tag label (as `_1`)
@@ -36,9 +36,10 @@ def normalize_offsets(offsets: List[Offset], min_offset_size: int = 2) -> List[O
 
     for current_offset in sorted_offsets:
 
-        # merge tags which appear as separated but are not really
-        if (previous_offset is not None) and (previous_offset.end + 1 >= current_offset.start):
-            # previous_offset.type = tag_priority(previous_offset.type, current_offset.type)
+        # merge 2 tags of the same type which appear as separated but are not really
+        if (previous_offset is not None and
+                previous_offset.end + 1 >= current_offset.start and
+                previous_offset.type == current_offset.type):
             previous_offset.end = current_offset.end
 
         if (previous_offset is not None) and (previous_offset.end < current_offset.end):

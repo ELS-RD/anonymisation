@@ -24,7 +24,7 @@ from flair.models import SequenceTagger
 from flair.trainers import ModelTrainer
 
 from misc.command_line import train_parse_args
-from misc.import_annotations import prepare_flair_train_test_corpus
+from misc.import_annotations import prepare_flair_train_dev_corpus
 from ner.model_factory import get_tokenizer
 
 # reproducibility
@@ -33,11 +33,11 @@ random.seed(5)
 
 def main(data_folder: str, model_folder: str, dev_size: float, nb_epochs: int,
          nb_segment: Optional[int], segment: Optional[int]) -> None:
-    nlp = spacy.blank('fr')
+    nlp = spacy.blank(name='fr')
     nlp.tokenizer = get_tokenizer(nlp)
 
-    corpus: Corpus = prepare_flair_train_test_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size,
-                                                     nb_segment=nb_segment, segment=segment)
+    corpus: Corpus = prepare_flair_train_dev_corpus(spacy_model=nlp, data_folder=data_folder, dev_size=dev_size,
+                                                    nb_segment=nb_segment, segment=segment)
     tag_dictionary = corpus.make_tag_dictionary(tag_type='ner')
     print(tag_dictionary.idx2item)
 

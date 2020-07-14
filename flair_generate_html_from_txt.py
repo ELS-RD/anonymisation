@@ -28,7 +28,7 @@ from ner.model_factory import get_tokenizer, colors
 
 
 def main(data_folder: str, output_folder: str, model_folder: str) -> None:
-    nlp: Language = spacy.blank('fr')
+    nlp: Language = spacy.blank(name='fr')
     nlp.tokenizer = get_tokenizer(nlp)
     tokenizer = build_spacy_tokenizer(nlp)
     filenames = [filename for filename in os.listdir(data_folder) if filename.endswith(".txt")]

@@ -29,6 +29,7 @@ from misc.normalize_offset import normalize_offsets
 from xml_extractions.extract_node_values import Offset
 import numpy as np
 
+
 def parse_offsets(text: str) -> Offset:
     """
     Convert to the right offset format
@@ -101,9 +102,8 @@ def export_data_set_flair_format(spacy_model: Language, data_file_names: List[st
     return tmp_path
 
 
-def prepare_flair_train_test_corpus(spacy_model: Language, data_folder: str, dev_size: float,
-                                    nb_segment: Optional[int], segment: Optional[int]) -> Corpus:
-
+def prepare_flair_train_dev_corpus(spacy_model: Language, data_folder: str, dev_size: float,
+                                   nb_segment: Optional[int], segment: Optional[int]) -> Corpus:
     all_annotated_files: List[str] = [os.path.join(data_folder, filename)
                                       for filename in os.listdir(data_folder) if filename.endswith(".txt")]
     if nb_segment is None and segment is None:
