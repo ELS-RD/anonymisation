@@ -115,8 +115,8 @@ def prepare_flair_train_dev_corpus(
         assert segment < nb_segment
         all_segments = np.array_split(all_annotated_files, nb_segment)
         dev_file_names = list(all_segments[segment])
-        print(dev_file_names)
 
+    print(f"dev set file names: {dev_file_names}")
     train_file_names = [file for file in all_annotated_files if file not in dev_file_names]
 
     train_path = export_data_set_flair_format(spacy_model, train_file_names)
