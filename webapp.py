@@ -30,7 +30,7 @@ Ressources:
 st.image(image="http://svowebmaster.free.fr/images_site_svo/armoiries/armoiries_LUXEMBOURG.gif", width=150)
 
 user_input = st.text_area(
-    "coller une décision ci-dessous", "", max_chars=20000, height=300
+    "coller une décision ci-dessous", "", max_chars=100000, height=300
 )
 
 "## Résultat"
