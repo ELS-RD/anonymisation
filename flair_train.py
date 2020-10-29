@@ -62,7 +62,6 @@ def main(
 
     trainer: ModelTrainer = ModelTrainer(model=tagger, corpus=corpus, use_tensorboard=False)
 
-    # TODO optimize LR https://github.com/flairNLP/flair/blob/master/resources/docs/TUTORIAL_8_MODEL_OPTIMIZATION.md
     trainer.train(
         model_folder,
         max_epochs=nb_epochs,

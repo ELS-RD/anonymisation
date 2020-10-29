@@ -10,3 +10,5 @@ tensorboard
 black
 isort
 flake8
+st-annotated-text
+streamlit
