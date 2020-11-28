@@ -32,7 +32,7 @@ def get_tokenizer(model: French) -> Tokenizer:
 
 @cache(allow_output_mutation=True, max_entries=1)
 def get_model():
-    return SequenceTagger.load("resources/flair_ner/luxano_segment_0/best-model.pt")
+    return SequenceTagger.load("resources/flair_ner/luxano_segment_0_flair/best-model.pt")
 
 
 @cache(allow_output_mutation=True, max_entries=1)
@@ -41,6 +41,10 @@ def get_french_tokenizer():
     nlp.tokenizer = get_tokenizer(model=nlp)
     return SpacyTokenizer(nlp)
 
+
+to_skip = ["ETAT"]
+
+replace_parenthesis = ["ADDRESS", "DATE"]
 
 st.beta_set_page_config(
     page_title="Anonymisation", page_icon="🔍", layout="centered", initial_sidebar_state="collapsed",
@@ -58,7 +62,7 @@ Ressources:
 
 st.image(image="http://svowebmaster.free.fr/images_site_svo/armoiries/armoiries_LUXEMBOURG.gif", width=150)
 
-user_input = st.text_area("coller une décision ci-dessous", "", max_chars=100000, height=300)
+user_input = st.text_area("coller une décision ci-dessous", "", max_chars=200000, height=300)
 
 replace_names = st.checkbox(label="Remplacer les entités nommées par des pseudos", value=False)
 
@@ -75,16 +79,28 @@ for paragraph in user_input.split("\n"):
     tagger.predict(sentence)
     paragraphs.append(sentence)
 
+inside_parenthesis = False
 if replace_names:
     pseudo = list(string.ascii_uppercase) + [a + b for a in string.ascii_uppercase for b in string.ascii_uppercase]
     replacement_dict: Dict[str, str] = dict()
     for sentence in paragraphs:
         for word in sentence:
-            if word.get_tag("ner").value != "O" and word.text not in string.punctuation:
-                if word.text not in replacement_dict:
-                    replacement_dict[word.text] = pseudo[len(replacement_dict)]
-                word.text = replacement_dict[word.text]
-
+            tag = word.get_tag("ner").value
+            if any([True for i in replace_parenthesis if i in tag]):
+                if not inside_parenthesis:
+                    # first item
+                    word.text = "(...)"
+                else:
+                    # not the first one, put empty
+                    word.text = ""
+                inside_parenthesis = True
+            elif tag != "O" and not any([True for i in to_skip if i in tag]):
+                inside_parenthesis = False
+                if word.text.lower() not in replacement_dict:
+                    replacement_dict[word.text.lower()] = pseudo[len(replacement_dict)]
+                word.text = replacement_dict[word.text.lower()]
+            else:
+                inside_parenthesis = False
 
 colors = {
     "ETABLISSEMENT": "#35c2b2",

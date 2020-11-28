@@ -115,6 +115,10 @@ flair_display_errors_lux:
 	--segment 0; \
 	)
 
+.PHONY: webapp
+webapp:
+	streamlit run webapp.py
+
 # run unit tests
 .PHONY: test
 test:
