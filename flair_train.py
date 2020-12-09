@@ -67,7 +67,7 @@ def main(
         max_epochs=nb_epochs,
         learning_rate=0.1,
         mini_batch_size=32,
-        embeddings_storage_mode="cpu",
+        embeddings_storage_mode="gpu",
         checkpoint=False,
     )
 
